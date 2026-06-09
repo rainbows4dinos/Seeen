@@ -44,6 +44,30 @@ Possible positioning language:
 
 > BandPath helps independent artists find their way into real scenes — mapping the venues, bands, curators, writers, radio shows, labels, festivals, and local networks that can help them build momentum.
 
+> BandPath shows you where to start looking and helps you triangulate from there.
+
+The second framing is important. BandPath does not claim to have definitive, verified answers. The underground music world is too volatile for that. Instead, BandPath surfaces the best available signals, explains where they came from, flags how fresh they are, and points artists toward the right starting places for their own verification and outreach.
+
+## The Staleness Problem
+
+Underground music scenes are volatile by nature. Booking contacts change. Bands go inactive or relocate. Venues shift formats or close. Promoters move on. Even well-funded directories struggle with this — and BandPath will too.
+
+This is not an edge case to be solved later. It is the central design constraint.
+
+Key failure modes to design around:
+
+- **Talent buyer / booking contact staleness.** The "official" contact listed on a venue website is frequently out of date. The real booker today may only be reachable through Instagram DMs, a mutual connection, or showing up to a show. BandPath should never present a booking contact with false confidence. Surface what's findable, timestamp it, and explicitly prompt the user to verify before outreach.
+
+- **Band activity and residency uncertainty.** A band may have broken up, relocated, or gone on indefinite hiatus. Signals like recent show announcements, Bandcamp activity, Instagram posts, and streaming geography can provide rough freshness indicators, but even those lag.
+
+- **Venue and promoter turnover.** Bookers, promoters, and venue managers shift frequently. A contact that was accurate a year ago may be completely wrong today.
+
+The honest product response to all of this is not to hide the uncertainty. It is to surface it clearly, timestamp everything, and help artists know *how* to verify rather than implying the verification has already been done.
+
+BandPath's value proposition is not "we have the right contacts." It is "we show you where to start looking and help you triangulate from there."
+
+The people using BandPath are themselves nodes in the scene graph. Their real-world knowledge, corrections, and updates are part of what makes the product work over time.
+
 ## Target User
 
 Primary user:
@@ -100,12 +124,12 @@ The MVP should likely focus on:
    - Include confidence level or source signal
    - Include next suggested action
    - Include links/sources
-   - Avoid pretending the AI "knows" more than it does
+   - Avoid pretending the AI “knows” more than it does
 
 4. Pathway suggestions
-   - Example: "Start with these 3 Portland contacts, then explore Olympia/Seattle punk-adjacent venues."
-   - Example: "This band's strongest signal is college/community radio, not playlists."
-   - Example: "These bands appear in adjacent scenes and could be potential billmates."
+   - Example: “Start with these 3 Portland contacts, then explore Olympia/Seattle punk-adjacent venues.”
+   - Example: “This band’s strongest signal is college/community radio, not playlists.”
+   - Example: “These bands appear in adjacent scenes and could be potential billmates.”
 
 ## Possible Information Architecture
 
@@ -161,6 +185,53 @@ Potential models:
 
 The goal is to avoid becoming another spammy music database full of stale contacts.
 
+## Data Confidence and UGC Layer
+
+Given the volatility of underground scenes, BandPath needs a multi-tier trust and confidence model. This is not a nice-to-have — it is a core product feature.
+
+### Confidence Tiers
+
+Every piece of data in BandPath should carry a visible confidence indicator based on its source and freshness. Proposed tiers:
+
+1. **AI / scraped data** — generated or pulled from public sources automatically. Lowest confidence by default. Always timestamped. Clearly labeled as machine-generated. Should prompt users to verify or flag.
+
+2. **Community-flagged data** — a scene participant has confirmed or updated this information, with an associated date. Higher confidence than raw AI data, but still subject to decay.
+
+3. **Verified / claimed data** — the venue, artist, or entity themselves has confirmed the information through a claim flow. Highest confidence tier. Should still carry a last-verified date.
+
+4. **Stale / flagged data** — any tier can be marked stale by community members. Dead contacts, inactive bands, and wrong information should be surfaceable without being deleted, so the history of a listing is preserved.
+
+### Confidence Is Temporal, Not Just Accuracy-Based
+
+A booking contact that was verified two years ago should display differently than one verified last month — even if both were once accurate. The age of a signal matters as much as its source.
+
+Every data point should ideally carry:
+- Source (where did this come from)
+- Source date (when was this captured)
+- Last community confirmation (when did a human last validate this)
+- Staleness flag (has anyone flagged this as outdated)
+
+### UGC / Community Editing Model
+
+BandPath should support community contributions as a first-class feature, not an afterthought. Suggested model:
+
+- **Anyone** can flag a listing as stale, inactive, or incorrect
+- **Registered users** can suggest edits or add missing information
+- **Claimed artists and venues** can update their own listings directly
+- **Edits from unclaimed sources** are shown as pending until confirmed or counter-flagged
+- **All changes are attributed** (even if just "community member, [date]")
+- **AI-generated content is always visually distinguished** from human-contributed content
+
+The goal is to avoid becoming another stale music database. Community participation is what keeps the data alive.
+
+### UI Principles for Confidence Display
+
+- Show confidence level on every opportunity card
+- Show the source and date on every data point where possible
+- Use visual language (color, icons, or labels) to distinguish AI-generated vs community-verified vs claimed data
+- Never hide uncertainty — surface it plainly and let artists decide what to do with it
+- Include a "Is this still accurate?" prompt on contacts and listings that haven't been updated recently
+
 ## Data Sources / Signals
 
 Potential sources to explore:
@@ -186,7 +257,7 @@ Important: source attribution matters. The product should show where a recommend
 
 AI could help by:
 
-- Summarizing an artist's sound from public descriptions, reviews, and metadata
+- Summarizing an artist’s sound from public descriptions, reviews, and metadata
 - Extracting genre/location/scene signals
 - Identifying related artists and shared ecosystem nodes
 - Clustering venues, bands, blogs, labels, and promoters by scene
@@ -194,7 +265,7 @@ AI could help by:
 - Turning raw signals into suggested next actions
 - Generating outreach drafts that are specific, respectful, and non-spammy
 - Flagging weak, stale, or low-confidence recommendations
-- Comparing an artist's likely pathway across cities
+- Comparing an artist’s likely pathway across cities
 
 AI should not hallucinate contacts or fake certainty. Every recommendation should be source-backed when possible.
 
@@ -214,7 +285,7 @@ The experience should feel:
 Avoid:
 
 - Growth-hack language
-- "Crush the algorithm" clichés
+- “Crush the algorithm” clichés
 - Fake virality promises
 - Generic music marketing advice
 - Overly polished enterprise SaaS vibes
@@ -422,6 +493,41 @@ It should respect local scenes as communities, not as markets to extract from.
 
 It should be transparent about uncertainty, source quality, and the difference between AI-generated suggestions and verified information.
 
+It should not pretend to have answers it doesn't have. The underground music world is too dynamic and volatile for false confidence. BandPath's job is to show artists where to start looking and help them triangulate — not to be an authoritative directory that claims to have everything figured out.
+
+The people using BandPath are part of the scene intelligence. Their corrections, confirmations, and contributions are what make the product honest over time.
+
+## Claude / Cursor Instructions
+
+When working on this project:
+
+- Preserve the DIY/community-first product spirit.
+- Do not over-enterprise the UI.
+- Prioritize useful MVP flows over complex architecture.
+- Prefer simple, shippable Next.js/React/Supabase patterns.
+- Use TypeScript.
+- Use Tailwind for styling.
+- Keep data models flexible; this is an evolving product.
+- Favor source-backed recommendations and visible confidence levels.
+- Avoid fake certainty or hallucinated music industry data.
+- Treat AI enrichment as assistive, not authoritative.
+- Make interfaces feel more like scene exploration and pathway discovery than analytics dashboards.
+- Every data point should carry a source, a timestamp, and a confidence tier. Design schemas and UI to support this from the start.
+- The staleness problem is real and central. Never design a flow that presents contact or band data as current without a freshness signal.
+- Community flagging and editing is a core feature, not a phase 2 item. Build data models that support it even before the UI exists.
+
+## Useful Initial Build Prompt
+
+Use this prompt to start implementation work:
+
+> We are building BandPath, a Next.js/TypeScript/Supabase app that helps independent musicians discover scene-based pathway opportunities. The app should let an artist search for or create an artist profile, claim/verify that profile, and view recommended opportunities such as venues, bands, blogs, radio shows, labels, festivals, playlists, and promoters. Recommendations should be represented as source-backed opportunity cards with confidence levels, explanation, links, and suggested next actions. Start by creating the core app structure, data model/types, and MVP screens: landing page, artist search/claim flow, artist dashboard, scene explorer, and opportunity detail. Use Tailwind and simple reusable components. Keep the UI DIY, editorial, and community-oriented rather than corporate SaaS.
+
+## Useful Design Prompt
+
+Use this prompt for Figma Make or design exploration:
+
+> Design a web app for BandPath, a scene intelligence and pathway discovery tool for independent musicians. The product helps artists claim their profile and discover relevant venues, bands, promoters, blogs, radio shows, labels, festivals, playlists, and local scenes. The design should feel like a modern DIY music directory crossed with a smart recommendation system — editorial, warm, slightly zine-like, but still clear and usable. Create screens for landing page, claim artist flow, artist dashboard, scene explorer, opportunity cards, and opportunity detail. Emphasize source-backed recommendations, confidence levels, and practical next actions. Avoid corporate SaaS aesthetics and generic analytics dashboard patterns.
+
 ## Open Questions
 
 - Should the product be called BandPath, Artist Pathway, SceneMap, or something else?
@@ -432,6 +538,11 @@ It should be transparent about uncertainty, source quality, and the difference b
 - What is the right verification method for claimed artist profiles?
 - How should confidence levels be calculated and explained?
 - What are the most useful opportunity categories for the first release?
+- What is the right decay threshold for flagging data as likely stale? (30 days? 90 days? 1 year? Varies by type?)
+- Should talent buyer / booking contacts be handled differently from other contact types, given how frequently they turn over?
+- How do we make community flagging low-friction enough that people actually use it?
+- Should there be a "this band is still active" / "this venue is still open" lightweight confirmation mechanic?
+- How do we credit or incentivize community contributors without over-engineering a reputation system?
 
 ## Near-Term Recommended Build Sequence
 
@@ -445,15 +556,3 @@ It should be transparent about uncertainty, source quality, and the difference b
 8. Add basic admin/enrichment workflow.
 9. Add AI enrichment only after the core product shape feels right.
 10. Test with one real band and one real city/scene before scaling.
-
-## Useful Initial Build Prompt
-
-Use this prompt to start implementation work:
-
-> We are building BandPath, a Next.js/TypeScript/Supabase app that helps independent musicians discover scene-based pathway opportunities. The app should let an artist search for or create an artist profile, claim/verify that profile, and view recommended opportunities such as venues, bands, blogs, radio shows, labels, festivals, playlists, and promoters. Recommendations should be represented as source-backed opportunity cards with confidence levels, explanation, links, and suggested next actions. Start by creating the core app structure, data model/types, and MVP screens: landing page, artist search/claim flow, artist dashboard, scene explorer, and opportunity detail. Use Tailwind and simple reusable components. Keep the UI DIY, editorial, and community-oriented rather than corporate SaaS.
-
-## Useful Design Prompt
-
-Use this prompt for Figma Make or design exploration:
-
-> Design a web app for BandPath, a scene intelligence and pathway discovery tool for independent musicians. The product helps artists claim their profile and discover relevant venues, bands, promoters, blogs, radio shows, labels, festivals, playlists, and local scenes. The design should feel like a modern DIY music directory crossed with a smart recommendation system — editorial, warm, slightly zine-like, but still clear and usable. Create screens for landing page, claim artist flow, artist dashboard, scene explorer, opportunity cards, and opportunity detail. Emphasize source-backed recommendations, confidence levels, and practical next actions. Avoid corporate SaaS aesthetics and generic analytics dashboard patterns.
