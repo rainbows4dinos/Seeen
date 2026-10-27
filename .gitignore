@@ -1,0 +1,32 @@
+# Dependencies and build output
+node_modules/
+dist/
+build/
+out/
+.next/
+.vite/
+coverage/
+*.tsbuildinfo
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+
+# Supabase local state
+supabase/.temp/
+supabase/.branches/
+
+# Logs and local tools
+*.log
+.vercel/
+.DS_Store
+Thumbs.db
+.idea/
+
+# Private local data: keep real contacts outside tracked source
+private/
+local-data/
