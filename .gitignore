@@ -30,3 +30,9 @@ Thumbs.db
 # Private local data: keep real contacts outside tracked source
 private/
 local-data/
+
+# Next.js extras
+next-env.d.ts
+.pnp
+.pnp.*
+npm-debug.log*

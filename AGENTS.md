@@ -14,6 +14,16 @@ Read [README.md](README.md) for current scope and delivery targets. For schema, 
 ## Working process
 
 - Keep scope aligned with the README. Historical material in `docs/archive/` is reference only and does not define current requirements.
-- Use the repository's actual scripts once scaffolding exists; document setup alongside it. Until then, report that application checks are unavailable.
+- Use the repository's scripts (`npm run lint`, `npm run typecheck`, `npm run build`) and keep setup docs in the README current. There is no test runner yet.
 - Validate behavior affected by a change. For deployment changes, check production and preview environment configuration and Supabase auth redirect behavior. For UI changes, check mobile layout, keyboard operation, and loading/empty/error states.
 - In handoffs, state what changed, what was checked, and what remains unverified.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
