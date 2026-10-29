@@ -13,12 +13,18 @@ The core questions are: Who do we know in this scene? Who are our Homies? Who co
 - **Connection:** a person, band, organization, or outlet, with one or more types, profile links, optional contact details, relationship notes, and timestamps.
 - **Locality:** geographic place. Keep locality distinct from genre/community tags.
 - **Scene:** a local music community. A connection can belong to multiple scenes.
-- **Homie:** a shared favorite flag on a connection, independent of relationship stage.
+- **Affiliation:** a link from one connection to another, with a role (for example vocals, member, DJ at, books for, works at), a current/former status, and optional notes. A person can be affiliated with many bands, venues, and organizations; a band's members are its incoming affiliations. Both connections must belong to the same workspace.
+- **Can help with:** free-form skills or services on a person (for example music videos, DJ sets, gear, screen printing), so members can find who to ask for a need, not only who plays where.
+- **Homie:** a shared favorite flag on a connection, independent of relationship stage and not inherited through affiliations.
 - **Relationship stage:** prospect, connected, active relationship, or inactive.
 - **Outreach entry:** dated history with channel, notes, and author, linked to a connection.
 - **Next action:** current planned step, optional follow-up date, priority, and responsible member.
 
 These are conceptual entities, not a finalized database schema. Give private records a workspace ownership path so Supabase policies can enforce membership across related data. Preserve history when changing a connection's current status or next action. Archive connections rather than casually removing their history.
+
+## Scene connections
+
+Scenes run on overlapping people: one musician might play in several bands and cover bands, DJ, and help other bands make videos through their day job. Capturing those links is core to the product, not an extra. For the MVP, show affiliations as linked lists on detail pages (a person's bands and roles; a band's members), so clicking through records traverses the network. Former affiliations stay visible because past lineups are part of how a scene connects. A graph visualization can be built later on the same data and remains outside this release.
 
 ## Prospect discovery
 

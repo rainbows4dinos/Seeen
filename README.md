@@ -11,6 +11,7 @@ Formerly Artist Pathway / BandPath. The project restarted on October 27, 2026 wi
 - **Connections:** bands, promoters, venues, DJs, playlisters, and other people or organizations in the network.
 - **Scenes:** organize connections by locality and scene, with multiple memberships when useful.
 - **Homies:** favorite connections with a shared band-wide flag.
+- **Affiliations:** links between connections, such as who plays in which bands, who books which venue, or who works where, shown on each connection's detail page.
 - **Prospects:** curate potential connections, record why they matter, and prioritize outreach.
 - **Follow-through:** log outreach and track a next action, responsible member, and follow-up date.
 - **Shared access:** authorized Merwulf members can work with the same private data across devices.
