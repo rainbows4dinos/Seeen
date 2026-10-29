@@ -23,9 +23,9 @@ Search and filters should make it easy to move between scenes, connection types,
 
 | Layer | Direction |
 | --- | --- |
-| Frontend | Web app; framework to be selected |
+| Frontend | Next.js (App Router) |
 | Language | TypeScript |
-| Styling | Tailwind CSS planned |
+| Styling | Tailwind CSS |
 | Hosting | Vercel |
 | Database | Supabase Postgres |
 | Authentication | Supabase Auth |
@@ -51,7 +51,32 @@ Automated scraping, AI recommendations, automatic messaging, social integrations
 
 ## Development status
 
-Planning and documentation only. Application scaffolding, Supabase migrations, and deployment workflows have not been created. There are no install, development, or test commands yet.
+Next.js app scaffolded with Supabase clients and session refresh. No schema, sign-in UI, or tests yet.
+
+## Local setup
+
+Requires Node 20.9+. Docker is needed only for local Supabase.
+
+```bash
+npm install
+cp .env.example .env.local   # add the Supabase URL and publishable key
+npm run dev                  # http://localhost:3000
+```
+
+| Script | Purpose |
+| --- | --- |
+| `npm run dev` | Dev server |
+| `npm run build` | Production build |
+| `npm run lint` | ESLint |
+| `npm run typecheck` | Route types + TypeScript |
+| `npm run db:start` / `db:stop` | Local Supabase via the CLI (Docker) |
+| `npm run db:migration <name>` | New versioned migration in `supabase/migrations/` |
+| `npm run db:reset` | Rebuild local DB from migrations |
+| `npm run db:types` | Generate DB types from local schema |
+
+To push migrations to the hosted project: `npx supabase login`, `npx supabase link --project-ref <project-id>`, then `npx supabase db push`.
+
+Supabase code lives in `src/lib/supabase/`: `client.ts` for Client Components, `server.ts` for server code, and `proxy.ts` for session refresh (wired up in `src/proxy.ts`). Only the project URL and publishable key belong in env vars the app reads. Never add the secret key.
 
 ## Project documentation
 
