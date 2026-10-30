@@ -10,14 +10,14 @@ Formerly Artist Pathway / BandPath. The project restarted on October 27, 2026 wi
 
 - **Connections:** bands, promoters, venues, DJs, playlisters, and other people or organizations in the network.
 - **Scenes:** organize connections by locality and scene, with multiple memberships when useful.
-- **Homies:** favorite connections with a shared band-wide flag.
+- **Status:** one band-wide choice per connection: Homies, Let's play, Prospect, Neutral, or Avoid, plus whether you've played together.
 - **Affiliations:** links between connections, such as who plays in which bands, who books which venue, or who works where, shown on each connection's detail page.
 - **Prospects:** curate potential connections, record why they matter, and prioritize outreach.
 - **Follow-through:** log outreach and track a next action, responsible member, and follow-up date.
 - **Shared access:** authorized Merwulf members can work with the same private data across devices.
 - **Portability:** export the directory to CSV.
 
-Search and filters should make it easy to move between scenes, connection types, Homies, and relationship stages. Start with manually curated prospects; automated discovery is deferred.
+Search and filters should make it easy to move between scenes, connection types, and statuses. Start with manually curated prospects; automated discovery is deferred.
 
 ## Architecture
 
@@ -51,7 +51,7 @@ Automated scraping, AI recommendations, automatic messaging, social integrations
 
 ## Development status
 
-Email/password sign-in works. Database schema, Row Level Security, and access tests are in `supabase/`. The directory UI is next.
+Email/password sign-in and the connection directory (list, add, edit, view, archive) work. Database schema, Row Level Security, and access tests are in `supabase/`. Scenes and filters are next.
 
 ## Local setup
 
@@ -81,7 +81,7 @@ Local Supabase loads fictional seed data from `supabase/seed.sql`. Sign in as `a
 
 The schema lives in `supabase/migrations/`. Every private table carries a `workspace_id`, and Row Level Security only lets members of that workspace read or write it. Signing up does not grant access; a member has to be added.
 
-History is kept, not overwritten: connections are archived instead of deleted, stage changes are logged, replacing a next action closes the old one (`set_next_action`), and outreach entries can only be changed by their author.
+History is kept, not overwritten: connections are archived instead of deleted, status changes are logged, replacing a next action closes the old one (`set_next_action`), and outreach entries can only be changed by their author.
 
 ### Pushing to the hosted project
 

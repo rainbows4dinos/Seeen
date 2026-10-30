@@ -77,20 +77,20 @@ isOneToOne: false
       referencedColumns: ["workspace_id","id"]
     }
                   ]
-                },"connection_stage_changes": {
+                },"connection_status_changes": {
                   Row: {
-                    "changed_at": string,"changed_by": string | null,"connection_id": string,"from_stage": Database["public"]['Enums']["relationship_stage"] | null,"id": number,"to_stage": Database["public"]['Enums']["relationship_stage"],"workspace_id": string
+                    "changed_at": string,"changed_by": string | null,"connection_id": string,"from_status": Database["public"]['Enums']["connection_status"] | null,"id": number,"to_status": Database["public"]['Enums']["connection_status"],"workspace_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "changed_at"?: string,"changed_by"?: string | null,"connection_id": string,"from_stage"?: Database["public"]['Enums']["relationship_stage"] | null,"id"?: never,"to_stage": Database["public"]['Enums']["relationship_stage"],"workspace_id": string
+                    "changed_at"?: string,"changed_by"?: string | null,"connection_id": string,"from_status"?: Database["public"]['Enums']["connection_status"] | null,"id"?: never,"to_status": Database["public"]['Enums']["connection_status"],"workspace_id": string
                   }
                   Update: {
-                    "changed_at"?: string,"changed_by"?: string | null,"connection_id"?: string,"from_stage"?: Database["public"]['Enums']["relationship_stage"] | null,"id"?: never,"to_stage"?: Database["public"]['Enums']["relationship_stage"],"workspace_id"?: string
+                    "changed_at"?: string,"changed_by"?: string | null,"connection_id"?: string,"from_status"?: Database["public"]['Enums']["connection_status"] | null,"id"?: never,"to_status"?: Database["public"]['Enums']["connection_status"],"workspace_id"?: string
                   }
                   Relationships: [
                     {
-      foreignKeyName: "connection_stage_changes_workspace_id_connection_id_fkey"
+      foreignKeyName: "connection_status_changes_workspace_id_connection_id_fkey"
       columns: ["workspace_id","connection_id"]
 isOneToOne: false
       referencedRelation: "connections"
@@ -99,14 +99,14 @@ isOneToOne: false
                   ]
                 },"connections": {
                   Row: {
-                    "archived_at": string | null,"can_help_with": (string)[],"created_at": string,"created_by": string | null,"email": string | null,"fit_reason": string | null,"id": string,"is_homie": boolean,"kind": Database["public"]['Enums']["connection_kind"],"locality_id": string | null,"name": string,"notes": string | null,"phone": string | null,"reach_out": Database["public"]['Enums']["reach_out"] | null,"reasons": (Database["public"]['Enums']["connection_reason"])[],"stage": Database["public"]['Enums']["relationship_stage"],"types": (Database["public"]['Enums']["connection_type"])[],"updated_at": string,"workspace_id": string
+                    "archived_at": string | null,"can_help_with": (string)[],"created_at": string,"created_by": string | null,"email": string | null,"id": string,"locality_id": string | null,"name": string,"notes": string | null,"phone": string | null,"played_together": boolean,"status": Database["public"]['Enums']["connection_status"],"types": (Database["public"]['Enums']["connection_type"])[],"updated_at": string,"workspace_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "archived_at"?: string | null,"can_help_with"?: (string)[],"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"fit_reason"?: string | null,"id"?: string,"is_homie"?: boolean,"kind"?: Database["public"]['Enums']["connection_kind"],"locality_id"?: string | null,"name": string,"notes"?: string | null,"phone"?: string | null,"reach_out"?: Database["public"]['Enums']["reach_out"] | null,"reasons"?: (Database["public"]['Enums']["connection_reason"])[],"stage"?: Database["public"]['Enums']["relationship_stage"],"types"?: (Database["public"]['Enums']["connection_type"])[],"updated_at"?: string,"workspace_id": string
+                    "archived_at"?: string | null,"can_help_with"?: (string)[],"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"id"?: string,"locality_id"?: string | null,"name": string,"notes"?: string | null,"phone"?: string | null,"played_together"?: boolean,"status"?: Database["public"]['Enums']["connection_status"],"types"?: (Database["public"]['Enums']["connection_type"])[],"updated_at"?: string,"workspace_id": string
                   }
                   Update: {
-                    "archived_at"?: string | null,"can_help_with"?: (string)[],"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"fit_reason"?: string | null,"id"?: string,"is_homie"?: boolean,"kind"?: Database["public"]['Enums']["connection_kind"],"locality_id"?: string | null,"name"?: string,"notes"?: string | null,"phone"?: string | null,"reach_out"?: Database["public"]['Enums']["reach_out"] | null,"reasons"?: (Database["public"]['Enums']["connection_reason"])[],"stage"?: Database["public"]['Enums']["relationship_stage"],"types"?: (Database["public"]['Enums']["connection_type"])[],"updated_at"?: string,"workspace_id"?: string
+                    "archived_at"?: string | null,"can_help_with"?: (string)[],"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"id"?: string,"locality_id"?: string | null,"name"?: string,"notes"?: string | null,"phone"?: string | null,"played_together"?: boolean,"status"?: Database["public"]['Enums']["connection_status"],"types"?: (Database["public"]['Enums']["connection_type"])[],"updated_at"?: string,"workspace_id"?: string
                   }
                   Relationships: [
                     {
@@ -295,7 +295,7 @@ isOneToOne: false
       } }
           }
           Enums: {
-            "action_status": "open"|"done"|"dropped"|"replaced","connection_kind": "person"|"band"|"organization"|"outlet","connection_reason": "dig_them"|"good_move"|"friends","connection_type": "band"|"musician"|"promoter"|"venue"|"dj"|"playlister"|"label"|"press"|"radio"|"photographer"|"videographer"|"other","member_role": "owner"|"member","outreach_channel": "in_person"|"email"|"text"|"call"|"instagram"|"other_social"|"other","reach_out": "yes"|"maybe"|"pass","relationship_stage": "prospect"|"connected"|"active"|"inactive"
+            "action_status": "open"|"done"|"dropped"|"replaced","connection_status": "homies"|"lets_play"|"prospect"|"neutral"|"avoid","connection_type": "band"|"musician"|"promoter"|"venue"|"dj"|"playlister"|"label"|"press"|"radio"|"photographer"|"videographer"|"other","member_role": "owner"|"member","outreach_channel": "in_person"|"email"|"text"|"call"|"instagram"|"other_social"|"other"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -411,7 +411,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "action_status": ["open", "done", "dropped", "replaced"],"connection_kind": ["person", "band", "organization", "outlet"],"connection_reason": ["dig_them", "good_move", "friends"],"connection_type": ["band", "musician", "promoter", "venue", "dj", "playlister", "label", "press", "radio", "photographer", "videographer", "other"],"member_role": ["owner", "member"],"outreach_channel": ["in_person", "email", "text", "call", "instagram", "other_social", "other"],"reach_out": ["yes", "maybe", "pass"],"relationship_stage": ["prospect", "connected", "active", "inactive"]
+            "action_status": ["open", "done", "dropped", "replaced"],"connection_status": ["homies", "lets_play", "prospect", "neutral", "avoid"],"connection_type": ["band", "musician", "promoter", "venue", "dj", "playlister", "label", "press", "radio", "photographer", "videographer", "other"],"member_role": ["owner", "member"],"outreach_channel": ["in_person", "email", "text", "call", "instagram", "other_social", "other"]
           }
         }
 } as const

@@ -4,7 +4,7 @@
 
 Seeen is a private shared network directory for Merwulf. The October 27, 2026 restart supersedes the earlier public scene-discovery concept. See [../README.md](../README.md) for release scope and schedule.
 
-The core questions are: Who do we know in this scene? Who are our Homies? Who could we connect with next, and why? What did we last do, and who will follow up?
+The core questions are: Who do we know in this scene? Who are our Homies, and who do we keep saying "let's play" with? Who could we connect with next, and why? What did we last do, and who will follow up?
 
 ## Working data model
 
@@ -15,14 +15,20 @@ The core questions are: Who do we know in this scene? Who are our Homies? Who co
 - **Scene:** a local music community. A connection can belong to multiple scenes.
 - **Affiliation:** a link from one connection to another, with a role (for example vocals, member, DJ at, books for, works at), a current/former status, and optional notes. A person can be affiliated with many bands, venues, and organizations; a band's members are its incoming affiliations. Both connections must belong to the same workspace.
 - **Can help with:** free-form skills or services on a person (for example music videos, DJ sets, gear, screen printing), so members can find who to ask for a need, not only who plays where.
-- **Homie:** a shared favorite flag on a connection, independent of relationship stage and not inherited through affiliations.
-- **Relationship stage:** prospect, connected, active relationship, or inactive.
-- **Reach out:** yes, maybe, or pass, set by the band. Pass is the honest "nope" (they gave us the cold shoulder, or we played with them once and that was enough). It drops a connection from prospect lists without archiving its history, and can be flipped back.
-- **Reasons:** why the band wants to connect, in any combination: we dig them, good move (strategic), or they're friends (the relationship matters even if the music isn't ours). Separate from Homie, which marks a band-wide favorite.
+- **Status:** one band-wide choice per connection, set in a single tap:
+  - **Homies:** the ultimate band-to-band relationship. Love playing together, love each other's music, love hanging out, support each other, top tour-mate candidates.
+  - **Let's play:** mutual "we should play together," not booked yet. The booking backlog of agreed admiration and opportunity.
+  - **Prospect:** we'd like to connect; not mutual yet.
+  - **Neutral:** we know of them, no particular plans. The default.
+  - **Avoid:** the honest "nope" (cold shoulder, or played once and that was enough). Kept, not archived, and can change.
+  Status is not inherited through affiliations. Changes are logged.
+- **Played together:** a separate fact, what has already happened, versus how the band feels and what's next. Distinguishes warm leads from cold ones when planning a town.
 - **Outreach entry:** dated history with channel, notes, and author, linked to a connection.
 - **Next action:** current planned step, optional follow-up date, and responsible member. No priority; the date is enough.
 
-Reach out, reasons, Homie, notes, and outreach are the band's candid, private judgments. They stay workspace-owned and must never be shared outside the workspace, even if connection identity is shared across bands later.
+Status, notes, and outreach are the band's candid, private judgments. They stay workspace-owned and must never be shared outside the workspace, even if connection identity is shared across bands later.
+
+Keep data entry light. Adding a connection should take seconds: name, type, where they're based, and status. Everything else is optional and tucked away. Prefer quick selections over free-text fields, which rarely get filled in.
 
 These are conceptual entities, not a finalized database schema. Give private records a workspace ownership path so Supabase policies can enforce membership across related data. Preserve history when changing a connection's current status or next action. Archive connections rather than casually removing their history.
 
