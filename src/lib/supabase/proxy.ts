@@ -4,8 +4,9 @@ import type { Database } from "./database.types";
 import { getSupabaseEnv } from "./env";
 
 // Refreshes the Supabase auth session on every matched request and writes
-// updated auth cookies onto the response. Route protection is not added yet;
-// it lands with the sign-in and membership work.
+// updated auth cookies onto the response. Returns the signed-in user's id
+// (or null) so the proxy can make an optimistic redirect decision.
+// Data access is still enforced by RLS; this is not a security boundary.
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
   const { url, publishableKey } = getSupabaseEnv();
@@ -32,7 +33,15 @@ export async function updateSession(request: NextRequest) {
 
   // Don't put code between createServerClient and getClaims().
   // getClaims() validates the JWT and triggers a refresh when needed.
-  await supabase.auth.getClaims();
+  const { data } = await supabase.auth.getClaims();
+  const userId = data?.claims?.sub ?? null;
 
-  return response;
+  return { response, userId };
+}
+
+// Redirect while keeping any auth cookies the refresh just set.
+export function redirectWithCookies(from: NextResponse, to: URL) {
+  const redirect = NextResponse.redirect(to);
+  from.cookies.getAll().forEach((cookie) => redirect.cookies.set(cookie));
+  return redirect;
 }

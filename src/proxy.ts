@@ -1,8 +1,24 @@
 import type { NextRequest } from "next/server";
-import { updateSession } from "@/lib/supabase/proxy";
+import { redirectWithCookies, updateSession } from "@/lib/supabase/proxy";
+
+const PUBLIC_PATHS = ["/login"];
 
 export async function proxy(request: NextRequest) {
-  return updateSession(request);
+  const { response, userId } = await updateSession(request);
+  const { pathname, search } = request.nextUrl;
+  const isPublic = PUBLIC_PATHS.includes(pathname);
+
+  if (!userId && !isPublic) {
+    const login = new URL("/login", request.url);
+    if (pathname !== "/") login.searchParams.set("next", pathname + search);
+    return redirectWithCookies(response, login);
+  }
+
+  if (userId && isPublic) {
+    return redirectWithCookies(response, new URL("/", request.url));
+  }
+
+  return response;
 }
 
 export const config = {

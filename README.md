@@ -51,7 +51,7 @@ Automated scraping, AI recommendations, automatic messaging, social integrations
 
 ## Development status
 
-Next.js app scaffolded with Supabase clients and session refresh. Database schema, Row Level Security, and access tests are in `supabase/`. No sign-in UI yet.
+Email/password sign-in works. Database schema, Row Level Security, and access tests are in `supabase/`. The directory UI is next.
 
 ## Local setup
 
@@ -88,12 +88,12 @@ History is kept, not overwritten: connections are archived instead of deleted, s
 ```bash
 npx supabase login
 npx supabase link --project-ref <project-id>
-npx supabase db push
+npx supabase db push --linked
 ```
 
 ### Creating the workspace and adding members
 
-Until the invite flow exists, add members in the Supabase SQL editor. Each person needs an account first (Authentication > Users > Add user, or sign in once the app has sign-in).
+Until the invite flow exists, add members in Supabase. Create their account under Authentication > Users > Add user (email, password, auto-confirm), share the password with them privately, then add the membership in the SQL editor. Public sign-ups should stay turned off in the Supabase auth settings.
 
 ```sql
 -- once
