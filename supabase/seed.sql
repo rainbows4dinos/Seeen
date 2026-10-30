@@ -1,0 +1,151 @@
+-- Local development seed. FICTIONAL DATA ONLY. Runs on `npm run db:reset`;
+-- never pushed to the hosted project.
+--
+-- Local sign-ins (password: password123)
+--   alex@example.com  member (owner) of Merwulf
+--   sam@example.com   member of Merwulf
+--   dana@example.com  signed up, not a member: should see nothing
+
+-- ---------------------------------------------------------------------------
+-- Auth users
+-- ---------------------------------------------------------------------------
+
+insert into auth.users (
+  instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
+  raw_app_meta_data, raw_user_meta_data, created_at, updated_at,
+  confirmation_token, recovery_token, email_change_token_new, email_change
+)
+select
+  '00000000-0000-0000-0000-000000000000', u.id, 'authenticated', 'authenticated',
+  u.email, extensions.crypt('password123', extensions.gen_salt('bf')), now(),
+  '{"provider":"email","providers":["email"]}', '{}', now(), now(),
+  '', '', '', ''
+from (values
+  ('11111111-1111-1111-1111-111111111111'::uuid, 'alex@example.com'),
+  ('22222222-2222-2222-2222-222222222222'::uuid, 'sam@example.com'),
+  ('44444444-4444-4444-4444-444444444444'::uuid, 'dana@example.com')
+) as u (id, email);
+
+insert into auth.identities (
+  id, user_id, provider_id, provider, identity_data, last_sign_in_at, created_at, updated_at
+)
+select
+  gen_random_uuid(), u.id, u.id::text, 'email',
+  jsonb_build_object('sub', u.id::text, 'email', u.email, 'email_verified', true),
+  now(), now(), now()
+from auth.users u
+where u.email in ('alex@example.com', 'sam@example.com', 'dana@example.com');
+
+-- ---------------------------------------------------------------------------
+-- Workspace
+-- ---------------------------------------------------------------------------
+
+insert into public.workspaces (id, name) values
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'Merwulf');
+
+insert into public.workspace_members (workspace_id, user_id, role, display_name) values
+  ('aaaaaaaa-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111', 'owner', 'Alex'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', '22222222-2222-2222-2222-222222222222', 'member', 'Sam');
+
+-- ---------------------------------------------------------------------------
+-- Places and scenes
+-- ---------------------------------------------------------------------------
+
+insert into public.localities (id, workspace_id, name, region, country) values
+  ('10000000-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-000000000001', 'Portland', 'OR', 'US'),
+  ('10000000-0000-0000-0000-000000000002', 'aaaaaaaa-0000-0000-0000-000000000001', 'Seattle', 'WA', 'US'),
+  ('10000000-0000-0000-0000-000000000003', 'aaaaaaaa-0000-0000-0000-000000000001', 'Boise', 'ID', 'US');
+
+insert into public.scenes (id, workspace_id, name, description, locality_id) values
+  ('20000000-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'Portland post-punk', 'Bands and rooms around the east side.', '10000000-0000-0000-0000-000000000001'),
+  ('20000000-0000-0000-0000-000000000002', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'Portland DIY', 'House shows, basements, all-ages spaces.', '10000000-0000-0000-0000-000000000001'),
+  ('20000000-0000-0000-0000-000000000003', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'Seattle noise', null, '10000000-0000-0000-0000-000000000002'),
+  ('20000000-0000-0000-0000-000000000004', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'Boise underground', null, '10000000-0000-0000-0000-000000000003');
+
+-- ---------------------------------------------------------------------------
+-- Connections (all fictional)
+-- ---------------------------------------------------------------------------
+
+insert into public.connections
+  (id, workspace_id, name, kind, types, stage, is_homie, fit_reason, can_help_with,
+   locality_id, email, notes, created_by)
+values
+  ('c0000000-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'The Tin Hollows', 'band', '{band}', 'active', true, null, '{}',
+   '10000000-0000-0000-0000-000000000001', null,
+   'Shared two bills in 2026. Always down to trade shows.', '11111111-1111-1111-1111-111111111111'),
+  ('c0000000-0000-0000-0000-000000000002', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'Jo Example', 'person', '{musician,dj}', 'active', true, null, '{"DJ sets","music videos"}',
+   '10000000-0000-0000-0000-000000000001', 'jo@example.com',
+   'Sings in The Tin Hollows, spins darkwave on Thursdays.', '11111111-1111-1111-1111-111111111111'),
+  ('c0000000-0000-0000-0000-000000000003', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'Velvet Ditch', 'band', '{band}', 'connected', false, null, '{}',
+   '10000000-0000-0000-0000-000000000002', null, null, '22222222-2222-2222-2222-222222222222'),
+  ('c0000000-0000-0000-0000-000000000004', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'The Lantern Room', 'organization', '{venue}', 'prospect', false,
+   'Books post-punk on weeknights; good fit for a first Seattle date.', '{}',
+   '10000000-0000-0000-0000-000000000002', 'booking@example.com', null, '22222222-2222-2222-2222-222222222222'),
+  ('c0000000-0000-0000-0000-000000000005', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'Riley Sample', 'person', '{promoter}', 'prospect', false,
+   'Runs a monthly night that pairs touring bands with locals.', '{}',
+   '10000000-0000-0000-0000-000000000002', null, null, '22222222-2222-2222-2222-222222222222'),
+  ('c0000000-0000-0000-0000-000000000006', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'Static Basement', 'organization', '{venue}', 'connected', true, null, '{}',
+   '10000000-0000-0000-0000-000000000001', null, 'All-ages basement. Bring your own PA.', '11111111-1111-1111-1111-111111111111'),
+  ('c0000000-0000-0000-0000-000000000007', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'KXXX Night Shift', 'outlet', '{radio}', 'inactive', false, null, '{}',
+   '10000000-0000-0000-0000-000000000003', null, 'Show went on hiatus.', '11111111-1111-1111-1111-111111111111'),
+  ('c0000000-0000-0000-0000-000000000008', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'Morgan Placeholder', 'person', '{photographer,musician}', 'connected', false, null,
+   '{"live photos","screen printing"}',
+   '10000000-0000-0000-0000-000000000001', null, null, '22222222-2222-2222-2222-222222222222');
+
+insert into public.connection_links (workspace_id, connection_id, label, url, position) values
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', 'Bandcamp', 'https://example.com/tin-hollows', 0),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', 'Instagram', 'https://example.com/@tinhollows', 1),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000004', 'Website', 'https://example.com/lantern-room', 0);
+
+insert into public.connection_scenes (workspace_id, connection_id, scene_id) values
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000001'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000002'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000003', '20000000-0000-0000-0000-000000000003'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000004', '20000000-0000-0000-0000-000000000003'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000005', '20000000-0000-0000-0000-000000000003'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000006', '20000000-0000-0000-0000-000000000002'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000007', '20000000-0000-0000-0000-000000000004'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000008', '20000000-0000-0000-0000-000000000001'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000008', '20000000-0000-0000-0000-000000000002');
+
+insert into public.affiliations (workspace_id, from_connection_id, to_connection_id, role, is_current, notes) values
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000001', 'vocals', true, null),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000006', 'DJ at', true, 'Thursday darkwave night'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000008', 'c0000000-0000-0000-0000-000000000003', 'bass', false, 'Left in 2025'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000005', 'c0000000-0000-0000-0000-000000000004', 'books for', true, null);
+
+-- ---------------------------------------------------------------------------
+-- Outreach and next actions
+-- ---------------------------------------------------------------------------
+
+insert into public.outreach_entries (workspace_id, connection_id, occurred_on, channel, summary, author_id) values
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001',
+   '2026-10-12', 'in_person', 'Talked after their set about a split bill in December.', '11111111-1111-1111-1111-111111111111'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000003',
+   '2026-09-30', 'instagram', 'DMed congrats on the new single, offered a Portland show.', '22222222-2222-2222-2222-222222222222'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000004',
+   '2026-10-20', 'email', 'Sent booking inquiry with live video link. No reply yet.', '22222222-2222-2222-2222-222222222222');
+
+insert into public.next_actions (workspace_id, connection_id, description, due_on, priority, assignee_id, created_by) values
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001',
+   'Lock a date for the December split bill', '2026-11-08', 'high',
+   '11111111-1111-1111-1111-111111111111', '11111111-1111-1111-1111-111111111111'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000004',
+   'Follow up on the booking inquiry', '2026-11-03', 'normal',
+   '22222222-2222-2222-2222-222222222222', '22222222-2222-2222-2222-222222222222'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000005',
+   'Ask Velvet Ditch for an intro', null, 'low',
+   '22222222-2222-2222-2222-222222222222', '22222222-2222-2222-2222-222222222222');
