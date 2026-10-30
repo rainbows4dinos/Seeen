@@ -6,6 +6,16 @@ Status: baseline guidance; visual tokens and component library are not yet selec
 
 Build a useful DIY music directory: editorial, personable, and scene-aware. Let names, places, links, and relationship context lead. Use plain language such as Connections, Scenes, Homies, and Next action.
 
+## No pressure
+
+Seeen is not a sales tool. Bands work on their own time, and urgency comes and goes with real events like a release or a tour.
+
+- Never tell a band something is urgent. No overdue alarms, red badges, streaks, or counts of what they're behind on.
+- Show dates as plain facts ("planned for Oct 12") rather than warnings.
+- Don't score or rank people. Use the band's own words: reach out yes, maybe, or pass, and the reasons they chose.
+- Recommendations are offers, not tasks. A band can ignore them without consequence.
+- Any heightened urgency is something the band turns on, such as a focus on an upcoming release or tour.
+
 ## Layout and hierarchy
 
 - Make browsing, search, and scene filters easy to reach on desktop and mobile.

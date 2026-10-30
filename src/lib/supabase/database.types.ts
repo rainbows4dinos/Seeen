@@ -99,14 +99,14 @@ isOneToOne: false
                   ]
                 },"connections": {
                   Row: {
-                    "archived_at": string | null,"can_help_with": (string)[],"created_at": string,"created_by": string | null,"email": string | null,"fit_reason": string | null,"id": string,"is_homie": boolean,"kind": Database["public"]['Enums']["connection_kind"],"locality_id": string | null,"name": string,"notes": string | null,"phone": string | null,"stage": Database["public"]['Enums']["relationship_stage"],"types": (Database["public"]['Enums']["connection_type"])[],"updated_at": string,"workspace_id": string
+                    "archived_at": string | null,"can_help_with": (string)[],"created_at": string,"created_by": string | null,"email": string | null,"fit_reason": string | null,"id": string,"is_homie": boolean,"kind": Database["public"]['Enums']["connection_kind"],"locality_id": string | null,"name": string,"notes": string | null,"phone": string | null,"reach_out": Database["public"]['Enums']["reach_out"] | null,"reasons": (Database["public"]['Enums']["connection_reason"])[],"stage": Database["public"]['Enums']["relationship_stage"],"types": (Database["public"]['Enums']["connection_type"])[],"updated_at": string,"workspace_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "archived_at"?: string | null,"can_help_with"?: (string)[],"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"fit_reason"?: string | null,"id"?: string,"is_homie"?: boolean,"kind"?: Database["public"]['Enums']["connection_kind"],"locality_id"?: string | null,"name": string,"notes"?: string | null,"phone"?: string | null,"stage"?: Database["public"]['Enums']["relationship_stage"],"types"?: (Database["public"]['Enums']["connection_type"])[],"updated_at"?: string,"workspace_id": string
+                    "archived_at"?: string | null,"can_help_with"?: (string)[],"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"fit_reason"?: string | null,"id"?: string,"is_homie"?: boolean,"kind"?: Database["public"]['Enums']["connection_kind"],"locality_id"?: string | null,"name": string,"notes"?: string | null,"phone"?: string | null,"reach_out"?: Database["public"]['Enums']["reach_out"] | null,"reasons"?: (Database["public"]['Enums']["connection_reason"])[],"stage"?: Database["public"]['Enums']["relationship_stage"],"types"?: (Database["public"]['Enums']["connection_type"])[],"updated_at"?: string,"workspace_id": string
                   }
                   Update: {
-                    "archived_at"?: string | null,"can_help_with"?: (string)[],"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"fit_reason"?: string | null,"id"?: string,"is_homie"?: boolean,"kind"?: Database["public"]['Enums']["connection_kind"],"locality_id"?: string | null,"name"?: string,"notes"?: string | null,"phone"?: string | null,"stage"?: Database["public"]['Enums']["relationship_stage"],"types"?: (Database["public"]['Enums']["connection_type"])[],"updated_at"?: string,"workspace_id"?: string
+                    "archived_at"?: string | null,"can_help_with"?: (string)[],"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"fit_reason"?: string | null,"id"?: string,"is_homie"?: boolean,"kind"?: Database["public"]['Enums']["connection_kind"],"locality_id"?: string | null,"name"?: string,"notes"?: string | null,"phone"?: string | null,"reach_out"?: Database["public"]['Enums']["reach_out"] | null,"reasons"?: (Database["public"]['Enums']["connection_reason"])[],"stage"?: Database["public"]['Enums']["relationship_stage"],"types"?: (Database["public"]['Enums']["connection_type"])[],"updated_at"?: string,"workspace_id"?: string
                   }
                   Relationships: [
                     {
@@ -151,14 +151,14 @@ isOneToOne: false
                   ]
                 },"next_actions": {
                   Row: {
-                    "assignee_id": string | null,"closed_at": string | null,"closed_by": string | null,"connection_id": string,"created_at": string,"created_by": string | null,"description": string,"due_on": string | null,"id": string,"priority": Database["public"]['Enums']["action_priority"],"status": Database["public"]['Enums']["action_status"],"workspace_id": string
+                    "assignee_id": string | null,"closed_at": string | null,"closed_by": string | null,"connection_id": string,"created_at": string,"created_by": string | null,"description": string,"due_on": string | null,"id": string,"status": Database["public"]['Enums']["action_status"],"workspace_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "assignee_id"?: string | null,"closed_at"?: string | null,"closed_by"?: string | null,"connection_id": string,"created_at"?: string,"created_by"?: string | null,"description": string,"due_on"?: string | null,"id"?: string,"priority"?: Database["public"]['Enums']["action_priority"],"status"?: Database["public"]['Enums']["action_status"],"workspace_id": string
+                    "assignee_id"?: string | null,"closed_at"?: string | null,"closed_by"?: string | null,"connection_id": string,"created_at"?: string,"created_by"?: string | null,"description": string,"due_on"?: string | null,"id"?: string,"status"?: Database["public"]['Enums']["action_status"],"workspace_id": string
                   }
                   Update: {
-                    "assignee_id"?: string | null,"closed_at"?: string | null,"closed_by"?: string | null,"connection_id"?: string,"created_at"?: string,"created_by"?: string | null,"description"?: string,"due_on"?: string | null,"id"?: string,"priority"?: Database["public"]['Enums']["action_priority"],"status"?: Database["public"]['Enums']["action_status"],"workspace_id"?: string
+                    "assignee_id"?: string | null,"closed_at"?: string | null,"closed_by"?: string | null,"connection_id"?: string,"created_at"?: string,"created_by"?: string | null,"description"?: string,"due_on"?: string | null,"id"?: string,"status"?: Database["public"]['Enums']["action_status"],"workspace_id"?: string
                   }
                   Relationships: [
                     {
@@ -274,7 +274,7 @@ isOneToOne: false
           }
           Functions: {
             "set_next_action":
-{ Args: { "p_assignee_id"?: string,"p_connection_id": string,"p_description": string,"p_due_on"?: string,"p_priority"?: Database["public"]['Enums']["action_priority"] }; Returns: {
+{ Args: { "p_assignee_id"?: string,"p_connection_id": string,"p_description": string,"p_due_on"?: string }; Returns: {
               "assignee_id": string | null,
 "closed_at": string | null,
 "closed_by": string | null,
@@ -284,7 +284,6 @@ isOneToOne: false
 "description": string,
 "due_on": string | null,
 "id": string,
-"priority": Database["public"]['Enums']["action_priority"],
 "status": Database["public"]['Enums']["action_status"],
 "workspace_id": string
             }
@@ -296,7 +295,7 @@ isOneToOne: false
       } }
           }
           Enums: {
-            "action_priority": "low"|"normal"|"high","action_status": "open"|"done"|"dropped"|"replaced","connection_kind": "person"|"band"|"organization"|"outlet","connection_type": "band"|"musician"|"promoter"|"venue"|"dj"|"playlister"|"label"|"press"|"radio"|"photographer"|"videographer"|"other","member_role": "owner"|"member","outreach_channel": "in_person"|"email"|"text"|"call"|"instagram"|"other_social"|"other","relationship_stage": "prospect"|"connected"|"active"|"inactive"
+            "action_status": "open"|"done"|"dropped"|"replaced","connection_kind": "person"|"band"|"organization"|"outlet","connection_reason": "dig_them"|"good_move"|"friends","connection_type": "band"|"musician"|"promoter"|"venue"|"dj"|"playlister"|"label"|"press"|"radio"|"photographer"|"videographer"|"other","member_role": "owner"|"member","outreach_channel": "in_person"|"email"|"text"|"call"|"instagram"|"other_social"|"other","reach_out": "yes"|"maybe"|"pass","relationship_stage": "prospect"|"connected"|"active"|"inactive"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -412,7 +411,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "action_priority": ["low", "normal", "high"],"action_status": ["open", "done", "dropped", "replaced"],"connection_kind": ["person", "band", "organization", "outlet"],"connection_type": ["band", "musician", "promoter", "venue", "dj", "playlister", "label", "press", "radio", "photographer", "videographer", "other"],"member_role": ["owner", "member"],"outreach_channel": ["in_person", "email", "text", "call", "instagram", "other_social", "other"],"relationship_stage": ["prospect", "connected", "active", "inactive"]
+            "action_status": ["open", "done", "dropped", "replaced"],"connection_kind": ["person", "band", "organization", "outlet"],"connection_reason": ["dig_them", "good_move", "friends"],"connection_type": ["band", "musician", "promoter", "venue", "dj", "playlister", "label", "press", "radio", "photographer", "videographer", "other"],"member_role": ["owner", "member"],"outreach_channel": ["in_person", "email", "text", "call", "instagram", "other_social", "other"],"reach_out": ["yes", "maybe", "pass"],"relationship_stage": ["prospect", "connected", "active", "inactive"]
           }
         }
 } as const

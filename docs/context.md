@@ -17,8 +17,12 @@ The core questions are: Who do we know in this scene? Who are our Homies? Who co
 - **Can help with:** free-form skills or services on a person (for example music videos, DJ sets, gear, screen printing), so members can find who to ask for a need, not only who plays where.
 - **Homie:** a shared favorite flag on a connection, independent of relationship stage and not inherited through affiliations.
 - **Relationship stage:** prospect, connected, active relationship, or inactive.
+- **Reach out:** yes, maybe, or pass, set by the band. Pass is the honest "nope" (they gave us the cold shoulder, or we played with them once and that was enough). It drops a connection from prospect lists without archiving its history, and can be flipped back.
+- **Reasons:** why the band wants to connect, in any combination: we dig them, good move (strategic), or they're friends (the relationship matters even if the music isn't ours). Separate from Homie, which marks a band-wide favorite.
 - **Outreach entry:** dated history with channel, notes, and author, linked to a connection.
-- **Next action:** current planned step, optional follow-up date, priority, and responsible member.
+- **Next action:** current planned step, optional follow-up date, and responsible member. No priority; the date is enough.
+
+Reach out, reasons, Homie, notes, and outreach are the band's candid, private judgments. They stay workspace-owned and must never be shared outside the workspace, even if connection identity is shared across bands later.
 
 These are conceptual entities, not a finalized database schema. Give private records a workspace ownership path so Supabase policies can enforce membership across related data. Preserve history when changing a connection's current status or next action. Archive connections rather than casually removing their history.
 
