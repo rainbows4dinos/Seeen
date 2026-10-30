@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(37);
+select plan(34);
 
 -- ---------------------------------------------------------------------------
 -- Fixtures (as postgres)
@@ -27,10 +27,10 @@ insert into public.workspace_members (workspace_id, user_id, role, display_name)
   ('aaaaaaaa-0000-0000-0000-0000000000f1', 'f2222222-2222-2222-2222-222222222222', 'member', 'Sam'),
   ('bbbbbbbb-0000-0000-0000-0000000000f2', 'f3333333-3333-3333-3333-333333333333', 'member', 'Cora');
 
-insert into public.connections (id, workspace_id, name, kind, types) values
-  ('c0000000-0000-0000-0000-0000000000f1', 'aaaaaaaa-0000-0000-0000-0000000000f1', 'The Tin Hollows', 'band', '{band}'),
-  ('c0000000-0000-0000-0000-0000000000f2', 'aaaaaaaa-0000-0000-0000-0000000000f1', 'Jo Example', 'person', '{musician,dj}'),
-  ('c0000000-0000-0000-0000-0000000000f3', 'bbbbbbbb-0000-0000-0000-0000000000f2', 'Elsewhere Hall', 'organization', '{venue}');
+insert into public.connections (id, workspace_id, name, types) values
+  ('c0000000-0000-0000-0000-0000000000f1', 'aaaaaaaa-0000-0000-0000-0000000000f1', 'The Tin Hollows', '{band}'),
+  ('c0000000-0000-0000-0000-0000000000f2', 'aaaaaaaa-0000-0000-0000-0000000000f1', 'Jo Example', '{musician,dj}'),
+  ('c0000000-0000-0000-0000-0000000000f3', 'bbbbbbbb-0000-0000-0000-0000000000f2', 'Elsewhere Hall', '{venue}');
 
 -- ---------------------------------------------------------------------------
 -- Signed out (anon)
@@ -98,7 +98,7 @@ select results_eq(
 );
 select is((select count(*) from public.workspace_members), 1::bigint, 'other-workspace member sees only their own roster');
 
-update public.connections set is_homie = true where id = 'c0000000-0000-0000-0000-0000000000f2';
+update public.connections set status = 'homies' where id = 'c0000000-0000-0000-0000-0000000000f2';
 
 select throws_ok(
   $$insert into public.affiliations (workspace_id, from_connection_id, to_connection_id, role)
@@ -121,8 +121,8 @@ select is(
   'non-member update changed nothing'
 );
 select is(
-  (select is_homie from public.connections where id = 'c0000000-0000-0000-0000-0000000000f2'),
-  false,
+  (select status::text from public.connections where id = 'c0000000-0000-0000-0000-0000000000f2'),
+  'neutral',
   'other-workspace update changed nothing'
 );
 
@@ -137,9 +137,9 @@ select is((select count(*) from public.connections), 2::bigint, 'member sees the
 select is((select count(*) from public.workspace_members), 2::bigint, 'member sees their bandmates');
 
 select lives_ok(
-  $$insert into public.connections (id, workspace_id, name, kind, types)
+  $$insert into public.connections (id, workspace_id, name, types)
     values ('c0000000-0000-0000-0000-0000000000f4',
-            'aaaaaaaa-0000-0000-0000-0000000000f1', 'Basement Saints', 'band', '{band}')$$,
+            'aaaaaaaa-0000-0000-0000-0000000000f1', 'Basement Saints', '{band}')$$,
   'member can add a connection'
 );
 select is(
@@ -162,28 +162,31 @@ select lives_ok(
   'member can link a person to a band'
 );
 
--- Homie and stage are independent.
-update public.connections set is_homie = true where id = 'c0000000-0000-0000-0000-0000000000f1';
-update public.connections set stage = 'connected' where id = 'c0000000-0000-0000-0000-0000000000f1';
-select is(
-  (select is_homie from public.connections where id = 'c0000000-0000-0000-0000-0000000000f1'),
-  true,
-  'Homie flag survives a stage change'
+-- Status and played-together are separate facts; status changes are logged.
+update public.connections set status = 'lets_play' where id = 'c0000000-0000-0000-0000-0000000000f1';
+update public.connections set played_together = true where id = 'c0000000-0000-0000-0000-0000000000f1';
+update public.connections set status = 'homies' where id = 'c0000000-0000-0000-0000-0000000000f1';
+select results_eq(
+  $$select status::text, played_together from public.connections
+    where id = 'c0000000-0000-0000-0000-0000000000f1'$$,
+  $$values ('homies'::text, true)$$,
+  'status and played together are set independently'
 );
 select results_eq(
-  $$select from_stage::text, to_stage::text, changed_by
-    from public.connection_stage_changes
+  $$select from_status::text, to_status::text, changed_by
+    from public.connection_status_changes
     where connection_id = 'c0000000-0000-0000-0000-0000000000f1'
     order by id$$,
-  $$values (null::text, 'prospect'::text, null::uuid),
-           ('prospect', 'connected', 'f1111111-1111-1111-1111-111111111111'::uuid)$$,
-  'stage changes are logged with who made them'
+  $$values (null::text, 'neutral'::text, null::uuid),
+           ('neutral', 'lets_play', 'f1111111-1111-1111-1111-111111111111'::uuid),
+           ('lets_play', 'homies', 'f1111111-1111-1111-1111-111111111111'::uuid)$$,
+  'status changes are logged with who made them; other edits are not'
 );
 select throws_ok(
-  $$insert into public.connection_stage_changes (workspace_id, connection_id, to_stage)
-    values ('aaaaaaaa-0000-0000-0000-0000000000f1', 'c0000000-0000-0000-0000-0000000000f1', 'active')$$,
+  $$insert into public.connection_status_changes (workspace_id, connection_id, to_status)
+    values ('aaaaaaaa-0000-0000-0000-0000000000f1', 'c0000000-0000-0000-0000-0000000000f1', 'avoid')$$,
   '42501', null,
-  'stage history cannot be written directly'
+  'status history cannot be written directly'
 );
 
 select throws_ok(
@@ -192,30 +195,11 @@ select throws_ok(
   'connections cannot be deleted (archive instead)'
 );
 
--- Reach out and reasons are band-private and editable by members.
-select lives_ok(
-  $$update public.connections
-    set reach_out = 'maybe', reasons = '{good_move,friends}'
-    where id = 'c0000000-0000-0000-0000-0000000000f1'$$,
-  'member can set reach out and reasons'
-);
-select results_eq(
-  $$select reach_out::text, reasons::text[] from public.connections
-    where id = 'c0000000-0000-0000-0000-0000000000f1'$$,
-  $$values ('maybe'::text, array['good_move','friends']::text[])$$,
-  'reasons can combine'
-);
-update public.connections set reach_out = 'pass' where id = 'c0000000-0000-0000-0000-0000000000f1';
-select is(
-  (select is_homie from public.connections where id = 'c0000000-0000-0000-0000-0000000000f1'),
-  true,
-  'passing on a connection keeps Homie and everything else'
-);
 select throws_ok(
-  $$update public.connections set reasons = '{urgent}'
+  $$update public.connections set status = 'urgent'
     where id = 'c0000000-0000-0000-0000-0000000000f1'$$,
   '22P02', null,
-  'reasons only accept the known set'
+  'status only accepts the known set'
 );
 
 -- Next actions keep history.

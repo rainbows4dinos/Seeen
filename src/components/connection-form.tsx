@@ -3,18 +3,7 @@
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import type { ConnectionFormState, ConnectionFormValues } from "@/lib/connections/form";
-import {
-  KINDS,
-  KIND_LABELS,
-  REACH_OUTS,
-  REACH_OUT_LABELS,
-  REASONS,
-  REASON_LABELS,
-  STAGES,
-  STAGE_LABELS,
-  TYPES,
-  TYPE_LABELS,
-} from "@/lib/connections/labels";
+import { STATUSES, STATUS_LABELS, TYPES, TYPE_LABELS } from "@/lib/connections/labels";
 
 type Action = (prev: ConnectionFormState, formData: FormData) => Promise<ConnectionFormState>;
 
@@ -67,6 +56,16 @@ function FormBody({
     (v.links.length ? v.links : [{ label: "", url: "" }]).map((l, i) => ({ ...l, key: i })),
   );
   const [nextKey, setNextKey] = useState(links.length);
+  // Open "More details" when it has content or an error to show.
+  const detailsOpen = Boolean(
+    errors.email ||
+      errors.linkUrls ||
+      v.email ||
+      v.phone ||
+      v.notes ||
+      v.canHelpWith ||
+      v.links.some((l) => l.url || l.label),
+  );
   const errorCount =
     Object.keys(errors).filter((k) => k !== "form" && k !== "linkUrls").length +
     Object.keys(errors.linkUrls ?? {}).length;
@@ -84,23 +83,17 @@ function FormBody({
       <fieldset className="flex flex-col gap-5">
         <legend className="mb-3 text-lg font-semibold">Who they are</legend>
 
-        <Field id="name" label="Name" error={errors.name}>
+        <Field id="c-name" label="Name" error={errors.name}>
           <input
-            id="name"
+            id="c-name"
             name="name"
             required
             defaultValue={v.name}
             autoComplete="off"
             className="field"
-            {...invalid("name", errors.name)}
+            {...invalid("c-name", errors.name)}
           />
         </Field>
-
-        <ChoiceGroup legend="What is it?" error={errors.kind} errorId="kind-error">
-          {KINDS.map((k) => (
-            <Choice key={k} type="radio" name="kind" value={k} label={KIND_LABELS[k]} defaultChecked={v.kind === k} />
-          ))}
-        </ChoiceGroup>
 
         <ChoiceGroup legend="Type" hint="Pick at least one." error={errors.types} errorId="types-error">
           {TYPES.map((t) => (
@@ -117,26 +110,26 @@ function FormBody({
 
         <fieldset className="flex flex-col gap-3">
           <legend className="text-sm font-medium">Where they&rsquo;re based</legend>
-          <p id="place-hint" className="-mt-1 text-sm text-muted">
+          <p id="c-place-hint" className="-mt-1 text-sm text-muted">
             Their home town, not where you met them.
           </p>
           <div className="grid gap-3 sm:grid-cols-3">
-            <Field id="city" label="City or town" error={errors.city}>
+            <Field id="c-city" label="City or town" error={errors.city}>
               <input
-                id="city"
+                id="c-city"
                 name="city"
                 list="known-places"
                 defaultValue={v.city}
                 autoComplete="off"
                 className="field"
-                {...invalid("city", errors.city, "place-hint")}
+                {...invalid("c-city", errors.city, "c-place-hint")}
               />
             </Field>
-            <Field id="region" label="State or region">
-              <input id="region" name="region" defaultValue={v.region} autoComplete="off" className="field" />
+            <Field id="c-region" label="State or region">
+              <input id="c-region" name="region" defaultValue={v.region} autoComplete="off" className="field" />
             </Field>
-            <Field id="country" label="Country">
-              <input id="country" name="country" defaultValue={v.country} autoComplete="off" className="field" />
+            <Field id="c-country" label="Country">
+              <input id="c-country" name="country" defaultValue={v.country} autoComplete="off" className="field" />
             </Field>
           </div>
           <datalist id="known-places">
@@ -150,86 +143,52 @@ function FormBody({
       </fieldset>
 
       <fieldset className="flex flex-col gap-5">
-        <legend className="mb-3 text-lg font-semibold">Your relationship</legend>
+        <legend className="mb-3 text-lg font-semibold">How you know them</legend>
 
-        <Field id="stage" label="Stage" error={errors.stage}>
-          <select id="stage" name="stage" defaultValue={v.stage} className="field" {...invalid("stage", errors.stage)}>
-            {STAGES.map((s) => (
-              <option key={s} value={s}>
-                {STAGE_LABELS[s]}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <ChoiceGroup legend="Reach out?" error={errors.reachOut} errorId="reachOut-error">
-          <Choice type="radio" name="reach_out" value="" label="Not set" defaultChecked={v.reachOut === ""} />
-          {REACH_OUTS.map((r) => (
+        <ChoiceGroup legend="Status" error={errors.status} errorId="status-error">
+          {STATUSES.map((st) => (
             <Choice
-              key={r}
+              key={st}
               type="radio"
-              name="reach_out"
-              value={r}
-              label={REACH_OUT_LABELS[r]}
-              defaultChecked={v.reachOut === r}
+              name="status"
+              value={st}
+              label={STATUS_LABELS[st]}
+              defaultChecked={v.status === st}
             />
           ))}
         </ChoiceGroup>
 
-        <ChoiceGroup legend="Why?" hint="Any that apply.">
-          {REASONS.map((r) => (
-            <Choice
-              key={r}
-              type="checkbox"
-              name="reasons"
-              value={r}
-              label={REASON_LABELS[r]}
-              defaultChecked={v.reasons.includes(r)}
-            />
-          ))}
-        </ChoiceGroup>
-
-        <Field id="fit_reason" label="Why they matter" hint="What you know or have heard. Not verified facts.">
-          <textarea
-            id="fit_reason"
-            name="fit_reason"
-            rows={3}
-            defaultValue={v.fitReason}
-            className="field"
-            aria-describedby="fit_reason-hint"
+        <div>
+          <Choice
+            type="checkbox"
+            name="played_together"
+            value="on"
+            label="We've played together"
+            defaultChecked={v.playedTogether}
           />
-        </Field>
-
-        <Field id="can_help_with" label="Can help with" hint="Separate with commas, like: music videos, DJ sets, gear.">
-          <input
-            id="can_help_with"
-            name="can_help_with"
-            defaultValue={v.canHelpWith}
-            className="field"
-            aria-describedby="can_help_with-hint"
-          />
-        </Field>
+        </div>
       </fieldset>
 
-      <fieldset className="flex flex-col gap-5">
-        <legend className="mb-3 text-lg font-semibold">Contact and links</legend>
-        <p className="-mt-3 text-sm text-muted">All optional.</p>
-
+      <details open={detailsOpen}>
+        <summary className="cursor-pointer text-lg font-semibold">
+          More details <span className="text-sm font-normal text-muted">(all optional)</span>
+        </summary>
+        <div className="flex flex-col gap-5 pt-5">
         <div className="grid gap-3 sm:grid-cols-2">
-          <Field id="email" label="Email" error={errors.email}>
+          <Field id="c-email" label="Email" error={errors.email}>
             <input
-              id="email"
+              id="c-email"
               name="email"
               type="email"
               inputMode="email"
               defaultValue={v.email}
               autoComplete="off"
               className="field"
-              {...invalid("email", errors.email)}
+              {...invalid("c-email", errors.email)}
             />
           </Field>
-          <Field id="phone" label="Phone">
-            <input id="phone" name="phone" type="tel" defaultValue={v.phone} autoComplete="off" className="field" />
+          <Field id="c-phone" label="Phone">
+            <input id="c-phone" name="phone" type="tel" defaultValue={v.phone} autoComplete="off" className="field" />
           </Field>
         </div>
 
@@ -239,25 +198,25 @@ function FormBody({
             const err = errors.linkUrls?.[i];
             return (
               <div key={link.key} className="grid gap-2 sm:grid-cols-[1fr_2fr_auto] sm:items-end">
-                <Field id={`link_label_${link.key}`} label={`Link ${i + 1} label`}>
+                <Field id={`c-link_label_${link.key}`} label={`Link ${i + 1} label`}>
                   <input
-                    id={`link_label_${link.key}`}
+                    id={`c-link_label_${link.key}`}
                     name="link_label"
                     defaultValue={link.label}
                     placeholder="Bandcamp"
                     className="field"
                   />
                 </Field>
-                <Field id={`link_url_${link.key}`} label={`Link ${i + 1} URL`} error={err}>
+                <Field id={`c-link_url_${link.key}`} label={`Link ${i + 1} URL`} error={err}>
                   <input
-                    id={`link_url_${link.key}`}
+                    id={`c-link_url_${link.key}`}
                     name="link_url"
                     type="url"
                     inputMode="url"
                     defaultValue={link.url}
                     placeholder="yourband.bandcamp.com"
                     className="field"
-                    {...invalid(`link_url_${link.key}`, err)}
+                    {...invalid(`c-link_url_${link.key}`, err)}
                   />
                 </Field>
                 <button
@@ -283,10 +242,21 @@ function FormBody({
           </button>
         </fieldset>
 
-        <Field id="notes" label="Notes">
-          <textarea id="notes" name="notes" rows={5} defaultValue={v.notes} className="field" />
+        <Field id="c-can_help_with" label="Can help with" hint="Separate with commas, like: music videos, DJ sets, gear.">
+          <input
+            id="c-can_help_with"
+            name="can_help_with"
+            defaultValue={v.canHelpWith}
+            className="field"
+            aria-describedby="c-can_help_with-hint"
+          />
         </Field>
-      </fieldset>
+
+        <Field id="c-notes" label="Notes">
+          <textarea id="c-notes" name="notes" rows={5} defaultValue={v.notes} className="field" />
+        </Field>
+        </div>
+      </details>
 
       <div className="flex flex-wrap gap-3">
         <button type="submit" disabled={pending} className="button-primary">

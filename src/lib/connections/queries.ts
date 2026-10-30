@@ -10,7 +10,7 @@ export async function listConnections({ archived }: { archived: boolean }) {
   let query = supabase
     .from("connections")
     .select(
-      "id, name, kind, types, stage, is_homie, reach_out, archived_at, localities ( name, region, country )",
+      "id, name, types, status, played_together, archived_at, localities ( name, region, country )",
     )
     .order("name");
   query = archived ? query.not("archived_at", "is", null) : query.is("archived_at", null);
@@ -34,13 +34,13 @@ export async function getConnection(id: string) {
     supabase
       .from("affiliations")
       .select(
-        "id, role, is_current, notes, other:connections!affiliations_workspace_id_to_connection_id_fkey ( id, name, kind, archived_at )",
+        "id, role, is_current, notes, other:connections!affiliations_workspace_id_to_connection_id_fkey ( id, name, types, archived_at )",
       )
       .eq("from_connection_id", id),
     supabase
       .from("affiliations")
       .select(
-        "id, role, is_current, notes, other:connections!affiliations_workspace_id_from_connection_id_fkey ( id, name, kind, archived_at )",
+        "id, role, is_current, notes, other:connections!affiliations_workspace_id_from_connection_id_fkey ( id, name, types, archived_at )",
       )
       .eq("to_connection_id", id),
     supabase
@@ -76,12 +76,9 @@ export function toFormValues(c: ConnectionDetail["connection"]): ConnectionFormV
   return {
     ...EMPTY_FORM,
     name: c.name,
-    kind: c.kind,
     types: c.types,
-    stage: c.stage,
-    reachOut: c.reach_out ?? "",
-    reasons: c.reasons,
-    fitReason: c.fit_reason ?? "",
+    status: c.status,
+    playedTogether: c.played_together,
     canHelpWith: c.can_help_with.join(", "),
     city: c.localities?.name ?? "",
     region: c.localities?.region ?? "",

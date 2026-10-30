@@ -2,7 +2,8 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { getMembership } from "@/lib/auth/dal";
 import { listConnections } from "@/lib/connections/queries";
-import { STAGE_LABELS, formatLocality, formatTypes } from "@/lib/connections/labels";
+import { STATUSES, STATUS_LABELS, formatLocality, formatTypes } from "@/lib/connections/labels";
+import type { ConnectionListItem } from "@/lib/connections/queries";
 import { NoWorkspace } from "@/components/no-workspace";
 
 export default function DirectoryPage({ searchParams }: PageProps<"/">) {
@@ -59,29 +60,18 @@ async function Directory({ searchParams }: { searchParams: PageProps<"/">["searc
           <p className="text-sm text-muted" aria-live="polite">
             {connections.length} {connections.length === 1 ? "connection" : "connections"}
           </p>
-          <ul className="flex flex-col divide-y divide-line border-y border-line">
-            {connections.map((c) => {
-              const place = formatLocality(c.localities);
-              return (
-                <li key={c.id}>
-                  <Link
-                    href={`/connections/${c.id}`}
-                    className="flex flex-col gap-1 py-3 hover:bg-line/30 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
-                  >
-                    <span className="flex flex-col">
-                      <span className="font-semibold break-words">{c.name}</span>
-                      <span className="text-sm text-muted">{formatTypes(c.types)}</span>
-                    </span>
-                    <span className="flex flex-wrap gap-x-3 text-sm text-muted sm:justify-end">
-                      {place ? <span>{place}</span> : null}
-                      <span>{STAGE_LABELS[c.stage]}</span>
-                      {c.reach_out === "pass" ? <span>Passed</span> : null}
-                    </span>
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+          {STATUSES.map((status) => {
+            const group = connections.filter((c) => c.status === status);
+            if (!group.length) return null;
+            return (
+              <section key={status} aria-labelledby={`group-${status}`} className="flex flex-col gap-2">
+                <h2 id={`group-${status}`} className="text-sm font-semibold uppercase tracking-wide text-muted">
+                  {STATUS_LABELS[status]} <span className="font-normal">({group.length})</span>
+                </h2>
+                <ConnectionList connections={group} />
+              </section>
+            );
+          })}
         </>
       )}
     </div>
@@ -109,5 +99,32 @@ function ViewLink({
     >
       {children}
     </Link>
+  );
+}
+
+function ConnectionList({ connections }: { connections: ConnectionListItem[] }) {
+  return (
+    <ul className="flex flex-col divide-y divide-line border-y border-line">
+      {connections.map((c) => {
+        const place = formatLocality(c.localities);
+        return (
+          <li key={c.id}>
+            <Link
+              href={`/connections/${c.id}`}
+              className="flex flex-col gap-1 py-3 hover:bg-line/30 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+            >
+              <span className="flex flex-col">
+                <span className="font-semibold break-words">{c.name}</span>
+                <span className="text-sm text-muted">{formatTypes(c.types)}</span>
+              </span>
+              <span className="flex flex-wrap gap-x-3 text-sm text-muted sm:justify-end">
+                {place ? <span>{place}</span> : null}
+                {c.played_together ? <span>Played together</span> : null}
+              </span>
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

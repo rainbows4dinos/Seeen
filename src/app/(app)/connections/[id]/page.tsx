@@ -3,11 +3,8 @@ import { Suspense } from "react";
 import { getMembership } from "@/lib/auth/dal";
 import { getConnection, type ConnectionDetail } from "@/lib/connections/queries";
 import {
-  KIND_LABELS,
-  REACH_OUT_LABELS,
-  REASON_LABELS,
-  STAGE_LABELS,
-  TYPE_LABELS,
+  STATUS_HINTS,
+  STATUS_LABELS,
   formatDate,
   formatLocality,
   formatTypes,
@@ -47,24 +44,13 @@ async function Connection({ params }: { params: PageProps<"/connections/[id]">["
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight break-words">{c.name}</h1>
         <p className="text-muted">
-          {[
-            // Skip the kind when a type already says it ("Band · Band").
-            c.types.some((t) => TYPE_LABELS[t] === KIND_LABELS[c.kind]) ? null : KIND_LABELS[c.kind],
-            formatTypes(c.types),
-            place,
-          ]
-            .filter(Boolean)
-            .join(" · ")}
+          {[formatTypes(c.types), place].filter(Boolean).join(" · ")}
         </p>
         <div className="flex flex-wrap gap-2 pt-1">
-          <span className="tag">{STAGE_LABELS[c.stage]}</span>
-          {c.is_homie ? <span className="tag">Homie</span> : null}
-          {c.reach_out ? <span className="tag">Reach out: {REACH_OUT_LABELS[c.reach_out]}</span> : null}
-          {c.reasons.map((r) => (
-            <span key={r} className="tag">
-              {REASON_LABELS[r]}
-            </span>
-          ))}
+          <span className="tag font-semibold" title={STATUS_HINTS[c.status]}>
+            {STATUS_LABELS[c.status]}
+          </span>
+          {c.played_together ? <span className="tag">Played together</span> : null}
         </div>
         <div className="pt-2">
           <Link href={`/connections/${c.id}/edit`} className="button-primary">
@@ -72,12 +58,6 @@ async function Connection({ params }: { params: PageProps<"/connections/[id]">["
           </Link>
         </div>
       </header>
-
-      {c.fit_reason ? (
-        <Section title="Why they matter">
-          <p className="whitespace-pre-wrap">{c.fit_reason}</p>
-        </Section>
-      ) : null}
 
       <Section title="Next action">
         {nextAction ? (
@@ -97,7 +77,7 @@ async function Connection({ params }: { params: PageProps<"/connections/[id]">["
         )}
       </Section>
 
-      <Affiliations kind={c.kind} affiliations={affiliations} />
+      <Affiliations affiliations={affiliations} />
 
       {c.can_help_with.length ? (
         <Section title="Can help with">
@@ -168,45 +148,49 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 // Read-only for now; editing affiliations is issue #17.
-function Affiliations({
-  kind,
-  affiliations,
-}: {
-  kind: ConnectionDetail["connection"]["kind"];
-  affiliations: ConnectionDetail["affiliations"];
-}) {
-  const rows = [
-    ...affiliations.outgoing.map((a) => ({ ...a, label: `${a.role} · ${a.other?.name}` })),
-    ...affiliations.incoming.map((a) => ({ ...a, label: `${a.other?.name} · ${a.role}` })),
-  ].filter((a) => a.other);
-  if (!rows.length) return null;
-
-  const current = rows.filter((a) => a.is_current);
-  const former = rows.filter((a) => !a.is_current);
-  const title = kind === "person" ? "Bands and roles" : "People and roles";
+// Outgoing links ("Jo -> vocals -> The Tin Hollows") read as "Part of";
+// incoming ones are the people and bands linked to this connection.
+function Affiliations({ affiliations }: { affiliations: ConnectionDetail["affiliations"] }) {
+  const groups = [
+    {
+      title: "Part of",
+      rows: affiliations.outgoing.map((a) => ({ ...a, label: `${a.role} · ${a.other?.name}` })),
+    },
+    {
+      title: "Linked here",
+      rows: affiliations.incoming.map((a) => ({ ...a, label: `${a.other?.name} · ${a.role}` })),
+    },
+  ].map((g) => ({ ...g, rows: g.rows.filter((a) => a.other) }));
+  if (!groups.some((g) => g.rows.length)) return null;
 
   return (
-    <Section title={title}>
-      {[
-        ["Current", current],
-        ["Former", former],
-      ].map(([label, list]) =>
-        (list as typeof rows).length ? (
-          <div key={label as string} className="flex flex-col gap-1">
-            <h3 className="text-sm font-medium text-muted">{label as string}</h3>
-            <ul className="flex flex-col gap-1">
-              {(list as typeof rows).map((a) => (
-                <li key={a.id}>
-                  <Link href={`/connections/${a.other!.id}`} className="link">
-                    {a.label}
-                  </Link>
-                  {a.notes ? <span className="text-sm text-muted"> ({a.notes})</span> : null}
-                </li>
-              ))}
-            </ul>
-          </div>
+    <>
+      {groups.map(({ title, rows }) =>
+        rows.length ? (
+          <Section key={title} title={title}>
+            {[
+              ["Current", rows.filter((a) => a.is_current)],
+              ["Former", rows.filter((a) => !a.is_current)],
+            ].map(([label, list]) =>
+              (list as typeof rows).length ? (
+                <div key={label as string} className="flex flex-col gap-1">
+                  <h3 className="text-sm font-medium text-muted">{label as string}</h3>
+                  <ul className="flex flex-col gap-1">
+                    {(list as typeof rows).map((a) => (
+                      <li key={a.id}>
+                        <Link href={`/connections/${a.other!.id}`} className="link">
+                          {a.label}
+                        </Link>
+                        {a.notes ? <span className="text-sm text-muted"> ({a.notes})</span> : null}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null,
+            )}
+          </Section>
         ) : null,
       )}
-    </Section>
+    </>
   );
 }

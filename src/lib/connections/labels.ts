@@ -1,18 +1,8 @@
 import type { Database } from "@/lib/supabase/database.types";
 
 type Enums = Database["public"]["Enums"];
-export type ConnectionKind = Enums["connection_kind"];
 export type ConnectionType = Enums["connection_type"];
-export type RelationshipStage = Enums["relationship_stage"];
-export type ReachOut = Enums["reach_out"];
-export type ConnectionReason = Enums["connection_reason"];
-
-export const KIND_LABELS: Record<ConnectionKind, string> = {
-  person: "Person",
-  band: "Band",
-  organization: "Organization",
-  outlet: "Outlet",
-};
+export type ConnectionStatus = Enums["connection_status"];
 
 export const TYPE_LABELS: Record<ConnectionType, string> = {
   band: "Band",
@@ -29,30 +19,25 @@ export const TYPE_LABELS: Record<ConnectionType, string> = {
   other: "Other",
 };
 
-export const STAGE_LABELS: Record<RelationshipStage, string> = {
+// Order matters: this is also the directory's grouping order.
+export const STATUS_LABELS: Record<ConnectionStatus, string> = {
+  homies: "Homies",
+  lets_play: "Let's play",
   prospect: "Prospect",
-  connected: "Connected",
-  active: "Active relationship",
-  inactive: "Inactive",
+  neutral: "Neutral",
+  avoid: "Avoid",
 };
 
-export const REACH_OUT_LABELS: Record<ReachOut, string> = {
-  yes: "Yes",
-  maybe: "Maybe",
-  pass: "Pass",
+export const STATUS_HINTS: Record<ConnectionStatus, string> = {
+  homies: "Love playing together, love hanging out, top tour-mate pick.",
+  lets_play: "We both want to play together. Just haven't booked it.",
+  prospect: "We'd like to. Not mutual yet.",
+  neutral: "We know of them. No plans.",
+  avoid: "Nope.",
 };
 
-export const REASON_LABELS: Record<ConnectionReason, string> = {
-  dig_them: "We dig them",
-  good_move: "Good move",
-  friends: "They're friends",
-};
-
-export const KINDS = Object.keys(KIND_LABELS) as ConnectionKind[];
 export const TYPES = Object.keys(TYPE_LABELS) as ConnectionType[];
-export const STAGES = Object.keys(STAGE_LABELS) as RelationshipStage[];
-export const REACH_OUTS = Object.keys(REACH_OUT_LABELS) as ReachOut[];
-export const REASONS = Object.keys(REASON_LABELS) as ConnectionReason[];
+export const STATUSES = Object.keys(STATUS_LABELS) as ConnectionStatus[];
 
 export function formatTypes(types: ConnectionType[]) {
   return types.map((t) => TYPE_LABELS[t]).join(", ");

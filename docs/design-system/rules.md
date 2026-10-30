@@ -12,14 +12,14 @@ Seeen is not a sales tool. Bands work on their own time, and urgency comes and g
 
 - Never tell a band something is urgent. No overdue alarms, red badges, streaks, or counts of what they're behind on.
 - Show dates as plain facts ("planned for Oct 12") rather than warnings.
-- Don't score or rank people. Use the band's own words: reach out yes, maybe, or pass, and the reasons they chose.
+- Don't score or rank people. Use the band's own words: Homies, Let's play, Prospect, Neutral, Avoid.
 - Recommendations are offers, not tasks. A band can ignore them without consequence.
 - Any heightened urgency is something the band turns on, such as a focus on an upcoming release or tour.
 
 ## Layout and hierarchy
 
 - Make browsing, search, and scene filters easy to reach on desktop and mobile.
-- Show connection name, type, scene, and Homie state before secondary metadata.
+- Show connection name, type, scene, and status before secondary metadata.
 - Keep primary actions clear: add a connection, favorite it, or record outreach.
 - Use comfortable reading widths and a consistent spacing scale. Define shared tokens when styling begins.
 - Keep the first release focused on directory and detail views; prioritize useful relationship context over metrics.
@@ -27,7 +27,8 @@ Seeen is not a sales tool. Bands work on their own time, and urgency comes and g
 ## Components and states
 
 - Reuse controls for buttons, fields, filters, tags, connection rows/cards, and status messages.
-- Make Homie controls identifiable by both label and state; give icon buttons accessible names.
+- Make status controls identifiable by both label and state; give icon buttons accessible names.
+- Keep entry light: required fields first, optional ones behind "More details." Prefer quick selections to free text.
 - Include loading, empty, no-results, error, saving, and success states. Preserve user input after failed saves.
 - Show dates with enough context to distinguish past outreach from a future follow-up.
 - Confirm destructive actions and prefer archiving when history is attached.

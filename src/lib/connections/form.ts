@@ -1,25 +1,11 @@
-import {
-  KINDS,
-  REACH_OUTS,
-  REASONS,
-  STAGES,
-  TYPES,
-  type ConnectionKind,
-  type ConnectionReason,
-  type ConnectionType,
-  type ReachOut,
-  type RelationshipStage,
-} from "./labels";
+import { STATUSES, TYPES, type ConnectionStatus, type ConnectionType } from "./labels";
 
 // Raw form values, kept as strings so a failed save can repopulate the form.
 export type ConnectionFormValues = {
   name: string;
-  kind: string;
   types: string[];
-  stage: string;
-  reachOut: string;
-  reasons: string[];
-  fitReason: string;
+  status: string;
+  playedTogether: boolean;
   canHelpWith: string;
   city: string;
   region: string;
@@ -43,12 +29,9 @@ export type ConnectionFormState = {
 
 export type ValidConnection = {
   name: string;
-  kind: ConnectionKind;
   types: ConnectionType[];
-  stage: RelationshipStage;
-  reach_out: ReachOut | null;
-  reasons: ConnectionReason[];
-  fit_reason: string | null;
+  status: ConnectionStatus;
+  played_together: boolean;
   can_help_with: string[];
   locality: { name: string; region: string | null; country: string | null } | null;
   email: string | null;
@@ -59,12 +42,9 @@ export type ValidConnection = {
 
 export const EMPTY_FORM: ConnectionFormValues = {
   name: "",
-  kind: "band",
   types: [],
-  stage: "prospect",
-  reachOut: "",
-  reasons: [],
-  fitReason: "",
+  status: "neutral",
+  playedTogether: false,
   canHelpWith: "",
   city: "",
   region: "",
@@ -83,12 +63,9 @@ export function readForm(fd: FormData): ConnectionFormValues {
   const urls = fd.getAll("link_url").map((v) => String(v).trim());
   return {
     name: str(fd, "name"),
-    kind: str(fd, "kind"),
     types: fd.getAll("types").map(String),
-    stage: str(fd, "stage"),
-    reachOut: str(fd, "reach_out"),
-    reasons: fd.getAll("reasons").map(String),
-    fitReason: str(fd, "fit_reason"),
+    status: str(fd, "status"),
+    playedTogether: fd.get("played_together") === "on",
     canHelpWith: str(fd, "can_help_with"),
     city: str(fd, "city"),
     region: str(fd, "region"),
@@ -123,16 +100,10 @@ export function validate(values: ConnectionFormValues):
   if (!values.name) errors.name = "Add a name.";
   else if (values.name.length > 200) errors.name = "Keep the name under 200 characters.";
 
-  if (!KINDS.includes(values.kind as ConnectionKind)) errors.kind = "Choose what kind of connection this is.";
-
   const types = values.types.filter((t): t is ConnectionType => TYPES.includes(t as ConnectionType));
   if (types.length === 0) errors.types = "Pick at least one type.";
 
-  if (!STAGES.includes(values.stage as RelationshipStage)) errors.stage = "Choose a stage.";
-
-  if (values.reachOut && !REACH_OUTS.includes(values.reachOut as ReachOut)) {
-    errors.reachOut = "Choose yes, maybe, pass, or not set.";
-  }
+  if (!STATUSES.includes(values.status as ConnectionStatus)) errors.status = "Choose a status.";
 
   if (values.email && !EMAIL_RE.test(values.email)) errors.email = "That email doesn't look right.";
 
@@ -159,14 +130,9 @@ export function validate(values: ConnectionFormValues):
     ok: true,
     data: {
       name: values.name,
-      kind: values.kind as ConnectionKind,
       types,
-      stage: values.stage as RelationshipStage,
-      reach_out: (values.reachOut || null) as ReachOut | null,
-      reasons: values.reasons.filter((r): r is ConnectionReason =>
-        REASONS.includes(r as ConnectionReason),
-      ),
-      fit_reason: optional(values.fitReason),
+      status: values.status as ConnectionStatus,
+      played_together: values.playedTogether,
       can_help_with: values.canHelpWith
         .split(",")
         .map((s) => s.trim())
