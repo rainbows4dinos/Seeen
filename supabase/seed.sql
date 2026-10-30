@@ -51,11 +51,17 @@ insert into public.workspace_members (workspace_id, user_id, role, display_name)
 -- Places and scenes
 -- ---------------------------------------------------------------------------
 
-insert into public.localities (id, workspace_id, name, region, country) values
-  ('10000000-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-000000000001', 'Portland', 'OR', 'US'),
-  ('10000000-0000-0000-0000-000000000002', 'aaaaaaaa-0000-0000-0000-000000000001', 'Seattle', 'WA', 'US'),
-  ('10000000-0000-0000-0000-000000000003', 'aaaaaaaa-0000-0000-0000-000000000001', 'Boise', 'ID', 'US'),
-  ('10000000-0000-0000-0000-000000000004', 'aaaaaaaa-0000-0000-0000-000000000001', 'Olympia', 'WA', 'US');
+insert into public.localities
+  (id, workspace_id, place_id, name, region, region_code, country, country_code, latitude, longitude)
+select l.id, 'aaaaaaaa-0000-0000-0000-000000000001', p.id, p.name, p.region_name, p.region_code,
+       p.country_name, p.country_code, p.latitude, p.longitude
+from (values
+  ('10000000-0000-0000-0000-000000000001'::uuid, 5746545),  -- Portland, OR
+  ('10000000-0000-0000-0000-000000000002'::uuid, 5809844),  -- Seattle, WA
+  ('10000000-0000-0000-0000-000000000003'::uuid, 5586437),  -- Boise, ID
+  ('10000000-0000-0000-0000-000000000004'::uuid, 5805687)   -- Olympia, WA
+) as l (id, place_id)
+join public.places p on p.id = l.place_id;
 
 insert into public.scenes (id, workspace_id, name, description, locality_id) values
   ('20000000-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-000000000001',

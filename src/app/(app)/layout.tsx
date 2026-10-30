@@ -16,6 +16,24 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
+      <footer className="border-t border-line">
+        <p className="mx-auto w-full max-w-3xl px-4 py-4 text-xs text-muted">
+          Town data from{" "}
+          <a href="https://www.geonames.org/" className="link" target="_blank" rel="noopener noreferrer">
+            GeoNames
+          </a>{" "}
+          (
+          <a
+            href="https://creativecommons.org/licenses/by/4.0/"
+            className="link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            CC BY 4.0
+          </a>
+          ).
+        </p>
+      </footer>
     </div>
   );
 }

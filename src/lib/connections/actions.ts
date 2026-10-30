@@ -29,32 +29,52 @@ async function requireWorkspace() {
   return membership.workspaceId;
 }
 
-// Reuse a place with the same name/region/country, or add it.
+// Each workspace has one locality per GeoNames place; reuse it or add it.
 async function resolveLocality(
   supabase: Supabase,
   workspaceId: string,
   locality: ValidConnection["locality"],
 ) {
   if (!locality) return null;
+  if ("keepLocalityId" in locality) return locality.keepLocalityId;
 
-  const { data: existing, error } = await supabase
+  const existing = await supabase
     .from("localities")
-    .select("id, name, region, country")
-    .ilike("name", locality.name);
-  if (error) throw error;
+    .select("id")
+    .eq("place_id", locality.placeId)
+    .maybeSingle();
+  if (existing.error) throw existing.error;
+  if (existing.data) return existing.data.id;
 
-  const norm = (v: string | null) => (v ?? "").trim().toLowerCase();
-  const match = existing.find(
-    (l) => norm(l.region) === norm(locality.region) && norm(l.country) === norm(locality.country),
-  );
-  if (match) return match.id;
+  const { data: place, error: placeError } = await supabase
+    .from("places")
+    .select("*")
+    .eq("id", locality.placeId)
+    .single();
+  if (placeError) throw placeError;
 
-  const { data, error: insertError } = await supabase
+  const { data, error } = await supabase
     .from("localities")
-    .insert({ workspace_id: workspaceId, ...locality })
+    .insert({
+      workspace_id: workspaceId,
+      place_id: place.id,
+      name: place.name,
+      region: place.region_name,
+      region_code: place.region_code,
+      country: place.country_name,
+      country_code: place.country_code,
+      latitude: place.latitude,
+      longitude: place.longitude,
+    })
     .select("id")
     .single();
-  if (insertError) throw insertError;
+  if (error?.code === "23505") {
+    // A bandmate added the same town at the same moment.
+    const again = await supabase.from("localities").select("id").eq("place_id", place.id).single();
+    if (again.error) throw again.error;
+    return again.data.id;
+  }
+  if (error) throw error;
   return data.id;
 }
 
