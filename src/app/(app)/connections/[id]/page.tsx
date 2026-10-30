@@ -7,7 +7,7 @@ import {
   STATUS_LABELS,
   formatDate,
   formatLocality,
-  formatTypes,
+  formatType,
 } from "@/lib/connections/labels";
 import { ArchiveControl } from "@/components/archive-control";
 import { NoWorkspace } from "@/components/no-workspace";
@@ -44,7 +44,7 @@ async function Connection({ params }: { params: PageProps<"/connections/[id]">["
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold tracking-tight break-words">{c.name}</h1>
         <p className="text-muted">
-          {[formatTypes(c.types), place].filter(Boolean).join(" · ")}
+          {[formatType(c), place].filter(Boolean).join(" · ")}
         </p>
         <div className="flex flex-wrap gap-2 pt-1">
           <span className="tag font-semibold" title={STATUS_HINTS[c.status]}>

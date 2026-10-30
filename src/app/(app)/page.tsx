@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { getMembership } from "@/lib/auth/dal";
 import { listConnections } from "@/lib/connections/queries";
-import { STATUSES, STATUS_LABELS, formatLocality, formatTypes } from "@/lib/connections/labels";
+import { STATUSES, STATUS_LABELS, formatLocality, formatType } from "@/lib/connections/labels";
 import type { ConnectionListItem } from "@/lib/connections/queries";
 import { NoWorkspace } from "@/components/no-workspace";
 
@@ -115,7 +115,7 @@ function ConnectionList({ connections }: { connections: ConnectionListItem[] }) 
             >
               <span className="flex flex-col">
                 <span className="font-semibold break-words">{c.name}</span>
-                <span className="text-sm text-muted">{formatTypes(c.types)}</span>
+                <span className="text-sm text-muted">{formatType(c)}</span>
               </span>
               <span className="flex flex-wrap gap-x-3 text-sm text-muted sm:justify-end">
                 {place ? <span>{place}</span> : null}

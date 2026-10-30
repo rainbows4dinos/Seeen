@@ -1,9 +1,20 @@
-import { STATUSES, TYPES, type ConnectionStatus, type ConnectionType } from "./labels";
+import {
+  GROUP_TYPES,
+  KINDS,
+  PERSON_ROLES,
+  STATUSES,
+  type ConnectionKind,
+  type ConnectionStatus,
+  type GroupType,
+  type PersonRole,
+} from "./labels";
 
 // Raw form values, kept as strings so a failed save can repopulate the form.
 export type ConnectionFormValues = {
   name: string;
-  types: string[];
+  kind: string;
+  personRoles: string[];
+  groupType: string;
   status: string;
   playedTogether: boolean;
   canHelpWith: string;
@@ -29,7 +40,9 @@ export type ConnectionFormState = {
 
 export type ValidConnection = {
   name: string;
-  types: ConnectionType[];
+  kind: ConnectionKind;
+  person_roles: PersonRole[];
+  group_type: GroupType | null;
   status: ConnectionStatus;
   played_together: boolean;
   can_help_with: string[];
@@ -42,7 +55,9 @@ export type ValidConnection = {
 
 export const EMPTY_FORM: ConnectionFormValues = {
   name: "",
-  types: [],
+  kind: "group",
+  personRoles: [],
+  groupType: "",
   status: "neutral",
   playedTogether: false,
   canHelpWith: "",
@@ -63,7 +78,9 @@ export function readForm(fd: FormData): ConnectionFormValues {
   const urls = fd.getAll("link_url").map((v) => String(v).trim());
   return {
     name: str(fd, "name"),
-    types: fd.getAll("types").map(String),
+    kind: str(fd, "kind"),
+    personRoles: fd.getAll("person_roles").map(String),
+    groupType: str(fd, "group_type"),
     status: str(fd, "status"),
     playedTogether: fd.get("played_together") === "on",
     canHelpWith: str(fd, "can_help_with"),
@@ -100,8 +117,16 @@ export function validate(values: ConnectionFormValues):
   if (!values.name) errors.name = "Add a name.";
   else if (values.name.length > 200) errors.name = "Keep the name under 200 characters.";
 
-  const types = values.types.filter((t): t is ConnectionType => TYPES.includes(t as ConnectionType));
-  if (types.length === 0) errors.types = "Pick at least one type.";
+  const kind = KINDS.includes(values.kind as ConnectionKind) ? (values.kind as ConnectionKind) : null;
+  if (!kind) errors.kind = "Choose person or band, venue, or org.";
+  const personRoles = values.personRoles.filter((r): r is PersonRole =>
+    PERSON_ROLES.includes(r as PersonRole),
+  );
+  const groupType = GROUP_TYPES.includes(values.groupType as GroupType)
+    ? (values.groupType as GroupType)
+    : null;
+  if (kind === "person" && personRoles.length === 0) errors.personRoles = "Pick at least one.";
+  if (kind === "group" && !groupType) errors.groupType = "Pick one.";
 
   if (!STATUSES.includes(values.status as ConnectionStatus)) errors.status = "Choose a status.";
 
@@ -130,7 +155,9 @@ export function validate(values: ConnectionFormValues):
     ok: true,
     data: {
       name: values.name,
-      types,
+      kind: kind!,
+      person_roles: kind === "person" ? personRoles : [],
+      group_type: kind === "group" ? groupType : null,
       status: values.status as ConnectionStatus,
       played_together: values.playedTogether,
       can_help_with: values.canHelpWith

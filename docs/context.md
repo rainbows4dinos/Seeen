@@ -10,7 +10,9 @@ The core questions are: Who do we know in this scene? Who are our Homies, and wh
 
 - **Workspace:** the Merwulf network; one workspace at launch.
 - **Membership:** an authenticated user's access to that workspace. Joining requires authorization; signing up alone must not grant access.
-- **Connection:** a person, band, organization, or outlet, with one or more types, profile links, optional contact details, relationship notes, and timestamps.
+- **Connection:** either a **person** or a **group**, with profile links, optional contact details, notes, and timestamps.
+  - A person can do several things at once: musician, DJ, promoter, booker, manager, label owner, producer, recording engineer, live sound engineer, photographer, videographer, artist/designer, writer, radio host, other.
+  - A group is exactly one thing: band, venue, label, recording studio, production studio, radio station, press (zine, blog, mag), promoter or collective, other.
 - **Locality:** geographic place. Keep locality distinct from genre/community tags.
 - **Scene:** a local music community. A connection can belong to multiple scenes.
 - **Affiliation:** a link from one connection to another, with a role (for example vocals, member, DJ at, books for, works at), a current/former status, and optional notes. A person can be affiliated with many bands, venues, and organizations; a band's members are its incoming affiliations. Both connections must belong to the same workspace.

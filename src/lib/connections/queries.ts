@@ -10,7 +10,7 @@ export async function listConnections({ archived }: { archived: boolean }) {
   let query = supabase
     .from("connections")
     .select(
-      "id, name, types, status, played_together, archived_at, localities ( name, region, country )",
+      "id, name, kind, person_roles, group_type, status, played_together, archived_at, localities ( name, region, country )",
     )
     .order("name");
   query = archived ? query.not("archived_at", "is", null) : query.is("archived_at", null);
@@ -34,13 +34,13 @@ export async function getConnection(id: string) {
     supabase
       .from("affiliations")
       .select(
-        "id, role, is_current, notes, other:connections!affiliations_workspace_id_to_connection_id_fkey ( id, name, types, archived_at )",
+        "id, role, is_current, notes, other:connections!affiliations_workspace_id_to_connection_id_fkey ( id, name, kind, group_type, archived_at )",
       )
       .eq("from_connection_id", id),
     supabase
       .from("affiliations")
       .select(
-        "id, role, is_current, notes, other:connections!affiliations_workspace_id_from_connection_id_fkey ( id, name, types, archived_at )",
+        "id, role, is_current, notes, other:connections!affiliations_workspace_id_from_connection_id_fkey ( id, name, kind, group_type, archived_at )",
       )
       .eq("to_connection_id", id),
     supabase
@@ -76,7 +76,9 @@ export function toFormValues(c: ConnectionDetail["connection"]): ConnectionFormV
   return {
     ...EMPTY_FORM,
     name: c.name,
-    types: c.types,
+    kind: c.kind,
+    personRoles: c.person_roles,
+    groupType: c.group_type ?? "",
     status: c.status,
     playedTogether: c.played_together,
     canHelpWith: c.can_help_with.join(", "),

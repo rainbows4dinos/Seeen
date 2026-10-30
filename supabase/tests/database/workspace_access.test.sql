@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(34);
+select plan(35);
 
 -- ---------------------------------------------------------------------------
 -- Fixtures (as postgres)
@@ -27,10 +27,10 @@ insert into public.workspace_members (workspace_id, user_id, role, display_name)
   ('aaaaaaaa-0000-0000-0000-0000000000f1', 'f2222222-2222-2222-2222-222222222222', 'member', 'Sam'),
   ('bbbbbbbb-0000-0000-0000-0000000000f2', 'f3333333-3333-3333-3333-333333333333', 'member', 'Cora');
 
-insert into public.connections (id, workspace_id, name, types) values
-  ('c0000000-0000-0000-0000-0000000000f1', 'aaaaaaaa-0000-0000-0000-0000000000f1', 'The Tin Hollows', '{band}'),
-  ('c0000000-0000-0000-0000-0000000000f2', 'aaaaaaaa-0000-0000-0000-0000000000f1', 'Jo Example', '{musician,dj}'),
-  ('c0000000-0000-0000-0000-0000000000f3', 'bbbbbbbb-0000-0000-0000-0000000000f2', 'Elsewhere Hall', '{venue}');
+insert into public.connections (id, workspace_id, name, kind, person_roles, group_type) values
+  ('c0000000-0000-0000-0000-0000000000f1', 'aaaaaaaa-0000-0000-0000-0000000000f1', 'The Tin Hollows', 'group', '{}', 'band'),
+  ('c0000000-0000-0000-0000-0000000000f2', 'aaaaaaaa-0000-0000-0000-0000000000f1', 'Jo Example', 'person', '{musician,dj}', null),
+  ('c0000000-0000-0000-0000-0000000000f3', 'bbbbbbbb-0000-0000-0000-0000000000f2', 'Elsewhere Hall', 'group', '{}', 'venue');
 
 -- ---------------------------------------------------------------------------
 -- Signed out (anon)
@@ -61,8 +61,8 @@ select is((select count(*) from public.workspaces), 0::bigint, 'non-member sees 
 select is((select count(*) from public.workspace_members), 0::bigint, 'non-member sees no members');
 select is((select count(*) from public.connections), 0::bigint, 'non-member sees no connections');
 select throws_ok(
-  $$insert into public.connections (workspace_id, name)
-    values ('aaaaaaaa-0000-0000-0000-0000000000f1', 'Sneaky')$$,
+  $$insert into public.connections (workspace_id, name, kind, group_type)
+    values ('aaaaaaaa-0000-0000-0000-0000000000f1', 'Sneaky', 'group', 'band')$$,
   '42501', null,
   'non-member cannot add a connection'
 );
@@ -137,9 +137,9 @@ select is((select count(*) from public.connections), 2::bigint, 'member sees the
 select is((select count(*) from public.workspace_members), 2::bigint, 'member sees their bandmates');
 
 select lives_ok(
-  $$insert into public.connections (id, workspace_id, name, types)
+  $$insert into public.connections (id, workspace_id, name, kind, person_roles, group_type)
     values ('c0000000-0000-0000-0000-0000000000f4',
-            'aaaaaaaa-0000-0000-0000-0000000000f1', 'Basement Saints', '{band}')$$,
+            'aaaaaaaa-0000-0000-0000-0000000000f1', 'Basement Saints', 'group', '{}', 'band')$$,
   'member can add a connection'
 );
 select is(
@@ -148,8 +148,14 @@ select is(
   'created_by defaults to the signed-in member'
 );
 select throws_ok(
-  $$insert into public.connections (workspace_id, name)
-    values ('bbbbbbbb-0000-0000-0000-0000000000f2', 'Wrong Band')$$,
+  $$insert into public.connections (workspace_id, name, kind, person_roles, group_type)
+    values ('aaaaaaaa-0000-0000-0000-0000000000f1', 'Half Person', 'person', '{dj}', 'band')$$,
+  '23514', null,
+  'a person cannot also be a group type'
+);
+select throws_ok(
+  $$insert into public.connections (workspace_id, name, kind, group_type)
+    values ('bbbbbbbb-0000-0000-0000-0000000000f2', 'Wrong Band', 'group', 'band')$$,
   '42501', null,
   'member cannot add to another workspace'
 );

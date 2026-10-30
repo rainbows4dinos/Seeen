@@ -53,7 +53,9 @@ async function resolveLocality(
 function connectionRow(data: ValidConnection, localityId: string | null) {
   return {
     name: data.name,
-    types: data.types,
+    kind: data.kind,
+    person_roles: data.person_roles,
+    group_type: data.group_type,
     status: data.status,
     played_together: data.played_together,
     can_help_with: data.can_help_with,

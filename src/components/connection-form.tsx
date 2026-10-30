@@ -3,7 +3,16 @@
 import Link from "next/link";
 import { useActionState, useState } from "react";
 import type { ConnectionFormState, ConnectionFormValues } from "@/lib/connections/form";
-import { STATUSES, STATUS_LABELS, TYPES, TYPE_LABELS } from "@/lib/connections/labels";
+import {
+  GROUP_TYPES,
+  GROUP_TYPE_LABELS,
+  KINDS,
+  KIND_LABELS,
+  PERSON_ROLES,
+  PERSON_ROLE_LABELS,
+  STATUSES,
+  STATUS_LABELS,
+} from "@/lib/connections/labels";
 
 type Action = (prev: ConnectionFormState, formData: FormData) => Promise<ConnectionFormState>;
 
@@ -56,6 +65,7 @@ function FormBody({
     (v.links.length ? v.links : [{ label: "", url: "" }]).map((l, i) => ({ ...l, key: i })),
   );
   const [nextKey, setNextKey] = useState(links.length);
+  const [kind, setKind] = useState(v.kind === "person" ? "person" : "group");
   // Open "More details" when it has content or an error to show.
   const detailsOpen = Boolean(
     errors.email ||
@@ -95,18 +105,48 @@ function FormBody({
           />
         </Field>
 
-        <ChoiceGroup legend="Type" hint="Pick at least one." error={errors.types} errorId="types-error">
-          {TYPES.map((t) => (
-            <Choice
-              key={t}
-              type="checkbox"
-              name="types"
-              value={t}
-              label={TYPE_LABELS[t]}
-              defaultChecked={v.types.includes(t)}
-            />
+        <ChoiceGroup legend="Is this a person or a group?" error={errors.kind} errorId="kind-error">
+          {KINDS.map((k) => (
+            <label key={k} className="choice">
+              <input
+                type="radio"
+                name="kind"
+                value={k}
+                checked={kind === k}
+                onChange={() => setKind(k)}
+              />
+              <span>{KIND_LABELS[k]}</span>
+            </label>
           ))}
         </ChoiceGroup>
+
+        {kind === "person" ? (
+          <ChoiceGroup legend="What do they do?" hint="Any that apply." error={errors.personRoles} errorId="personRoles-error">
+            {PERSON_ROLES.map((r) => (
+              <Choice
+                key={r}
+                type="checkbox"
+                name="person_roles"
+                value={r}
+                label={PERSON_ROLE_LABELS[r]}
+                defaultChecked={v.personRoles.includes(r)}
+              />
+            ))}
+          </ChoiceGroup>
+        ) : (
+          <ChoiceGroup legend="What is it?" error={errors.groupType} errorId="groupType-error">
+            {GROUP_TYPES.map((g) => (
+              <Choice
+                key={g}
+                type="radio"
+                name="group_type"
+                value={g}
+                label={GROUP_TYPE_LABELS[g]}
+                defaultChecked={v.groupType === g}
+              />
+            ))}
+          </ChoiceGroup>
+        )}
 
         <fieldset className="flex flex-col gap-3">
           <legend className="text-sm font-medium">Where they&rsquo;re based</legend>
