@@ -9,7 +9,9 @@ import {
   formatLocality,
   formatType,
 } from "@/lib/connections/labels";
+import { addOptionsFor, sectionFor } from "@/lib/affiliations/options";
 import { ArchiveControl } from "@/components/archive-control";
+import { LinksPanel, type LinkRow } from "@/components/links-panel";
 import { NoWorkspace } from "@/components/no-workspace";
 
 export default function ConnectionPage({ params }: PageProps<"/connections/[id]">) {
@@ -25,7 +27,9 @@ async function Connection({ params }: { params: PageProps<"/connections/[id]">["
   if (!membership) return <NoWorkspace />;
 
   const { id } = await params;
-  const { connection: c, affiliations, nextAction } = await getConnection(id);
+  const detail = await getConnection(id);
+  const { connection: c, nextAction, labelMates, sharedWithUs, isLabelMateWithUs } = detail;
+  const rows = linkRows(c, detail.affiliations);
   const place = formatLocality(c.localities);
   const archived = Boolean(c.archived_at);
 
@@ -51,6 +55,11 @@ async function Connection({ params }: { params: PageProps<"/connections/[id]">["
             {STATUS_LABELS[c.status]}
           </span>
           {c.played_together ? <span className="tag">Played together</span> : null}
+          {c.is_us ? <span className="tag font-semibold">This is us</span> : null}
+          {isLabelMateWithUs ? <span className="tag">Label mate</span> : null}
+          {sharedWithUs.length ? (
+            <span className="tag">Shares a member with us: {sharedWithUs.join(", ")}</span>
+          ) : null}
         </div>
         <div className="pt-2">
           <Link href={`/connections/${c.id}/edit`} className="button-primary">
@@ -77,7 +86,27 @@ async function Connection({ params }: { params: PageProps<"/connections/[id]">["
         )}
       </Section>
 
-      <Affiliations affiliations={affiliations} />
+      <LinksPanel
+        subjectId={c.id}
+        rows={rows}
+        options={addOptionsFor(c)}
+        candidates={detail.candidates}
+      />
+
+      {c.group_type === "band" && labelMates.length ? (
+        <Section title="Label mates">
+          <ul className="flex flex-col gap-1">
+            {labelMates.map((m) => (
+              <li key={m.id}>
+                <Link href={`/connections/${m.id}`} className="link">
+                  {m.name}
+                </Link>
+                {m.is_us ? <span className="text-muted"> (us)</span> : null}
+              </li>
+            ))}
+          </ul>
+        </Section>
+      ) : null}
 
       {c.can_help_with.length ? (
         <Section title="Can help with">
@@ -147,50 +176,28 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-// Read-only for now; editing affiliations is issue #17.
-// Outgoing links ("Jo -> vocals -> The Tin Hollows") read as "Part of";
-// incoming ones are the people and bands linked to this connection.
-function Affiliations({ affiliations }: { affiliations: ConnectionDetail["affiliations"] }) {
-  const groups = [
-    {
-      title: "Part of",
-      rows: affiliations.outgoing.map((a) => ({ ...a, label: `${a.role} · ${a.other?.name}` })),
-    },
-    {
-      title: "Linked here",
-      rows: affiliations.incoming.map((a) => ({ ...a, label: `${a.other?.name} · ${a.role}` })),
-    },
-  ].map((g) => ({ ...g, rows: g.rows.filter((a) => a.other) }));
-  if (!groups.some((g) => g.rows.length)) return null;
-
-  return (
-    <>
-      {groups.map(({ title, rows }) =>
-        rows.length ? (
-          <Section key={title} title={title}>
-            {[
-              ["Current", rows.filter((a) => a.is_current)],
-              ["Former", rows.filter((a) => !a.is_current)],
-            ].map(([label, list]) =>
-              (list as typeof rows).length ? (
-                <div key={label as string} className="flex flex-col gap-1">
-                  <h3 className="text-sm font-medium text-muted">{label as string}</h3>
-                  <ul className="flex flex-col gap-1">
-                    {(list as typeof rows).map((a) => (
-                      <li key={a.id}>
-                        <Link href={`/connections/${a.other!.id}`} className="link">
-                          {a.label}
-                        </Link>
-                        {a.notes ? <span className="text-sm text-muted"> ({a.notes})</span> : null}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null,
-            )}
-          </Section>
-        ) : null,
-      )}
-    </>
-  );
+function linkRows(
+  subject: ConnectionDetail["connection"],
+  affiliations: ConnectionDetail["affiliations"],
+): LinkRow[] {
+  const make = (
+    a: ConnectionDetail["affiliations"]["outgoing"][number],
+    direction: "out" | "in",
+  ): LinkRow | null =>
+    a.other
+      ? {
+          id: a.id,
+          section: sectionFor(subject, { kind: a.kind, direction }),
+          otherId: a.other.id,
+          otherName: a.other.is_us ? `${a.other.name} (us)` : a.other.name,
+          otherArchived: Boolean(a.other.archived_at),
+          role: a.role,
+          isCurrent: a.is_current,
+          notes: a.notes,
+        }
+      : null;
+  return [
+    ...affiliations.outgoing.map((a) => make(a, "out")),
+    ...affiliations.incoming.map((a) => make(a, "in")),
+  ].filter((r): r is LinkRow => r !== null);
 }

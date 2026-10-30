@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(35);
+select plan(41);
 
 -- ---------------------------------------------------------------------------
 -- Fixtures (as postgres)
@@ -161,11 +161,50 @@ select throws_ok(
 );
 
 select lives_ok(
-  $$insert into public.affiliations (workspace_id, from_connection_id, to_connection_id, role)
+  $$insert into public.affiliations (workspace_id, from_connection_id, to_connection_id, kind, role)
     values ('aaaaaaaa-0000-0000-0000-0000000000f1',
             'c0000000-0000-0000-0000-0000000000f2',
-            'c0000000-0000-0000-0000-0000000000f1', 'vocals')$$,
+            'c0000000-0000-0000-0000-0000000000f1', 'member', 'vocals, guitar')$$,
   'member can link a person to a band'
+);
+select throws_ok(
+  $$insert into public.affiliations (workspace_id, from_connection_id, to_connection_id, kind)
+    values ('aaaaaaaa-0000-0000-0000-0000000000f1',
+            'c0000000-0000-0000-0000-0000000000f2',
+            'c0000000-0000-0000-0000-0000000000f1', 'member')$$,
+  '23505', null,
+  'one link per kind between the same two connections'
+);
+select lives_ok(
+  $$insert into public.affiliations (workspace_id, from_connection_id, to_connection_id, kind)
+    values ('aaaaaaaa-0000-0000-0000-0000000000f1',
+            'c0000000-0000-0000-0000-0000000000f4',
+            'c0000000-0000-0000-0000-0000000000f1', 'related')$$,
+  'role is optional'
+);
+delete from public.affiliations
+  where from_connection_id = 'c0000000-0000-0000-0000-0000000000f4' and kind = 'related';
+select is(
+  (select count(*) from public.affiliations where from_connection_id = 'c0000000-0000-0000-0000-0000000000f4'),
+  0::bigint,
+  'members can remove a link'
+);
+
+-- One "us" per workspace, and it has to be a group.
+select lives_ok(
+  $$update public.connections set is_us = true where id = 'c0000000-0000-0000-0000-0000000000f4'$$,
+  'a band can be marked as us'
+);
+select throws_ok(
+  $$update public.connections set is_us = true where id = 'c0000000-0000-0000-0000-0000000000f1'$$,
+  '23505', null,
+  'only one us per workspace'
+);
+select throws_ok(
+  $$update public.connections set is_us = true, group_type = null, kind = 'person', person_roles = '{dj}'
+    where id = 'c0000000-0000-0000-0000-0000000000f4'$$,
+  '23514', null,
+  'us must be a group'
 );
 
 -- Status and played-together are separate facts; status changes are logged.

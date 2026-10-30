@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { refresh } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { getMembership } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -14,6 +14,14 @@ import {
 type Supabase = Awaited<ReturnType<typeof createClient>>;
 
 const SAVE_FAILED = "Couldn't save. Your changes are still here; try again.";
+
+function saveErrors(error: unknown): ConnectionFormState["errors"] {
+  const e = error as { code?: string; message?: string } | null;
+  if (e?.code === "23505" && e.message?.includes("connections_one_us_per_workspace")) {
+    return { isUs: "Another connection is already marked as your band." };
+  }
+  return { form: SAVE_FAILED };
+}
 
 async function requireWorkspace() {
   const membership = await getMembership();
@@ -58,6 +66,7 @@ function connectionRow(data: ValidConnection, localityId: string | null) {
     group_type: data.group_type,
     status: data.status,
     played_together: data.played_together,
+    is_us: data.is_us,
     can_help_with: data.can_help_with,
     locality_id: localityId,
     email: data.email,
@@ -113,10 +122,11 @@ export async function createConnection(
     if (error) throw error;
     id = data.id;
     await replaceLinks(supabase, workspaceId, id, result.data.links);
-  } catch {
-    return { values, errors: { form: SAVE_FAILED }, attempt: Date.now() };
+  } catch (error) {
+    return { values, errors: saveErrors(error), attempt: Date.now() };
   }
 
+  revalidatePath("/", "layout");
   redirect(`/connections/${id}`);
 }
 
@@ -143,10 +153,11 @@ export async function updateConnection(
     // RLS hides rows the user can't edit, which shows up as zero rows updated.
     if (!data.length) throw new Error("not found");
     await replaceLinks(supabase, workspaceId, id, result.data.links);
-  } catch {
-    return { values, errors: { form: SAVE_FAILED }, attempt: Date.now() };
+  } catch (error) {
+    return { values, errors: saveErrors(error), attempt: Date.now() };
   }
 
+  revalidatePath("/", "layout");
   redirect(`/connections/${id}`);
 }
 
@@ -164,7 +175,9 @@ async function setArchived(id: string, archived: boolean): Promise<ArchiveState>
   if (error || !data.length) {
     return { error: archived ? "Couldn't archive. Try again." : "Couldn't restore. Try again." };
   }
-  refresh();
+  // Any change can show up on other pages (both ends of a link, the
+  // directory), so drop the client's cached pages, not just this one.
+  revalidatePath("/", "layout");
   return {};
 }
 

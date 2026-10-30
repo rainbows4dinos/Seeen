@@ -54,7 +54,8 @@ insert into public.workspace_members (workspace_id, user_id, role, display_name)
 insert into public.localities (id, workspace_id, name, region, country) values
   ('10000000-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-000000000001', 'Portland', 'OR', 'US'),
   ('10000000-0000-0000-0000-000000000002', 'aaaaaaaa-0000-0000-0000-000000000001', 'Seattle', 'WA', 'US'),
-  ('10000000-0000-0000-0000-000000000003', 'aaaaaaaa-0000-0000-0000-000000000001', 'Boise', 'ID', 'US');
+  ('10000000-0000-0000-0000-000000000003', 'aaaaaaaa-0000-0000-0000-000000000001', 'Boise', 'ID', 'US'),
+  ('10000000-0000-0000-0000-000000000004', 'aaaaaaaa-0000-0000-0000-000000000001', 'Olympia', 'WA', 'US');
 
 insert into public.scenes (id, workspace_id, name, description, locality_id) values
   ('20000000-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-000000000001',
@@ -109,6 +110,25 @@ values
    '10000000-0000-0000-0000-000000000003', null,
    'Said at the merch table: next time they come through, play together.', '11111111-1111-1111-1111-111111111111');
 
+insert into public.connections
+  (id, workspace_id, name, kind, person_roles, group_type, status, played_together, is_us, locality_id, created_by)
+values
+  ('c0000000-0000-0000-0000-000000000010', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'Merwulf (sample)', 'group', '{}', 'band', 'neutral', false, true,
+   '10000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111'),
+  ('c0000000-0000-0000-0000-000000000011', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'Grey Static Records', 'group', '{}', 'label', 'homies', false, false,
+   '10000000-0000-0000-0000-000000000004', '11111111-1111-1111-1111-111111111111'),
+  ('c0000000-0000-0000-0000-000000000012', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'Night Gleaners', 'group', '{}', 'band', 'lets_play', false, false,
+   '10000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111'),
+  ('c0000000-0000-0000-0000-000000000013', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'Hit Parade Ghosts', 'group', '{}', 'band', 'neutral', false, false,
+   '10000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111'),
+  ('c0000000-0000-0000-0000-000000000014', 'aaaaaaaa-0000-0000-0000-000000000001',
+   'Dee Sample', 'person', '{musician}', null, 'homies', true, false,
+   '10000000-0000-0000-0000-000000000001', '11111111-1111-1111-1111-111111111111');
+
 insert into public.connection_links (workspace_id, connection_id, label, url, position) values
   ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', 'Bandcamp', 'https://example.com/tin-hollows', 0),
   ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', 'Instagram', 'https://example.com/@tinhollows', 1),
@@ -126,11 +146,20 @@ insert into public.connection_scenes (workspace_id, connection_id, scene_id) val
   ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000008', '20000000-0000-0000-0000-000000000001'),
   ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000008', '20000000-0000-0000-0000-000000000002');
 
-insert into public.affiliations (workspace_id, from_connection_id, to_connection_id, role, is_current, notes) values
-  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000001', 'vocals', true, null),
-  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000006', 'DJ at', true, 'Thursday darkwave night'),
-  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000008', 'c0000000-0000-0000-0000-000000000003', 'bass', false, 'Left in 2025'),
-  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000005', 'c0000000-0000-0000-0000-000000000004', 'books for', true, null);
+insert into public.affiliations (workspace_id, from_connection_id, to_connection_id, kind, role, is_current, notes) values
+  -- Jo: sings in two original bands and a cover band, and DJs
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000001', 'member', 'vocals', true, null),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000012', 'member', 'vocals, synth', true, null),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000013', 'member', 'vocals', true, 'Cover band, weddings and dive bars'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000006', 'works_with', 'DJ', true, 'Thursday darkwave night'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000008', 'c0000000-0000-0000-0000-000000000003', 'member', 'bass', false, 'Left in 2025'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000005', 'c0000000-0000-0000-0000-000000000004', 'works_with', 'books shows', true, null),
+  -- Us, our label, a label mate, and a shared member
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000010', 'c0000000-0000-0000-0000-000000000011', 'on_label', null, true, null),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000009', 'c0000000-0000-0000-0000-000000000011', 'on_label', null, true, null),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000014', 'c0000000-0000-0000-0000-000000000010', 'member', 'drums', true, null),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000014', 'c0000000-0000-0000-0000-000000000012', 'member', 'drums', false, 'Filled in for a tour'),
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000012', 'c0000000-0000-0000-0000-000000000001', 'related', 'split 7-inch', true, null);
 
 -- ---------------------------------------------------------------------------
 -- Outreach and next actions

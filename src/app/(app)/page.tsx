@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { getMembership } from "@/lib/auth/dal";
-import { listConnections } from "@/lib/connections/queries";
+import { listConnections, loadNetwork } from "@/lib/connections/queries";
 import { STATUSES, STATUS_LABELS, formatLocality, formatType } from "@/lib/connections/labels";
 import type { ConnectionListItem } from "@/lib/connections/queries";
 import { NoWorkspace } from "@/components/no-workspace";
@@ -20,7 +20,13 @@ async function Directory({ searchParams }: { searchParams: PageProps<"/">["searc
 
   const { view } = await searchParams;
   const archived = view === "archived";
-  const connections = await listConnections({ archived });
+  const [connections, network] = await Promise.all([listConnections({ archived }), loadNetwork()]);
+  const us = connections.filter((c) => c.is_us);
+  const tagsFor = (id: string) =>
+    [
+      network.isLabelMateWithUs(id) ? "Label mate" : null,
+      network.sharedMembersWithUs(id).length ? "Shares a member" : null,
+    ].filter((t): t is string => Boolean(t));
 
   return (
     <div className="flex flex-col gap-6">
@@ -60,15 +66,23 @@ async function Directory({ searchParams }: { searchParams: PageProps<"/">["searc
           <p className="text-sm text-muted" aria-live="polite">
             {connections.length} {connections.length === 1 ? "connection" : "connections"}
           </p>
+          {us.length ? (
+            <section aria-labelledby="group-us" className="flex flex-col gap-2">
+              <h2 id="group-us" className="text-sm font-semibold uppercase tracking-wide text-muted">
+                Us
+              </h2>
+              <ConnectionList connections={us} tagsFor={tagsFor} />
+            </section>
+          ) : null}
           {STATUSES.map((status) => {
-            const group = connections.filter((c) => c.status === status);
+            const group = connections.filter((c) => c.status === status && !c.is_us);
             if (!group.length) return null;
             return (
               <section key={status} aria-labelledby={`group-${status}`} className="flex flex-col gap-2">
                 <h2 id={`group-${status}`} className="text-sm font-semibold uppercase tracking-wide text-muted">
                   {STATUS_LABELS[status]} <span className="font-normal">({group.length})</span>
                 </h2>
-                <ConnectionList connections={group} />
+                <ConnectionList connections={group} tagsFor={tagsFor} />
               </section>
             );
           })}
@@ -102,7 +116,13 @@ function ViewLink({
   );
 }
 
-function ConnectionList({ connections }: { connections: ConnectionListItem[] }) {
+function ConnectionList({
+  connections,
+  tagsFor,
+}: {
+  connections: ConnectionListItem[];
+  tagsFor: (id: string) => string[];
+}) {
   return (
     <ul className="flex flex-col divide-y divide-line border-y border-line">
       {connections.map((c) => {
@@ -120,6 +140,9 @@ function ConnectionList({ connections }: { connections: ConnectionListItem[] }) 
               <span className="flex flex-wrap gap-x-3 text-sm text-muted sm:justify-end">
                 {place ? <span>{place}</span> : null}
                 {c.played_together ? <span>Played together</span> : null}
+                {tagsFor(c.id).map((t) => (
+                  <span key={t}>{t}</span>
+                ))}
               </span>
             </Link>
           </li>

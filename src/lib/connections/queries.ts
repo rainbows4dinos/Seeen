@@ -10,7 +10,7 @@ export async function listConnections({ archived }: { archived: boolean }) {
   let query = supabase
     .from("connections")
     .select(
-      "id, name, kind, person_roles, group_type, status, played_together, archived_at, localities ( name, region, country )",
+      "id, name, kind, person_roles, group_type, status, played_together, is_us, archived_at, localities ( name, region, country )",
     )
     .order("name");
   query = archived ? query.not("archived_at", "is", null) : query.is("archived_at", null);
@@ -34,13 +34,13 @@ export async function getConnection(id: string) {
     supabase
       .from("affiliations")
       .select(
-        "id, role, is_current, notes, other:connections!affiliations_workspace_id_to_connection_id_fkey ( id, name, kind, group_type, archived_at )",
+        "id, kind, role, is_current, notes, other:connections!affiliations_workspace_id_to_connection_id_fkey ( id, name, kind, group_type, is_us, archived_at )",
       )
       .eq("from_connection_id", id),
     supabase
       .from("affiliations")
       .select(
-        "id, role, is_current, notes, other:connections!affiliations_workspace_id_from_connection_id_fkey ( id, name, kind, group_type, archived_at )",
+        "id, kind, role, is_current, notes, other:connections!affiliations_workspace_id_from_connection_id_fkey ( id, name, kind, group_type, is_us, archived_at )",
       )
       .eq("to_connection_id", id),
     supabase
@@ -62,11 +62,18 @@ export async function getConnection(id: string) {
   }
 
   const links = [...connection.data.connection_links].sort((a, b) => a.position - b.position);
+  const network = await loadNetwork();
 
   return {
     connection: { ...connection.data, connection_links: links },
     affiliations: { outgoing: outgoing.data, incoming: incoming.data },
     nextAction: nextAction.data,
+    candidates: network.connections
+      .filter((c) => c.id !== id && !c.archived_at)
+      .map(({ id, name, kind, group_type }) => ({ id, name, kind, group_type })),
+    labelMates: network.labelMatesOf(id),
+    sharedWithUs: network.sharedMembersWithUs(id),
+    isLabelMateWithUs: network.isLabelMateWithUs(id),
   };
 }
 
@@ -81,6 +88,7 @@ export function toFormValues(c: ConnectionDetail["connection"]): ConnectionFormV
     groupType: c.group_type ?? "",
     status: c.status,
     playedTogether: c.played_together,
+    isUs: c.is_us,
     canHelpWith: c.can_help_with.join(", "),
     city: c.localities?.name ?? "",
     region: c.localities?.region ?? "",
@@ -102,4 +110,56 @@ export async function listLocalities() {
     .order("name");
   if (error) throw new Error("Couldn't load places.");
   return data;
+}
+
+// The whole workspace's link graph is small, so derive network facts in memory:
+// label mates (bands sharing a label) and members shared with "us".
+export async function loadNetwork() {
+  const supabase = await createClient();
+  const [links, conns] = await Promise.all([
+    supabase.from("affiliations").select("from_connection_id, to_connection_id, kind"),
+    supabase.from("connections").select("id, name, kind, group_type, is_us, archived_at").order("name"),
+  ]);
+  if (links.error || conns.error) throw new Error("Couldn't load your network.");
+
+  const connections = conns.data;
+  const byId = new Map(connections.map((c) => [c.id, c]));
+  const usId = connections.find((c) => c.is_us)?.id ?? null;
+  const edges = links.data;
+
+  const labelsOf = (id: string) =>
+    edges.filter((e) => e.kind === "on_label" && e.from_connection_id === id).map((e) => e.to_connection_id);
+  const membersOf = (id: string) =>
+    new Set(edges.filter((e) => e.kind === "member" && e.to_connection_id === id).map((e) => e.from_connection_id));
+
+  const labelMatesOf = (id: string) => {
+    const labels = new Set(labelsOf(id));
+    const ids = new Set(
+      edges
+        .filter((e) => e.kind === "on_label" && labels.has(e.to_connection_id) && e.from_connection_id !== id)
+        .map((e) => e.from_connection_id),
+    );
+    return [...ids]
+      .map((mid) => byId.get(mid))
+      .filter((c): c is NonNullable<typeof c> => Boolean(c && !c.archived_at))
+      .map((c) => ({ id: c.id, name: c.name, is_us: c.is_us }));
+  };
+
+  const usLabelMates = new Set(usId ? labelMatesOf(usId).map((c) => c.id) : []);
+  const usMembers = usId ? membersOf(usId) : new Set<string>();
+
+  return {
+    connections,
+    usId,
+    labelMatesOf,
+    isLabelMateWithUs: (id: string) => usLabelMates.has(id),
+    // Names of people in both this band and ours (current or former).
+    sharedMembersWithUs: (id: string) =>
+      id === usId
+        ? []
+        : [...membersOf(id)]
+            .filter((m) => usMembers.has(m))
+            .map((m) => byId.get(m)?.name)
+            .filter((n): n is string => Boolean(n)),
+  };
 }
