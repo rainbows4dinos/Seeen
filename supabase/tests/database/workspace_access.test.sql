@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(33);
+select plan(37);
 
 -- ---------------------------------------------------------------------------
 -- Fixtures (as postgres)
@@ -192,10 +192,36 @@ select throws_ok(
   'connections cannot be deleted (archive instead)'
 );
 
+-- Reach out and reasons are band-private and editable by members.
+select lives_ok(
+  $$update public.connections
+    set reach_out = 'maybe', reasons = '{good_move,friends}'
+    where id = 'c0000000-0000-0000-0000-0000000000f1'$$,
+  'member can set reach out and reasons'
+);
+select results_eq(
+  $$select reach_out::text, reasons::text[] from public.connections
+    where id = 'c0000000-0000-0000-0000-0000000000f1'$$,
+  $$values ('maybe'::text, array['good_move','friends']::text[])$$,
+  'reasons can combine'
+);
+update public.connections set reach_out = 'pass' where id = 'c0000000-0000-0000-0000-0000000000f1';
+select is(
+  (select is_homie from public.connections where id = 'c0000000-0000-0000-0000-0000000000f1'),
+  true,
+  'passing on a connection keeps Homie and everything else'
+);
+select throws_ok(
+  $$update public.connections set reasons = '{urgent}'
+    where id = 'c0000000-0000-0000-0000-0000000000f1'$$,
+  '22P02', null,
+  'reasons only accept the known set'
+);
+
 -- Next actions keep history.
 select lives_ok(
   $$select public.set_next_action('c0000000-0000-0000-0000-0000000000f1',
-      'Ask about a June show', '2026-11-15', 'high',
+      'Ask about a June show', '2026-11-15',
       'f2222222-2222-2222-2222-222222222222')$$,
   'member can set a next action'
 );
@@ -218,7 +244,7 @@ select throws_ok(
 );
 select throws_ok(
   $$select public.set_next_action('c0000000-0000-0000-0000-0000000000f1', 'Assign to outsider',
-      null, 'normal', 'f3333333-3333-3333-3333-333333333333')$$,
+      null, 'f3333333-3333-3333-3333-333333333333')$$,
   '23503', null,
   'next actions can only be assigned to workspace members'
 );
