@@ -1,0 +1,418 @@
+
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[]
+
+export type Database = {
+  
+  "public": {
+          Tables: {
+            "affiliations": {
+                  Row: {
+                    "created_at": string,"from_connection_id": string,"id": string,"is_current": boolean,"notes": string | null,"role": string,"to_connection_id": string,"updated_at": string,"workspace_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"from_connection_id": string,"id"?: string,"is_current"?: boolean,"notes"?: string | null,"role": string,"to_connection_id": string,"updated_at"?: string,"workspace_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"from_connection_id"?: string,"id"?: string,"is_current"?: boolean,"notes"?: string | null,"role"?: string,"to_connection_id"?: string,"updated_at"?: string,"workspace_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "affiliations_workspace_id_from_connection_id_fkey"
+      columns: ["workspace_id","from_connection_id"]
+isOneToOne: false
+      referencedRelation: "connections"
+      referencedColumns: ["workspace_id","id"]
+    },{
+      foreignKeyName: "affiliations_workspace_id_to_connection_id_fkey"
+      columns: ["workspace_id","to_connection_id"]
+isOneToOne: false
+      referencedRelation: "connections"
+      referencedColumns: ["workspace_id","id"]
+    }
+                  ]
+                },"connection_links": {
+                  Row: {
+                    "connection_id": string,"created_at": string,"id": string,"label": string | null,"position": number,"url": string,"workspace_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "connection_id": string,"created_at"?: string,"id"?: string,"label"?: string | null,"position"?: number,"url": string,"workspace_id": string
+                  }
+                  Update: {
+                    "connection_id"?: string,"created_at"?: string,"id"?: string,"label"?: string | null,"position"?: number,"url"?: string,"workspace_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "connection_links_workspace_id_connection_id_fkey"
+      columns: ["workspace_id","connection_id"]
+isOneToOne: false
+      referencedRelation: "connections"
+      referencedColumns: ["workspace_id","id"]
+    }
+                  ]
+                },"connection_scenes": {
+                  Row: {
+                    "connection_id": string,"created_at": string,"scene_id": string,"workspace_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "connection_id": string,"created_at"?: string,"scene_id": string,"workspace_id": string
+                  }
+                  Update: {
+                    "connection_id"?: string,"created_at"?: string,"scene_id"?: string,"workspace_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "connection_scenes_workspace_id_connection_id_fkey"
+      columns: ["workspace_id","connection_id"]
+isOneToOne: false
+      referencedRelation: "connections"
+      referencedColumns: ["workspace_id","id"]
+    },{
+      foreignKeyName: "connection_scenes_workspace_id_scene_id_fkey"
+      columns: ["workspace_id","scene_id"]
+isOneToOne: false
+      referencedRelation: "scenes"
+      referencedColumns: ["workspace_id","id"]
+    }
+                  ]
+                },"connection_stage_changes": {
+                  Row: {
+                    "changed_at": string,"changed_by": string | null,"connection_id": string,"from_stage": Database["public"]['Enums']["relationship_stage"] | null,"id": number,"to_stage": Database["public"]['Enums']["relationship_stage"],"workspace_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "changed_at"?: string,"changed_by"?: string | null,"connection_id": string,"from_stage"?: Database["public"]['Enums']["relationship_stage"] | null,"id"?: never,"to_stage": Database["public"]['Enums']["relationship_stage"],"workspace_id": string
+                  }
+                  Update: {
+                    "changed_at"?: string,"changed_by"?: string | null,"connection_id"?: string,"from_stage"?: Database["public"]['Enums']["relationship_stage"] | null,"id"?: never,"to_stage"?: Database["public"]['Enums']["relationship_stage"],"workspace_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "connection_stage_changes_workspace_id_connection_id_fkey"
+      columns: ["workspace_id","connection_id"]
+isOneToOne: false
+      referencedRelation: "connections"
+      referencedColumns: ["workspace_id","id"]
+    }
+                  ]
+                },"connections": {
+                  Row: {
+                    "archived_at": string | null,"can_help_with": (string)[],"created_at": string,"created_by": string | null,"email": string | null,"fit_reason": string | null,"id": string,"is_homie": boolean,"kind": Database["public"]['Enums']["connection_kind"],"locality_id": string | null,"name": string,"notes": string | null,"phone": string | null,"stage": Database["public"]['Enums']["relationship_stage"],"types": (Database["public"]['Enums']["connection_type"])[],"updated_at": string,"workspace_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "archived_at"?: string | null,"can_help_with"?: (string)[],"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"fit_reason"?: string | null,"id"?: string,"is_homie"?: boolean,"kind"?: Database["public"]['Enums']["connection_kind"],"locality_id"?: string | null,"name": string,"notes"?: string | null,"phone"?: string | null,"stage"?: Database["public"]['Enums']["relationship_stage"],"types"?: (Database["public"]['Enums']["connection_type"])[],"updated_at"?: string,"workspace_id": string
+                  }
+                  Update: {
+                    "archived_at"?: string | null,"can_help_with"?: (string)[],"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"fit_reason"?: string | null,"id"?: string,"is_homie"?: boolean,"kind"?: Database["public"]['Enums']["connection_kind"],"locality_id"?: string | null,"name"?: string,"notes"?: string | null,"phone"?: string | null,"stage"?: Database["public"]['Enums']["relationship_stage"],"types"?: (Database["public"]['Enums']["connection_type"])[],"updated_at"?: string,"workspace_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "connections_workspace_id_created_by_fkey"
+      columns: ["workspace_id","created_by"]
+isOneToOne: false
+      referencedRelation: "workspace_members"
+      referencedColumns: ["workspace_id","user_id"]
+    },{
+      foreignKeyName: "connections_workspace_id_fkey"
+      columns: ["workspace_id"]
+isOneToOne: false
+      referencedRelation: "workspaces"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "connections_workspace_id_locality_id_fkey"
+      columns: ["workspace_id","locality_id"]
+isOneToOne: false
+      referencedRelation: "localities"
+      referencedColumns: ["workspace_id","id"]
+    }
+                  ]
+                },"localities": {
+                  Row: {
+                    "country": string | null,"created_at": string,"id": string,"name": string,"region": string | null,"workspace_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "country"?: string | null,"created_at"?: string,"id"?: string,"name": string,"region"?: string | null,"workspace_id": string
+                  }
+                  Update: {
+                    "country"?: string | null,"created_at"?: string,"id"?: string,"name"?: string,"region"?: string | null,"workspace_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "localities_workspace_id_fkey"
+      columns: ["workspace_id"]
+isOneToOne: false
+      referencedRelation: "workspaces"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"next_actions": {
+                  Row: {
+                    "assignee_id": string | null,"closed_at": string | null,"closed_by": string | null,"connection_id": string,"created_at": string,"created_by": string | null,"description": string,"due_on": string | null,"id": string,"priority": Database["public"]['Enums']["action_priority"],"status": Database["public"]['Enums']["action_status"],"workspace_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "assignee_id"?: string | null,"closed_at"?: string | null,"closed_by"?: string | null,"connection_id": string,"created_at"?: string,"created_by"?: string | null,"description": string,"due_on"?: string | null,"id"?: string,"priority"?: Database["public"]['Enums']["action_priority"],"status"?: Database["public"]['Enums']["action_status"],"workspace_id": string
+                  }
+                  Update: {
+                    "assignee_id"?: string | null,"closed_at"?: string | null,"closed_by"?: string | null,"connection_id"?: string,"created_at"?: string,"created_by"?: string | null,"description"?: string,"due_on"?: string | null,"id"?: string,"priority"?: Database["public"]['Enums']["action_priority"],"status"?: Database["public"]['Enums']["action_status"],"workspace_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "next_actions_workspace_id_assignee_id_fkey"
+      columns: ["workspace_id","assignee_id"]
+isOneToOne: false
+      referencedRelation: "workspace_members"
+      referencedColumns: ["workspace_id","user_id"]
+    },{
+      foreignKeyName: "next_actions_workspace_id_connection_id_fkey"
+      columns: ["workspace_id","connection_id"]
+isOneToOne: false
+      referencedRelation: "connections"
+      referencedColumns: ["workspace_id","id"]
+    },{
+      foreignKeyName: "next_actions_workspace_id_created_by_fkey"
+      columns: ["workspace_id","created_by"]
+isOneToOne: false
+      referencedRelation: "workspace_members"
+      referencedColumns: ["workspace_id","user_id"]
+    }
+                  ]
+                },"outreach_entries": {
+                  Row: {
+                    "author_id": string | null,"channel": Database["public"]['Enums']["outreach_channel"],"connection_id": string,"created_at": string,"id": string,"occurred_on": string,"summary": string,"updated_at": string,"workspace_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "author_id"?: string | null,"channel"?: Database["public"]['Enums']["outreach_channel"],"connection_id": string,"created_at"?: string,"id"?: string,"occurred_on"?: string,"summary": string,"updated_at"?: string,"workspace_id": string
+                  }
+                  Update: {
+                    "author_id"?: string | null,"channel"?: Database["public"]['Enums']["outreach_channel"],"connection_id"?: string,"created_at"?: string,"id"?: string,"occurred_on"?: string,"summary"?: string,"updated_at"?: string,"workspace_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "outreach_entries_workspace_id_author_id_fkey"
+      columns: ["workspace_id","author_id"]
+isOneToOne: false
+      referencedRelation: "workspace_members"
+      referencedColumns: ["workspace_id","user_id"]
+    },{
+      foreignKeyName: "outreach_entries_workspace_id_connection_id_fkey"
+      columns: ["workspace_id","connection_id"]
+isOneToOne: false
+      referencedRelation: "connections"
+      referencedColumns: ["workspace_id","id"]
+    }
+                  ]
+                },"scenes": {
+                  Row: {
+                    "created_at": string,"description": string | null,"id": string,"locality_id": string | null,"name": string,"updated_at": string,"workspace_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"description"?: string | null,"id"?: string,"locality_id"?: string | null,"name": string,"updated_at"?: string,"workspace_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"description"?: string | null,"id"?: string,"locality_id"?: string | null,"name"?: string,"updated_at"?: string,"workspace_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "scenes_workspace_id_fkey"
+      columns: ["workspace_id"]
+isOneToOne: false
+      referencedRelation: "workspaces"
+      referencedColumns: ["id"]
+    },{
+      foreignKeyName: "scenes_workspace_id_locality_id_fkey"
+      columns: ["workspace_id","locality_id"]
+isOneToOne: false
+      referencedRelation: "localities"
+      referencedColumns: ["workspace_id","id"]
+    }
+                  ]
+                },"workspace_members": {
+                  Row: {
+                    "created_at": string,"display_name": string,"role": Database["public"]['Enums']["member_role"],"user_id": string,"workspace_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"display_name": string,"role"?: Database["public"]['Enums']["member_role"],"user_id": string,"workspace_id": string
+                  }
+                  Update: {
+                    "created_at"?: string,"display_name"?: string,"role"?: Database["public"]['Enums']["member_role"],"user_id"?: string,"workspace_id"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "workspace_members_workspace_id_fkey"
+      columns: ["workspace_id"]
+isOneToOne: false
+      referencedRelation: "workspaces"
+      referencedColumns: ["id"]
+    }
+                  ]
+                },"workspaces": {
+                  Row: {
+                    "created_at": string,"id": string,"name": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"id"?: string,"name": string
+                  }
+                  Update: {
+                    "created_at"?: string,"id"?: string,"name"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                }
+          }
+          Views: {
+            [_ in never]: never
+          }
+          Functions: {
+            "set_next_action":
+{ Args: { "p_assignee_id"?: string,"p_connection_id": string,"p_description": string,"p_due_on"?: string,"p_priority"?: Database["public"]['Enums']["action_priority"] }; Returns: {
+              "assignee_id": string | null,
+"closed_at": string | null,
+"closed_by": string | null,
+"connection_id": string,
+"created_at": string,
+"created_by": string | null,
+"description": string,
+"due_on": string | null,
+"id": string,
+"priority": Database["public"]['Enums']["action_priority"],
+"status": Database["public"]['Enums']["action_status"],
+"workspace_id": string
+            }
+                          SetofOptions: {
+        from: "*"
+        to: "next_actions"
+        isOneToOne: true
+        isSetofReturn: false
+      } }
+          }
+          Enums: {
+            "action_priority": "low"|"normal"|"high","action_status": "open"|"done"|"dropped"|"replaced","connection_kind": "person"|"band"|"organization"|"outlet","connection_type": "band"|"musician"|"promoter"|"venue"|"dj"|"playlister"|"label"|"press"|"radio"|"photographer"|"videographer"|"other","member_role": "owner"|"member","outreach_channel": "in_person"|"email"|"text"|"call"|"instagram"|"other_social"|"other","relationship_stage": "prospect"|"connected"|"active"|"inactive"
+          }
+          CompositeTypes: {
+            [_ in never]: never
+          }
+        }
+}
+
+type DatabaseWithoutInternals = Omit<Database, '__InternalSupabase'>
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+
+export type Tables<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+  ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : never
+
+export type TablesInsert<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : never
+
+export type TablesUpdate<
+  DefaultSchemaTableNameOrOptions extends
+    | keyof DefaultSchema["Tables"]
+    | { schema: keyof DatabaseWithoutInternals },
+  TableName extends DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+  ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : never
+
+export type Enums<
+  DefaultSchemaEnumNameOrOptions extends
+    | keyof DefaultSchema["Enums"]
+    | { schema: keyof DatabaseWithoutInternals },
+  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never
+> = DefaultSchemaEnumNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+  ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+  : never
+
+export type CompositeTypes<
+  PublicCompositeTypeNameOrOptions extends
+    | keyof DefaultSchema["CompositeTypes"]
+    | { schema: keyof DatabaseWithoutInternals },
+  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+  }
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never
+> = PublicCompositeTypeNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+  ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+  : never
+
+export const Constants = {
+  "public": {
+          Enums: {
+            "action_priority": ["low", "normal", "high"],"action_status": ["open", "done", "dropped", "replaced"],"connection_kind": ["person", "band", "organization", "outlet"],"connection_type": ["band", "musician", "promoter", "venue", "dj", "playlister", "label", "press", "radio", "photographer", "videographer", "other"],"member_role": ["owner", "member"],"outreach_channel": ["in_person", "email", "text", "call", "instagram", "other_social", "other"],"relationship_stage": ["prospect", "connected", "active", "inactive"]
+          }
+        }
+} as const

@@ -51,7 +51,7 @@ Automated scraping, AI recommendations, automatic messaging, social integrations
 
 ## Development status
 
-Next.js app scaffolded with Supabase clients and session refresh. No schema, sign-in UI, or tests yet.
+Next.js app scaffolded with Supabase clients and session refresh. Database schema, Row Level Security, and access tests are in `supabase/`. No sign-in UI yet.
 
 ## Local setup
 
@@ -72,9 +72,38 @@ npm run dev                  # http://localhost:3000
 | `npm run db:start` / `db:stop` | Local Supabase via the CLI (Docker) |
 | `npm run db:migration <name>` | New versioned migration in `supabase/migrations/` |
 | `npm run db:reset` | Rebuild local DB from migrations |
-| `npm run db:types` | Generate DB types from local schema |
+| `npm run db:test` | Run database access tests (`supabase/tests/`) |
+| `npm run db:types` | Regenerate `src/lib/supabase/database.types.ts` |
 
-To push migrations to the hosted project: `npx supabase login`, `npx supabase link --project-ref <project-id>`, then `npx supabase db push`.
+Local Supabase loads fictional seed data from `supabase/seed.sql`. Sign in as `alex@example.com` or `sam@example.com` (members) or `dana@example.com` (not a member), all with password `password123`.
+
+## Database
+
+The schema lives in `supabase/migrations/`. Every private table carries a `workspace_id`, and Row Level Security only lets members of that workspace read or write it. Signing up does not grant access; a member has to be added.
+
+History is kept, not overwritten: connections are archived instead of deleted, stage changes are logged, replacing a next action closes the old one (`set_next_action`), and outreach entries can only be changed by their author.
+
+### Pushing to the hosted project
+
+```bash
+npx supabase login
+npx supabase link --project-ref <project-id>
+npx supabase db push
+```
+
+### Creating the workspace and adding members
+
+Until the invite flow exists, add members in the Supabase SQL editor. Each person needs an account first (Authentication > Users > Add user, or sign in once the app has sign-in).
+
+```sql
+-- once
+insert into public.workspaces (name) values ('Merwulf') returning id;
+
+-- per member
+insert into public.workspace_members (workspace_id, user_id, role, display_name)
+select '<workspace-id>', id, 'member', 'Display Name'
+from auth.users where email = 'member@example.com';
+```
 
 Supabase code lives in `src/lib/supabase/`: `client.ts` for Client Components, `server.ts` for server code, and `proxy.ts` for session refresh (wired up in `src/proxy.ts`). Only the project URL and publishable key belong in env vars the app reads. Never add the secret key.
 
