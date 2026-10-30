@@ -85,3 +85,51 @@ body {
     animation: none !important;
   }
 }
+
+@layer components {
+  .button-primary,
+  .button-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Radio/checkbox pill. Selected state shows a check mark, not just color. */
+  .choice {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.75rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.375rem 0.875rem;
+    cursor: pointer;
+  }
+  .choice input {
+    width: 1.125rem;
+    height: 1.125rem;
+    accent-color: var(--foreground);
+  }
+  .choice:has(input:checked) {
+    border-color: var(--foreground);
+    font-weight: 600;
+  }
+  .choice:has(input:focus-visible) {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.125rem 0.625rem;
+    font-size: 0.875rem;
+  }
+
+  .link {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}

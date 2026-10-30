@@ -51,7 +51,7 @@ Automated scraping, AI recommendations, automatic messaging, social integrations
 
 ## Development status
 
-Email/password sign-in works. Database schema, Row Level Security, and access tests are in `supabase/`. The directory UI is next.
+Email/password sign-in and the connection directory (list, add, edit, view, archive) work. Database schema, Row Level Security, and access tests are in `supabase/`. Scenes, filters, and Homie controls are next.
 
 ## Local setup
 
