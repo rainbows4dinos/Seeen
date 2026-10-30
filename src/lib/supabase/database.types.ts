@@ -131,17 +131,23 @@ isOneToOne: false
                   ]
                 },"localities": {
                   Row: {
-                    "country": string | null,"created_at": string,"id": string,"name": string,"region": string | null,"workspace_id": string
+                    "country": string | null,"country_code": string | null,"created_at": string,"id": string,"latitude": number | null,"longitude": number | null,"name": string,"place_id": number | null,"region": string | null,"region_code": string | null,"workspace_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "country"?: string | null,"created_at"?: string,"id"?: string,"name": string,"region"?: string | null,"workspace_id": string
+                    "country"?: string | null,"country_code"?: string | null,"created_at"?: string,"id"?: string,"latitude"?: number | null,"longitude"?: number | null,"name": string,"place_id"?: number | null,"region"?: string | null,"region_code"?: string | null,"workspace_id": string
                   }
                   Update: {
-                    "country"?: string | null,"created_at"?: string,"id"?: string,"name"?: string,"region"?: string | null,"workspace_id"?: string
+                    "country"?: string | null,"country_code"?: string | null,"created_at"?: string,"id"?: string,"latitude"?: number | null,"longitude"?: number | null,"name"?: string,"place_id"?: number | null,"region"?: string | null,"region_code"?: string | null,"workspace_id"?: string
                   }
                   Relationships: [
                     {
+      foreignKeyName: "localities_place_id_fkey"
+      columns: ["place_id"]
+isOneToOne: false
+      referencedRelation: "places"
+      referencedColumns: ["id"]
+    },{
       foreignKeyName: "localities_workspace_id_fkey"
       columns: ["workspace_id"]
 isOneToOne: false
@@ -206,6 +212,20 @@ isOneToOne: false
       referencedRelation: "connections"
       referencedColumns: ["workspace_id","id"]
     }
+                  ]
+                },"places": {
+                  Row: {
+                    "ascii_name": string,"country_code": string,"country_name": string,"id": number,"latitude": number,"longitude": number,"name": string,"population": number,"region_code": string | null,"region_name": string | null
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "ascii_name": string,"country_code": string,"country_name": string,"id": number,"latitude": number,"longitude": number,"name": string,"population"?: number,"region_code"?: string | null,"region_name"?: string | null
+                  }
+                  Update: {
+                    "ascii_name"?: string,"country_code"?: string,"country_name"?: string,"id"?: number,"latitude"?: number,"longitude"?: number,"name"?: string,"population"?: number,"region_code"?: string | null,"region_name"?: string | null
+                  }
+                  Relationships: [
+                    
                   ]
                 },"scenes": {
                   Row: {
@@ -273,7 +293,26 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "set_next_action":
+            "search_places":
+{ Args: { "max_results"?: number,"prefer_countries"?: (string)[],"q": string }; Returns: {
+              "ascii_name": string,
+"country_code": string,
+"country_name": string,
+"id": number,
+"latitude": number,
+"longitude": number,
+"name": string,
+"population": number,
+"region_code": string | null,
+"region_name": string | null
+            }[]
+                          SetofOptions: {
+        from: "*"
+        to: "places"
+        isOneToOne: false
+        isSetofReturn: true
+      } },
+"set_next_action":
 { Args: { "p_assignee_id"?: string,"p_connection_id": string,"p_description": string,"p_due_on"?: string }; Returns: {
               "assignee_id": string | null,
 "closed_at": string | null,

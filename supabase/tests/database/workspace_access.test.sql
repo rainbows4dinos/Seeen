@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(41);
+select plan(45);
 
 -- ---------------------------------------------------------------------------
 -- Fixtures (as postgres)
@@ -49,6 +49,11 @@ select throws_ok(
   '42501', null,
   'anon cannot read workspaces'
 );
+select throws_ok(
+  $$select * from public.search_places('portland')$$,
+  '42501', null,
+  'anon cannot search places'
+);
 
 -- ---------------------------------------------------------------------------
 -- Signed up, no membership (dana)
@@ -58,6 +63,22 @@ set local role authenticated;
 select set_config('request.jwt.claims', '{"sub":"f4444444-4444-4444-4444-444444444444","role":"authenticated"}', true);
 
 select is((select count(*) from public.workspaces), 0::bigint, 'non-member sees no workspaces');
+select is(
+  (select region_code from public.search_places('portland') limit 1),
+  'OR',
+  'any signed-in user can search places; biggest match first'
+);
+select is(
+  (select region_code from public.search_places('portland, me') limit 1),
+  'ME',
+  'a qualifier after a comma narrows by state'
+);
+select throws_ok(
+  $$insert into public.places (id, name, ascii_name, country_code, country_name, latitude, longitude)
+    values (1, 'Fake', 'Fake', 'US', 'United States', 0, 0)$$,
+  '42501', null,
+  'places cannot be changed through the API'
+);
 select is((select count(*) from public.workspace_members), 0::bigint, 'non-member sees no members');
 select is((select count(*) from public.connections), 0::bigint, 'non-member sees no connections');
 select throws_ok(

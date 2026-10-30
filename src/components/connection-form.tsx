@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { PlaceField } from "@/components/place-field";
 import { useActionState, useState } from "react";
 import type { ConnectionFormState, ConnectionFormValues } from "@/lib/connections/form";
 import {
@@ -21,13 +22,11 @@ export function ConnectionForm({
   initial,
   submitLabel,
   cancelHref,
-  places,
 }: {
   action: Action;
   initial: ConnectionFormValues;
   submitLabel: string;
   cancelHref: string;
-  places: { name: string; region: string | null }[];
 }) {
   const [state, formAction, pending] = useActionState(action, { values: initial, errors: {} });
 
@@ -40,7 +39,6 @@ export function ConnectionForm({
       pending={pending}
       submitLabel={submitLabel}
       cancelHref={cancelHref}
-      places={places}
     />
   );
 }
@@ -51,14 +49,12 @@ function FormBody({
   pending,
   submitLabel,
   cancelHref,
-  places,
 }: {
   state: ConnectionFormState;
   formAction: (fd: FormData) => void;
   pending: boolean;
   submitLabel: string;
   cancelHref: string;
-  places: { name: string; region: string | null }[];
 }) {
   const { values: v, errors } = state;
   const [links, setLinks] = useState(() =>
@@ -120,24 +116,6 @@ function FormBody({
           ))}
         </ChoiceGroup>
 
-        {kind === "group" ? (
-          <div className="flex flex-col gap-1">
-            <Choice
-              type="checkbox"
-              name="is_us"
-              value="on"
-              label="This is our band"
-              defaultChecked={v.isUs}
-            />
-            <p className="text-sm text-muted">Lets Seeen spot label mates and shared members.</p>
-            {errors.isUs ? (
-              <p id="isUs-error" className="text-sm font-medium text-error">
-                Error: {errors.isUs}
-              </p>
-            ) : null}
-          </div>
-        ) : null}
-
         {kind === "person" ? (
           <ChoiceGroup legend="What do they do?" hint="Any that apply." error={errors.personRoles} errorId="personRoles-error">
             {PERSON_ROLES.map((r) => (
@@ -166,38 +144,30 @@ function FormBody({
           </ChoiceGroup>
         )}
 
-        <fieldset className="flex flex-col gap-3">
-          <legend className="text-sm font-medium">Where they&rsquo;re based</legend>
-          <p id="c-place-hint" className="-mt-1 text-sm text-muted">
-            Their home town, not where you met them.
-          </p>
-          <div className="grid gap-3 sm:grid-cols-3">
-            <Field id="c-city" label="City or town" error={errors.city}>
-              <input
-                id="c-city"
-                name="city"
-                list="known-places"
-                defaultValue={v.city}
-                autoComplete="off"
-                className="field"
-                {...invalid("c-city", errors.city, "c-place-hint")}
-              />
-            </Field>
-            <Field id="c-region" label="State or region">
-              <input id="c-region" name="region" defaultValue={v.region} autoComplete="off" className="field" />
-            </Field>
-            <Field id="c-country" label="Country">
-              <input id="c-country" name="country" defaultValue={v.country} autoComplete="off" className="field" />
-            </Field>
+        {kind === "group" ? (
+          <div className="flex flex-col gap-1">
+            <Choice
+              type="checkbox"
+              name="is_us"
+              value="on"
+              label="This is our band"
+              defaultChecked={v.isUs}
+            />
+            <p className="text-sm text-muted">Lets Seeen spot label mates and shared members.</p>
+            {errors.isUs ? (
+              <p id="isUs-error" className="text-sm font-medium text-error">
+                Error: {errors.isUs}
+              </p>
+            ) : null}
           </div>
-          <datalist id="known-places">
-            {places.map((p) => (
-              <option key={`${p.name}-${p.region}`} value={p.name}>
-                {[p.name, p.region].filter(Boolean).join(", ")}
-              </option>
-            ))}
-          </datalist>
-        </fieldset>
+        ) : null}
+
+        <PlaceField
+          initialId={v.placeId ? Number(v.placeId) : null}
+          initialLabel={v.placeText}
+          keepLocalityId={v.keepLocalityId || null}
+          error={errors.placeText}
+        />
       </fieldset>
 
       <fieldset className="flex flex-col gap-5">

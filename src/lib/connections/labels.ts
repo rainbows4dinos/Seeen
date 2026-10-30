@@ -1,4 +1,5 @@
 import type { Database } from "@/lib/supabase/database.types";
+import { formatShortPlace } from "@/lib/places";
 
 type Enums = Database["public"]["Enums"];
 export type ConnectionKind = Enums["connection_kind"];
@@ -74,10 +75,15 @@ export function formatType(c: {
 }
 
 export function formatLocality(
-  locality: { name: string; region: string | null; country: string | null } | null,
+  locality: {
+    name: string;
+    region: string | null;
+    region_code?: string | null;
+    country: string | null;
+    country_code?: string | null;
+  } | null,
 ) {
-  if (!locality) return null;
-  return [locality.name, locality.region].filter(Boolean).join(", ");
+  return locality ? formatShortPlace(locality) : null;
 }
 
 export function formatDate(iso: string) {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { getMembership } from "@/lib/auth/dal";
 import { updateConnection } from "@/lib/connections/actions";
-import { getConnection, listLocalities, toFormValues } from "@/lib/connections/queries";
+import { getConnection, toFormValues } from "@/lib/connections/queries";
 import { ConnectionForm } from "@/components/connection-form";
 import { NoWorkspace } from "@/components/no-workspace";
 
@@ -21,7 +21,7 @@ async function EditConnection({ params }: { params: PageProps<"/connections/[id]
   if (!membership) return <NoWorkspace />;
 
   const { id } = await params;
-  const [{ connection }, places] = await Promise.all([getConnection(id), listLocalities()]);
+  const { connection } = await getConnection(id);
 
   return (
     <div className="flex flex-col gap-6">
@@ -31,7 +31,6 @@ async function EditConnection({ params }: { params: PageProps<"/connections/[id]
         initial={toFormValues(connection)}
         submitLabel="Save changes"
         cancelHref={`/connections/${id}`}
-        places={places}
       />
     </div>
   );

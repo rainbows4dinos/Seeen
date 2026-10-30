@@ -19,9 +19,9 @@ export type ConnectionFormValues = {
   playedTogether: boolean;
   isUs: boolean;
   canHelpWith: string;
-  city: string;
-  region: string;
-  country: string;
+  placeId: string;
+  placeText: string;
+  keepLocalityId: string;
   email: string;
   phone: string;
   notes: string;
@@ -48,7 +48,7 @@ export type ValidConnection = {
   played_together: boolean;
   is_us: boolean;
   can_help_with: string[];
-  locality: { name: string; region: string | null; country: string | null } | null;
+  locality: { placeId: number } | { keepLocalityId: string } | null;
   email: string | null;
   phone: string | null;
   notes: string | null;
@@ -64,9 +64,9 @@ export const EMPTY_FORM: ConnectionFormValues = {
   playedTogether: false,
   isUs: false,
   canHelpWith: "",
-  city: "",
-  region: "",
-  country: "",
+  placeId: "",
+  placeText: "",
+  keepLocalityId: "",
   email: "",
   phone: "",
   notes: "",
@@ -88,9 +88,9 @@ export function readForm(fd: FormData): ConnectionFormValues {
     playedTogether: fd.get("played_together") === "on",
     isUs: fd.get("is_us") === "on",
     canHelpWith: str(fd, "can_help_with"),
-    city: str(fd, "city"),
-    region: str(fd, "region"),
-    country: str(fd, "country"),
+    placeId: str(fd, "place_id"),
+    placeText: str(fd, "place_text"),
+    keepLocalityId: str(fd, "keep_locality_id"),
     email: str(fd, "email"),
     phone: str(fd, "phone"),
     notes: str(fd, "notes"),
@@ -136,8 +136,9 @@ export function validate(values: ConnectionFormValues):
 
   if (values.email && !EMAIL_RE.test(values.email)) errors.email = "That email doesn't look right.";
 
-  if ((values.region || values.country) && !values.city) {
-    errors.city = "Add a city or town, or clear the region and country.";
+  const placeId = /^\d+$/.test(values.placeId) ? Number(values.placeId) : null;
+  if (values.placeText && !placeId && !values.keepLocalityId) {
+    errors.placeText = "Pick a town from the suggestions, or clear the field.";
   }
 
   const links: ValidConnection["links"] = [];
@@ -169,9 +170,11 @@ export function validate(values: ConnectionFormValues):
         .split(",")
         .map((s) => s.trim())
         .filter(Boolean),
-      locality: values.city
-        ? { name: values.city, region: optional(values.region), country: optional(values.country) }
-        : null,
+      locality: placeId
+        ? { placeId }
+        : values.keepLocalityId
+          ? { keepLocalityId: values.keepLocalityId }
+          : null,
       email: optional(values.email),
       phone: optional(values.phone),
       notes: optional(values.notes),

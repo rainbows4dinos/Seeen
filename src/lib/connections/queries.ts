@@ -1,6 +1,7 @@
 import "server-only";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { formatPlace } from "@/lib/places";
 import { EMPTY_FORM, type ConnectionFormValues } from "./form";
 
 // All reads go through RLS: a member only ever sees their workspace's rows.
@@ -10,7 +11,7 @@ export async function listConnections({ archived }: { archived: boolean }) {
   let query = supabase
     .from("connections")
     .select(
-      "id, name, kind, person_roles, group_type, status, played_together, is_us, archived_at, localities ( name, region, country )",
+      "id, name, kind, person_roles, group_type, status, played_together, is_us, archived_at, localities ( name, region, region_code, country, country_code, place_id )",
     )
     .order("name");
   query = archived ? query.not("archived_at", "is", null) : query.is("archived_at", null);
@@ -28,7 +29,7 @@ export async function getConnection(id: string) {
   const [connection, outgoing, incoming, nextAction] = await Promise.all([
     supabase
       .from("connections")
-      .select("*, localities ( name, region, country ), connection_links ( id, label, url, position )")
+      .select("*, localities ( name, region, region_code, country, country_code, place_id ), connection_links ( id, label, url, position )")
       .eq("id", id)
       .maybeSingle(),
     supabase
@@ -90,9 +91,9 @@ export function toFormValues(c: ConnectionDetail["connection"]): ConnectionFormV
     playedTogether: c.played_together,
     isUs: c.is_us,
     canHelpWith: c.can_help_with.join(", "),
-    city: c.localities?.name ?? "",
-    region: c.localities?.region ?? "",
-    country: c.localities?.country ?? "",
+    placeId: c.localities?.place_id ? String(c.localities.place_id) : "",
+    placeText: c.localities ? formatPlace({ ...c.localities, country_name: c.localities.country }) : "",
+    keepLocalityId: c.localities && !c.localities.place_id && c.locality_id ? c.locality_id : "",
     email: c.email ?? "",
     phone: c.phone ?? "",
     notes: c.notes ?? "",
@@ -100,16 +101,6 @@ export function toFormValues(c: ConnectionDetail["connection"]): ConnectionFormV
       ? c.connection_links.map((l) => ({ label: l.label ?? "", url: l.url }))
       : EMPTY_FORM.links,
   };
-}
-
-export async function listLocalities() {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from("localities")
-    .select("id, name, region, country")
-    .order("name");
-  if (error) throw new Error("Couldn't load places.");
-  return data;
 }
 
 // The whole workspace's link graph is small, so derive network facts in memory:
