@@ -15,7 +15,8 @@ The core questions are: Who do we know in this scene? Who are our Homies, and wh
   - A group is exactly one thing: band, venue, label, recording studio, production studio, radio station, press (zine, blog, mag), promoter or collective, other.
 - **Locality:** geographic place. Keep locality distinct from genre/community tags.
 - **Scene:** a local music community. A connection can belong to multiple scenes.
-- **Affiliation:** a link from one connection to another, with a role (for example vocals, member, DJ at, books for, works at), a current/former status, and optional notes. A person can be affiliated with many bands, venues, and organizations; a band's members are its incoming affiliations. Both connections must belong to the same workspace.
+- **Affiliation:** a link between two connections in the same workspace, with a kind, an optional role or detail (for example "vocals, guitar"), a current/former status, and optional notes. Kinds: **member** (person plays in a band), **works with** (person books for, runs, or works at a venue, label, studio, and so on), **on label** (band is on a label), **related** (side project, split release, sister venue), and **other**. A band's members are its incoming member links.
+- **Us:** one group per workspace can be marked as the band itself ("This is our band"). Seeen uses it to show label mates (bands on a label with us) and bands that share a member with us.
 - **Can help with:** free-form skills or services on a person (for example music videos, DJ sets, gear, screen printing), so members can find who to ask for a need, not only who plays where.
 - **Status:** one band-wide choice per connection, set in a single tap:
   - **Homies:** the ultimate band-to-band relationship. Love playing together, love each other's music, love hanging out, support each other, top tour-mate candidates.

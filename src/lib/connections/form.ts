@@ -17,6 +17,7 @@ export type ConnectionFormValues = {
   groupType: string;
   status: string;
   playedTogether: boolean;
+  isUs: boolean;
   canHelpWith: string;
   city: string;
   region: string;
@@ -45,6 +46,7 @@ export type ValidConnection = {
   group_type: GroupType | null;
   status: ConnectionStatus;
   played_together: boolean;
+  is_us: boolean;
   can_help_with: string[];
   locality: { name: string; region: string | null; country: string | null } | null;
   email: string | null;
@@ -60,6 +62,7 @@ export const EMPTY_FORM: ConnectionFormValues = {
   groupType: "",
   status: "neutral",
   playedTogether: false,
+  isUs: false,
   canHelpWith: "",
   city: "",
   region: "",
@@ -83,6 +86,7 @@ export function readForm(fd: FormData): ConnectionFormValues {
     groupType: str(fd, "group_type"),
     status: str(fd, "status"),
     playedTogether: fd.get("played_together") === "on",
+    isUs: fd.get("is_us") === "on",
     canHelpWith: str(fd, "can_help_with"),
     city: str(fd, "city"),
     region: str(fd, "region"),
@@ -160,6 +164,7 @@ export function validate(values: ConnectionFormValues):
       group_type: kind === "group" ? groupType : null,
       status: values.status as ConnectionStatus,
       played_together: values.playedTogether,
+      is_us: kind === "group" && values.isUs,
       can_help_with: values.canHelpWith
         .split(",")
         .map((s) => s.trim())

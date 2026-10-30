@@ -120,6 +120,24 @@ function FormBody({
           ))}
         </ChoiceGroup>
 
+        {kind === "group" ? (
+          <div className="flex flex-col gap-1">
+            <Choice
+              type="checkbox"
+              name="is_us"
+              value="on"
+              label="This is our band"
+              defaultChecked={v.isUs}
+            />
+            <p className="text-sm text-muted">Lets Seeen spot label mates and shared members.</p>
+            {errors.isUs ? (
+              <p id="isUs-error" className="text-sm font-medium text-error">
+                Error: {errors.isUs}
+              </p>
+            ) : null}
+          </div>
+        ) : null}
+
         {kind === "person" ? (
           <ChoiceGroup legend="What do they do?" hint="Any that apply." error={errors.personRoles} errorId="personRoles-error">
             {PERSON_ROLES.map((r) => (

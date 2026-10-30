@@ -7,14 +7,14 @@ export type Database = {
           Tables: {
             "affiliations": {
                   Row: {
-                    "created_at": string,"from_connection_id": string,"id": string,"is_current": boolean,"notes": string | null,"role": string,"to_connection_id": string,"updated_at": string,"workspace_id": string
+                    "created_at": string,"from_connection_id": string,"id": string,"is_current": boolean,"kind": Database["public"]['Enums']["affiliation_kind"],"notes": string | null,"role": string | null,"to_connection_id": string,"updated_at": string,"workspace_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"from_connection_id": string,"id"?: string,"is_current"?: boolean,"notes"?: string | null,"role": string,"to_connection_id": string,"updated_at"?: string,"workspace_id": string
+                    "created_at"?: string,"from_connection_id": string,"id"?: string,"is_current"?: boolean,"kind"?: Database["public"]['Enums']["affiliation_kind"],"notes"?: string | null,"role"?: string | null,"to_connection_id": string,"updated_at"?: string,"workspace_id": string
                   }
                   Update: {
-                    "created_at"?: string,"from_connection_id"?: string,"id"?: string,"is_current"?: boolean,"notes"?: string | null,"role"?: string,"to_connection_id"?: string,"updated_at"?: string,"workspace_id"?: string
+                    "created_at"?: string,"from_connection_id"?: string,"id"?: string,"is_current"?: boolean,"kind"?: Database["public"]['Enums']["affiliation_kind"],"notes"?: string | null,"role"?: string | null,"to_connection_id"?: string,"updated_at"?: string,"workspace_id"?: string
                   }
                   Relationships: [
                     {
@@ -99,14 +99,14 @@ isOneToOne: false
                   ]
                 },"connections": {
                   Row: {
-                    "archived_at": string | null,"can_help_with": (string)[],"created_at": string,"created_by": string | null,"email": string | null,"group_type": Database["public"]['Enums']["group_type"] | null,"id": string,"kind": Database["public"]['Enums']["connection_kind"],"locality_id": string | null,"name": string,"notes": string | null,"person_roles": (Database["public"]['Enums']["person_role"])[],"phone": string | null,"played_together": boolean,"status": Database["public"]['Enums']["connection_status"],"updated_at": string,"workspace_id": string
+                    "archived_at": string | null,"can_help_with": (string)[],"created_at": string,"created_by": string | null,"email": string | null,"group_type": Database["public"]['Enums']["group_type"] | null,"id": string,"is_us": boolean,"kind": Database["public"]['Enums']["connection_kind"],"locality_id": string | null,"name": string,"notes": string | null,"person_roles": (Database["public"]['Enums']["person_role"])[],"phone": string | null,"played_together": boolean,"status": Database["public"]['Enums']["connection_status"],"updated_at": string,"workspace_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "archived_at"?: string | null,"can_help_with"?: (string)[],"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"group_type"?: Database["public"]['Enums']["group_type"] | null,"id"?: string,"kind"?: Database["public"]['Enums']["connection_kind"],"locality_id"?: string | null,"name": string,"notes"?: string | null,"person_roles"?: (Database["public"]['Enums']["person_role"])[],"phone"?: string | null,"played_together"?: boolean,"status"?: Database["public"]['Enums']["connection_status"],"updated_at"?: string,"workspace_id": string
+                    "archived_at"?: string | null,"can_help_with"?: (string)[],"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"group_type"?: Database["public"]['Enums']["group_type"] | null,"id"?: string,"is_us"?: boolean,"kind"?: Database["public"]['Enums']["connection_kind"],"locality_id"?: string | null,"name": string,"notes"?: string | null,"person_roles"?: (Database["public"]['Enums']["person_role"])[],"phone"?: string | null,"played_together"?: boolean,"status"?: Database["public"]['Enums']["connection_status"],"updated_at"?: string,"workspace_id": string
                   }
                   Update: {
-                    "archived_at"?: string | null,"can_help_with"?: (string)[],"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"group_type"?: Database["public"]['Enums']["group_type"] | null,"id"?: string,"kind"?: Database["public"]['Enums']["connection_kind"],"locality_id"?: string | null,"name"?: string,"notes"?: string | null,"person_roles"?: (Database["public"]['Enums']["person_role"])[],"phone"?: string | null,"played_together"?: boolean,"status"?: Database["public"]['Enums']["connection_status"],"updated_at"?: string,"workspace_id"?: string
+                    "archived_at"?: string | null,"can_help_with"?: (string)[],"created_at"?: string,"created_by"?: string | null,"email"?: string | null,"group_type"?: Database["public"]['Enums']["group_type"] | null,"id"?: string,"is_us"?: boolean,"kind"?: Database["public"]['Enums']["connection_kind"],"locality_id"?: string | null,"name"?: string,"notes"?: string | null,"person_roles"?: (Database["public"]['Enums']["person_role"])[],"phone"?: string | null,"played_together"?: boolean,"status"?: Database["public"]['Enums']["connection_status"],"updated_at"?: string,"workspace_id"?: string
                   }
                   Relationships: [
                     {
@@ -295,7 +295,7 @@ isOneToOne: false
       } }
           }
           Enums: {
-            "action_status": "open"|"done"|"dropped"|"replaced","connection_kind": "person"|"group","connection_status": "homies"|"lets_play"|"prospect"|"neutral"|"avoid","group_type": "band"|"venue"|"label"|"recording_studio"|"production_studio"|"radio_station"|"press"|"promoter_collective"|"other","member_role": "owner"|"member","outreach_channel": "in_person"|"email"|"text"|"call"|"instagram"|"other_social"|"other","person_role": "musician"|"dj"|"promoter"|"booker"|"manager"|"label_owner"|"producer"|"recording_engineer"|"live_sound_engineer"|"photographer"|"videographer"|"artist_designer"|"writer"|"radio_host"|"other"
+            "action_status": "open"|"done"|"dropped"|"replaced","affiliation_kind": "member"|"works_with"|"on_label"|"related"|"other","connection_kind": "person"|"group","connection_status": "homies"|"lets_play"|"prospect"|"neutral"|"avoid","group_type": "band"|"venue"|"label"|"recording_studio"|"production_studio"|"radio_station"|"press"|"promoter_collective"|"other","member_role": "owner"|"member","outreach_channel": "in_person"|"email"|"text"|"call"|"instagram"|"other_social"|"other","person_role": "musician"|"dj"|"promoter"|"booker"|"manager"|"label_owner"|"producer"|"recording_engineer"|"live_sound_engineer"|"photographer"|"videographer"|"artist_designer"|"writer"|"radio_host"|"other"
           }
           CompositeTypes: {
             [_ in never]: never
@@ -411,7 +411,7 @@ export type CompositeTypes<
 export const Constants = {
   "public": {
           Enums: {
-            "action_status": ["open", "done", "dropped", "replaced"],"connection_kind": ["person", "group"],"connection_status": ["homies", "lets_play", "prospect", "neutral", "avoid"],"group_type": ["band", "venue", "label", "recording_studio", "production_studio", "radio_station", "press", "promoter_collective", "other"],"member_role": ["owner", "member"],"outreach_channel": ["in_person", "email", "text", "call", "instagram", "other_social", "other"],"person_role": ["musician", "dj", "promoter", "booker", "manager", "label_owner", "producer", "recording_engineer", "live_sound_engineer", "photographer", "videographer", "artist_designer", "writer", "radio_host", "other"]
+            "action_status": ["open", "done", "dropped", "replaced"],"affiliation_kind": ["member", "works_with", "on_label", "related", "other"],"connection_kind": ["person", "group"],"connection_status": ["homies", "lets_play", "prospect", "neutral", "avoid"],"group_type": ["band", "venue", "label", "recording_studio", "production_studio", "radio_station", "press", "promoter_collective", "other"],"member_role": ["owner", "member"],"outreach_channel": ["in_person", "email", "text", "call", "instagram", "other_social", "other"],"person_role": ["musician", "dj", "promoter", "booker", "manager", "label_owner", "producer", "recording_engineer", "live_sound_engineer", "photographer", "videographer", "artist_designer", "writer", "radio_host", "other"]
           }
         }
 } as const
