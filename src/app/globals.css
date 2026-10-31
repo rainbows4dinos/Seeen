@@ -60,8 +60,8 @@
   /* Spacing and strokes */
   --space-2xs: 2px;
   --space-xs: 4px;
-  --space-sm: 6px;
-  --space-md: 10px;
+  --space-sm: 8px;
+  --space-md: 12px;
   --space-lg: 16px;
   --space-xl: 24px;
   --space-2xl: 32px;
@@ -127,7 +127,7 @@
     color: var(--color-text-primary);
     font-family: var(--type-mono);
     font-size: 14px;
-    line-height: 1.55;
+    line-height: 20px;
   }
 
   h1,
@@ -146,6 +146,7 @@
     font-family: var(--type-display);
     font-weight: 700;
     font-size: 20px;
+    line-height: 24px;
     letter-spacing: -0.03em;
   }
 
@@ -177,12 +178,13 @@
     font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    line-height: 1.4;
+    line-height: 16px;
   }
   /* Mono/Caption: tiny metadata like "BAND". */
   .caption {
     font-family: var(--type-mono);
     font-size: 11px;
+    line-height: 16px;
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--color-text-secondary);
@@ -191,10 +193,10 @@
      never as text color. */
   .swipe {
     background: linear-gradient(
-      transparent 44%,
-      var(--color-plate-magenta) 44%,
-      var(--color-plate-magenta) 82%,
-      transparent 82%
+      transparent 36%,
+      var(--color-plate-magenta) 36%,
+      var(--color-plate-magenta) 76%,
+      transparent 76%
     );
     padding-right: 0.04em;
     -webkit-box-decoration-break: clone;
@@ -203,19 +205,55 @@
   .hand {
     font-family: var(--type-hand);
     font-size: 30px;
-    line-height: 1;
+    line-height: 32px;
   }
 
-  /* Paper surface: forms, panels, cards. */
+  /* Paper surface: forms, panels, cards. The 1px edge is drawn by an
+     overlay, not a border, so it adds no height (4px grid) and stays on
+     top of full-width rows inside. */
   .panel {
+    position: relative;
     background: var(--color-bg-surface);
+  }
+  .panel::after,
+  .window::after {
+    content: "";
+    position: absolute;
+    inset: 0;
     border: var(--stroke-hair) solid var(--color-border-strong);
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  /* Stacked rows with hairline dividers drawn on top, again adding no
+     height. Replaces divide-y. */
+  .rows > * {
+    position: relative;
+  }
+  .rows > * + *::before,
+  .rule-top::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: var(--stroke-hair);
+    background: var(--color-border-subtle);
+    z-index: 1;
+    pointer-events: none;
+  }
+  .rule-top {
+    position: relative;
+  }
+  .rule-strong::before {
+    background: var(--color-border-strong);
   }
   /* Window: the boxed tool look with a hard shadow. */
   .window {
+    position: relative;
     background: var(--color-bg-surface);
-    border: var(--stroke-strong) solid var(--color-border-strong);
     box-shadow: var(--shadow-hard);
+  }
+  .window::after {
+    border-width: var(--stroke-strong);
   }
 
   .field {
@@ -244,7 +282,7 @@
     border: var(--stroke-hair) solid var(--color-border-strong);
     border-radius: 0;
     padding: 0.25rem 0.75rem;
-    line-height: 1.4;
+    line-height: 16px;
     font-family: var(--type-mono);
     font-size: 13px;
     font-weight: 500;
@@ -353,12 +391,13 @@
     align-items: center;
     border: var(--stroke-hair) solid var(--color-border-strong);
     border-radius: 0;
+    /* 1 + 1 + 16 + 1 + 1 = 20px tall */
     padding: 1px 6px;
     font-family: var(--type-mono);
     font-size: 11px;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    line-height: 1.4;
+    line-height: 16px;
     background: transparent;
   }
   .tag-homies {
@@ -406,12 +445,13 @@
   .nav-chip {
     display: inline-flex;
     align-items: center;
-    min-height: 2rem;
+    min-height: 28px;
     border: var(--stroke-hair) solid var(--color-border-strong);
     background: var(--color-bg-surface);
-    padding: 0.125rem 0.625rem;
+    padding: 3px 10px;
     font-family: var(--type-display);
     font-size: 15px;
+    line-height: 20px;
     font-weight: 600;
     letter-spacing: -0.01em;
   }
@@ -425,12 +465,13 @@
   .logo {
     display: inline-flex;
     align-items: center;
-    min-height: 2.25rem;
+    min-height: var(--control-height);
     border: var(--stroke-hair) solid var(--color-border-strong);
     background: var(--color-bg-surface);
-    padding: 0.125rem 0.625rem;
+    padding: 3px 10px;
     font-family: var(--type-display);
     font-size: 22px;
+    line-height: 28px;
     font-weight: 700;
     letter-spacing: -0.03em;
     text-shadow: var(--misregister-cyan);

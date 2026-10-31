@@ -15,7 +15,7 @@ export function LoginForm() {
     <form action={action} className="flex flex-col gap-4" noValidate>
       <input type="hidden" name="next" value={next} />
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-2">
         <label htmlFor="email" className="text-sm font-medium">
           Email
         </label>
@@ -33,7 +33,7 @@ export function LoginForm() {
         />
       </div>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-2">
         <label htmlFor="password" className="text-sm font-medium">
           Password
         </label>

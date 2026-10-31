@@ -107,7 +107,7 @@ function FormBody({
       ) : null}
 
       <fieldset className="flex flex-col gap-5">
-        <legend className="mb-3 text-lg font-semibold">Who they are</legend>
+        <legend className="mb-3 text-lg leading-6 font-semibold">Who they are</legend>
 
         <Field id="c-name" label="Name" error={errors.name}>
           <input
@@ -222,7 +222,7 @@ function FormBody({
       </fieldset>
 
       <fieldset className="flex flex-col gap-5">
-        <legend className="mb-3 text-lg font-semibold">How you know them</legend>
+        <legend className="mb-3 text-lg leading-6 font-semibold">How you know them</legend>
 
         <ChoiceGroup legend="Status" error={errors.status} errorId="status-error">
           {STATUSES.map((st) => (
@@ -249,7 +249,7 @@ function FormBody({
       </fieldset>
 
       <details open={detailsOpen}>
-        <summary className="cursor-pointer text-lg font-semibold">
+        <summary className="cursor-pointer text-lg leading-6 font-semibold">
           More details <span className="text-sm font-normal text-muted">(all optional)</span>
         </summary>
         <div className="flex flex-col gap-5 pt-5">
@@ -377,7 +377,7 @@ function Field({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-2">
       <label htmlFor={id} className="text-sm font-medium">
         {label}
       </label>

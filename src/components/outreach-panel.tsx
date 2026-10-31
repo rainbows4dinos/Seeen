@@ -40,7 +40,7 @@ export function OutreachPanel({
         </div>
       )}
       {entries.length ? (
-        <ol className="panel flex flex-col divide-y divide-line">
+        <ol className="panel rows flex flex-col">
           {entries.map((e) => (
             <EntryRow key={e.id} entry={e} mine={e.author_id === me} today={today} />
           ))}
@@ -152,7 +152,7 @@ function LogForm({
         </p>
       ) : null}
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <label htmlFor="o-date" className="text-sm font-medium">
             When
           </label>
@@ -173,7 +173,7 @@ function LogForm({
             </p>
           ) : null}
         </div>
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <label htmlFor="o-channel" className="text-sm font-medium">
             How
           </label>
@@ -201,7 +201,7 @@ function LogForm({
           ) : null}
         </div>
       </div>
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-2">
         <label htmlFor="o-summary" className="text-sm font-medium">
           What happened
         </label>

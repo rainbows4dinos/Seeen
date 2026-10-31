@@ -56,7 +56,7 @@ export function SceneForm({
           </div>
         ) : null}
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <label htmlFor="s-name" className="text-sm font-medium">
             Name
           </label>
@@ -87,7 +87,7 @@ export function SceneForm({
           hint="Where the scene is centered. Leave empty for a region like the Pacific Northwest."
         />
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <label htmlFor="s-parent" className="text-sm font-medium">
             Part of a bigger scene? <span className="font-normal text-muted">(optional)</span>
           </label>
@@ -113,7 +113,7 @@ export function SceneForm({
           ) : null}
         </div>
 
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <label htmlFor="s-description" className="text-sm font-medium">
             Description <span className="font-normal text-muted">(optional)</span>
           </label>
@@ -141,7 +141,7 @@ function RemoveScene({ id, name }: { id: string; name: string }) {
   const [pending, startTransition] = useTransition();
 
   return (
-    <div className="flex flex-col gap-3 border-t border-line pt-6">
+    <div className="flex flex-col gap-3 rule-top pt-6">
       {!confirming ? (
         <button type="button" className="button-secondary self-start" onClick={() => setConfirming(true)}>
           Remove scene

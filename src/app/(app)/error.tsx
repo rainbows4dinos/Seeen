@@ -22,7 +22,7 @@ export default function AppError({ error, reset }: { error: Error & { digest?: s
 
   return (
     <div role="alert" className="flex flex-col items-start gap-4">
-      <h1 ref={headingRef} tabIndex={-1} className="text-4xl font-bold sm:text-[52px] outline-none">
+      <h1 ref={headingRef} tabIndex={-1} className="text-4xl font-bold sm:text-[52px] sm:leading-[52px] outline-none">
         That didn&rsquo;t load.
       </h1>
       <p className="text-muted">

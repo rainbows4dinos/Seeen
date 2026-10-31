@@ -60,7 +60,7 @@ async function Connection({
       ) : null}
 
       <header className="flex flex-col gap-2">
-        <h1 className="text-4xl font-bold sm:text-[52px] break-words">{c.name}</h1>
+        <h1 className="text-4xl font-bold sm:text-[52px] sm:leading-[52px] break-words">{c.name}</h1>
         <p className="text-muted">
           {[formatType(c), place].filter(Boolean).join(" · ")}
         </p>
@@ -213,7 +213,7 @@ async function Connection({
         </Section>
       ) : null}
 
-      <footer className="flex flex-col gap-4 border-t border-line pt-6">
+      <footer className="flex flex-col gap-4 rule-top pt-6">
         <p className="text-sm text-muted">
           Added {formatDate(c.created_at)} · Updated {formatDate(c.updated_at)}
         </p>
@@ -226,7 +226,7 @@ async function Connection({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-xl font-bold">{title}</h2>
+      <h2 className="text-xl leading-6 font-bold">{title}</h2>
       {children}
     </section>
   );

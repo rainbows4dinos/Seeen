@@ -67,7 +67,7 @@ export function PlaceField({
   const describedBy = [`${id}-hint`, `${id}-status`, error ? "c-place-error" : null].filter(Boolean).join(" ");
 
   return (
-    <div className="relative flex flex-col gap-1.5">
+    <div className="relative flex flex-col gap-2">
       <label htmlFor="c-place" className="text-sm font-medium">
         {label}
       </label>
