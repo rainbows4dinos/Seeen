@@ -22,21 +22,36 @@
   --stock-lilac: #dcd2f6;
   --stock-butter: #fbeeaa;
 
-  /* Color (Paper mode) */
+  /* Color (Paper mode). Names match the Figma variables' code syntax. */
+  --red-error: #b0002a;
   --color-bg-ground: var(--ground-200);
   --color-bg-surface: var(--paper-50);
+  --color-bg-photo-paper: var(--paper-photo);
   --color-bg-inverse: var(--ink-900);
   --color-text-primary: var(--ink-900);
   --color-text-secondary: var(--ink-600);
   --color-text-inverse: var(--paper-50);
+  --color-text-error: var(
+    --red-error
+  ); /* 6.4:1 on paper; errors also say "Error:" */
   --color-border-strong: var(--ink-900);
   --color-border-subtle: var(--ground-300);
+  --color-border-error: var(--red-error);
   --color-pattern-dot: var(--ground-dot);
+  --color-plate-cyan: var(--plate-cyan);
+  --color-plate-magenta: var(--plate-magenta);
+  --color-plate-yellow: var(--plate-yellow);
   --color-status-homie: var(--plate-magenta);
   --color-status-prospect: var(--plate-cyan);
-  /* Not in Figma yet (code-side additions, flagged for review): */
   --color-status-lets-play: var(--plate-yellow);
-  --red-error: #b0002a; /* 6.4:1 on paper; errors also say "Error:" in text */
+  --color-status-avoid: var(--ink-900);
+  --color-stock-pink: var(--stock-pink);
+  --color-stock-mint: var(--stock-mint);
+  --color-stock-lilac: var(--stock-lilac);
+  --color-stock-butter: var(--stock-butter);
+  /* Focus: the ink outline carries the 3:1 contrast; magenta glow is decoration. */
+  --color-focus-outline: var(--ink-900);
+  --color-focus-glow: var(--plate-magenta);
 
   /* Spacing and strokes */
   --space-2xs: 2px;
@@ -72,7 +87,7 @@
   --color-muted: var(--color-text-secondary);
   --color-line: var(--color-border-subtle);
   --color-strong: var(--color-border-strong);
-  --color-error: var(--red-error);
+  --color-error: var(--color-text-error);
   --color-cyan: var(--plate-cyan);
   --color-magenta: var(--plate-magenta);
   --color-yellow: var(--plate-yellow);
@@ -128,9 +143,9 @@
 
   /* Focus: ink outline (3:1 on every surface) with a magenta glow from Figma. */
   :focus-visible {
-    outline: 2px solid var(--ink-900);
+    outline: 2px solid var(--color-focus-outline);
     outline-offset: 2px;
-    box-shadow: 0 0 0 5px var(--plate-magenta);
+    box-shadow: 0 0 0 5px var(--color-focus-glow);
   }
 }
 
@@ -192,7 +207,7 @@
     font-size: 1rem; /* 16px avoids iOS zoom on focus */
   }
   .field[aria-invalid="true"] {
-    border-color: var(--red-error);
+    border-color: var(--color-border-error);
     border-width: 2px;
   }
 
@@ -268,9 +283,9 @@
     font-weight: 600;
   }
   .choice:has(input:focus-visible) {
-    outline: 2px solid var(--ink-900);
+    outline: 2px solid var(--color-focus-outline);
     outline-offset: 2px;
-    box-shadow: 0 0 0 5px var(--plate-magenta);
+    box-shadow: 0 0 0 5px var(--color-focus-glow);
   }
 
   /* Segmented control (Figma Segmented Control): joined boxes, current
@@ -333,7 +348,7 @@
   }
   .tag-ink,
   .tag-avoid {
-    background: var(--color-bg-inverse);
+    background: var(--color-status-avoid);
     color: var(--color-text-inverse);
   }
 

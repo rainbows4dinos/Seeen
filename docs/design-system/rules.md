@@ -8,7 +8,7 @@ Status: phase 1 tokens are in. The source of truth is the Seeen Figma file ("Com
 - **Type:** Hanken Grotesk for headings and nav. IBM Plex Mono for body, labels, and controls. Reenie Beanie for rare handwritten notes. Fonts are self-hosted with Fontsource.
 - **Shape:** square corners everywhere, 1px ink borders, and a 1.5px border on windows. Windows and the primary button get a hard offset shadow.
 - **Components:** `.panel`, `.window`, `.field`, `.button-primary` (yellow), `.button-secondary` (paper, yellow on hover), `.choice` (segment that inverts when on), `.segmented`, `.tag` with `.tag-{status}`, `.nav-chip`, `.logo` (cyan misregister), `.label`, and `.caption`.
-- **Code-side additions not yet in Figma:** the Let's play status color (yellow plate), the Avoid/ink tag, an error red `#b0002a`, and the focus ring (ink outline plus magenta glow).
+- **Status and state colors:** Let's play is the yellow plate and Avoid/"Us" is an ink tag. Error red is `#b0002a`. Focus is a 2px ink outline plus a magenta glow. All are Figma variables (`color/status/*`, `color/text/error`, `color/border/error`, `color/focus/*`), and their code syntax matches the CSS names.
 - **Later phases:** xerox shader on photos, cut-out edges, tape, and rub-down type texture.
 
 ## Character
