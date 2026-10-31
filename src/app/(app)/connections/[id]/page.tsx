@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import { getMembership } from "@/lib/auth/dal";
 import { getConnection, type ConnectionDetail } from "@/lib/connections/queries";
 import {
-  STATUS_HINTS,
   STATUS_LABELS,
   formatDate,
   formatLocality,
@@ -13,6 +12,7 @@ import { addOptionsFor, sectionFor } from "@/lib/affiliations/options";
 import { ArchiveControl } from "@/components/archive-control";
 import { LinksPanel, type LinkRow } from "@/components/links-panel";
 import { NoWorkspace } from "@/components/no-workspace";
+import { QuickStatus } from "@/components/quick-status";
 
 export default function ConnectionPage({ params }: PageProps<"/connections/[id]">) {
   return (
@@ -28,7 +28,7 @@ async function Connection({ params }: { params: PageProps<"/connections/[id]">["
 
   const { id } = await params;
   const detail = await getConnection(id);
-  const { connection: c, nextAction, labelMates, sharedWithUs, isLabelMateWithUs } = detail;
+  const { connection: c, nextAction, labelMates, sharedWithUs, isLabelMateWithUs, statusHistory } = detail;
   const rows = linkRows(c, detail.affiliations);
   const place = formatLocality(c.localities);
   const archived = Boolean(c.archived_at);
@@ -50,11 +50,7 @@ async function Connection({ params }: { params: PageProps<"/connections/[id]">["
         <p className="text-muted">
           {[formatType(c), place].filter(Boolean).join(" · ")}
         </p>
-        <div className="flex flex-wrap gap-2 pt-1">
-          <span className="tag font-semibold" title={STATUS_HINTS[c.status]}>
-            {STATUS_LABELS[c.status]}
-          </span>
-          {c.played_together ? <span className="tag">Played together</span> : null}
+        <div className="flex flex-wrap gap-2 pt-1 empty:hidden">
           {c.is_us ? <span className="tag font-semibold">This is us</span> : null}
           {isLabelMateWithUs ? <span className="tag">Label mate</span> : null}
           {sharedWithUs.length ? (
@@ -80,6 +76,26 @@ async function Connection({ params }: { params: PageProps<"/connections/[id]">["
           </Link>
         </div>
       </header>
+
+      <Section title="Where things stand">
+        <QuickStatus id={c.id} initial={{ status: c.status, playedTogether: c.played_together }} />
+        {statusHistory.length > 1 ? (
+          <details className="text-sm">
+            <summary className="cursor-pointer text-muted">Status history</summary>
+            <ol className="flex flex-col gap-1 pt-2">
+              {statusHistory.map((h) => (
+                <li key={h.id}>
+                  {h.from_status ? `${STATUS_LABELS[h.from_status]} to ${STATUS_LABELS[h.to_status]}` : `Added as ${STATUS_LABELS[h.to_status]}`}
+                  <span className="text-muted">
+                    {" · "}
+                    {[formatDate(h.changed_at), h.by].filter(Boolean).join(" · ")}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </details>
+        ) : null}
+      </Section>
 
       <Section title="Next action">
         {nextAction ? (

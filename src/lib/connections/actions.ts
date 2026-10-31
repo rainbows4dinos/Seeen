@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { getMembership } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
 import { resolveLocality } from "@/lib/localities";
+import { STATUSES, type ConnectionStatus } from "./labels";
 import {
   readForm,
   validate,
@@ -200,4 +201,40 @@ export async function archiveConnection(id: string): Promise<ArchiveState> {
 
 export async function restoreConnection(id: string): Promise<ArchiveState> {
   return setArchived(id, false);
+}
+
+export type QuickState = { status: ConnectionStatus; playedTogether: boolean };
+export type QuickResult = { ok: true; saved: QuickState } | { ok: false; saved: QuickState | null };
+
+// One-tap status and "played together" changes from the detail page.
+// Status history is logged by a database trigger.
+export async function quickUpdate(
+  id: string,
+  change: { status: ConnectionStatus } | { playedTogether: boolean },
+): Promise<QuickResult> {
+  await requireWorkspace();
+  const supabase = await createClient();
+  const patch =
+    "status" in change
+      ? STATUSES.includes(change.status)
+        ? { status: change.status }
+        : null
+      : { played_together: Boolean(change.playedTogether) };
+
+  const current = async () => {
+    const { data } = await supabase.from("connections").select("status, played_together").eq("id", id).maybeSingle();
+    return data ? { status: data.status, playedTogether: data.played_together } : null;
+  };
+  if (!patch) return { ok: false, saved: await current() };
+
+  const { data, error } = await supabase
+    .from("connections")
+    .update(patch)
+    .eq("id", id)
+    .select("status, played_together")
+    .maybeSingle();
+  if (error || !data) return { ok: false, saved: await current() };
+
+  revalidatePath("/", "layout");
+  return { ok: true, saved: { status: data.status, playedTogether: data.played_together } };
 }

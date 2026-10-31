@@ -9,6 +9,7 @@ import {
   formatType,
 } from "@/lib/connections/labels";
 import type { ConnectionListItem } from "@/lib/connections/queries";
+import type { ConnectionStatus } from "@/lib/connections/labels";
 import { NoWorkspace } from "@/components/no-workspace";
 import { listScenes, nestScenes, sceneAndChildren } from "@/lib/scenes/queries";
 import {
@@ -36,9 +37,13 @@ async function Directory({
   if (!membership) return <NoWorkspace />;
 
   const params = await searchParams;
-  const archived = params.view === "archived";
-  const filters = readFilters(params);
-  const filtering = hasFilters(filters);
+  const view = readView(params.view);
+  const archived = view === "archived";
+  const list = LISTS[view as ListView] ?? null;
+  const asked = readFilters(params);
+  // The Let's play and Prospects views are the directory with one status.
+  const filters = list ? { ...asked, statuses: [list.status] } : asked;
+  const filtering = hasFilters(asked);
   const [all, network, scenes] = await Promise.all([
     listConnections({ archived }),
     loadNetwork(),
@@ -51,7 +56,7 @@ async function Directory({
     matches(c, filters, { sceneIds, hideAvoid: !archived }),
   );
   const hiddenAvoid =
-    !archived && !filters.statuses.length
+    view === "current" && !filters.statuses.length
       ? all.filter(
           (c) =>
             c.status === "avoid" &&
@@ -70,6 +75,8 @@ async function Directory({
         .map((c) => [c.locality_id!, formatLocality(c.localities)!] as const),
     ),
   ].sort((a, b) => a[1].localeCompare(b[1]));
+  // In Let's play and Prospects, "of Y" counts that list, not everyone.
+  const total = list ? all.filter((c) => c.status === list.status).length : all.length;
   const us = connections.filter((c) => c.is_us);
   const tagsFor = (id: string) =>
     [
@@ -86,23 +93,24 @@ async function Directory({
         </Link>
       </div>
 
-      <nav aria-label="Directory views" className="flex gap-4 text-sm">
-        <ViewLink href="/" current={!archived}>
-          Current
-        </ViewLink>
-        <ViewLink href="/?view=archived" current={archived}>
-          Archived
-        </ViewLink>
+      <nav aria-label="Directory views" className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+        {VIEWS.map((v) => (
+          <ViewLink key={v.id} href={viewHref(v.id)} current={view === v.id}>
+            {v.label}
+          </ViewLink>
+        ))}
       </nav>
+
+      {list ? <p className="text-muted">{list.intro}</p> : null}
 
       {all.length ? (
         <FilterForm
           filters={filters}
-          archived={archived}
+          view={view}
           scenes={nestScenes(scenes)}
           towns={towns}
           open={Boolean(
-            filters.statuses.length ||
+            asked.statuses.length ||
             filters.type ||
             filters.scene ||
             filters.town,
@@ -113,6 +121,8 @@ async function Directory({
       {all.length === 0 ? (
         archived ? (
           <p className="text-muted">Nothing archived.</p>
+        ) : list ? (
+          <p className="text-muted">{list.empty}</p>
         ) : (
           <div className="flex flex-col items-start gap-3 rounded-md border border-dashed border-line p-6">
             <p className="font-medium">No connections yet.</p>
@@ -132,13 +142,13 @@ async function Directory({
             aria-live="polite"
           >
             <p>
-              {filtering || connections.length !== all.length
-                ? `Showing ${connections.length} of ${all.length}`
-                : `${all.length} ${all.length === 1 ? "connection" : "connections"}`}
+              {filtering || connections.length !== total
+                ? `Showing ${connections.length} of ${total}`
+                : `${total} ${total === 1 ? "connection" : "connections"}`}
             </p>
             {hiddenAvoid ? (
               <Link
-                href={filterHref({ ...filters, statuses: ["avoid"] }, archived)}
+                href={filterHref({ ...filters, statuses: ["avoid"] }, view)}
                 className="link"
               >
                 {hiddenAvoid} in Avoid, hidden. Show them
@@ -146,16 +156,15 @@ async function Directory({
             ) : null}
           </div>
 
-          {connections.length === 0 ? (
+          {connections.length === 0 && list && !filtering ? (
+            <p className="text-muted">{list.empty}</p>
+          ) : connections.length === 0 ? (
             <div className="flex flex-col items-start gap-3 rounded-md border border-dashed border-line p-6">
               <p className="font-medium">Nothing matches.</p>
               <p className="text-muted">
                 Try fewer filters or a shorter search.
               </p>
-              <Link
-                href={archived ? "/?view=archived" : "/"}
-                className="button-secondary"
-              >
+              <Link href={viewHref(view)} className="button-secondary">
                 Clear filters
               </Link>
             </div>
@@ -200,11 +209,46 @@ async function Directory({
   );
 }
 
-function filterHref(f: DirectoryFilters, archived: boolean) {
+type View = "current" | "lets_play" | "prospects" | "archived";
+type ListView = "lets_play" | "prospects";
+
+const VIEWS: { id: View; label: string }[] = [
+  { id: "current", label: "Current" },
+  { id: "lets_play", label: "Let's play" },
+  { id: "prospects", label: "Prospects" },
+  { id: "archived", label: "Archived" },
+];
+
+// Plain lists, no ranking: the order is alphabetical on purpose.
+const LISTS: Record<ListView, { status: ConnectionStatus; intro: string; empty: string }> = {
+  lets_play: {
+    status: "lets_play",
+    intro:
+      "People and bands you both want to play with. Filter by town or scene when you're putting a show together.",
+    empty:
+      "No one here yet. Mark a connection Let's play when you both want to share a bill.",
+  },
+  prospects: {
+    status: "prospect",
+    intro: "Who you'd like to know. Notes are what bandmates have picked up, not checked facts.",
+    empty: "No prospects yet. Mark a connection Prospect when you'd like to reach out.",
+  },
+};
+
+function readView(v: string | string[] | undefined): View {
+  const value = Array.isArray(v) ? v[0] : v;
+  return VIEWS.some((x) => x.id === value) ? (value as View) : "current";
+}
+
+function viewHref(view: View) {
+  return view === "current" ? "/" : `/?view=${view}`;
+}
+
+function filterHref(f: DirectoryFilters, view: View) {
   const p = new URLSearchParams();
-  if (archived) p.set("view", "archived");
+  if (view !== "current") p.set("view", view);
   if (f.q) p.set("q", f.q);
-  f.statuses.forEach((st) => p.append("status", st));
+  if (!LISTS[view as ListView]) f.statuses.forEach((st) => p.append("status", st));
   if (f.type) p.set("type", f.type);
   if (f.scene) p.set("scene", f.scene);
   if (f.town) p.set("town", f.town);
@@ -215,13 +259,13 @@ function filterHref(f: DirectoryFilters, archived: boolean) {
 // A plain GET form: works without JavaScript, and the URL is shareable.
 function FilterForm({
   filters: f,
-  archived,
+  view,
   scenes,
   towns,
   open,
 }: {
   filters: DirectoryFilters;
-  archived: boolean;
+  view: View;
   scenes: {
     scene: { id: string; name: string };
     children: { id: string; name: string }[];
@@ -229,7 +273,8 @@ function FilterForm({
   towns: (readonly [string, string])[];
   open: boolean;
 }) {
-  const clearHref = archived ? "/?view=archived" : "/";
+  const clearHref = viewHref(view);
+  const isList = Boolean(LISTS[view as ListView]);
   return (
     <form
       action="/"
@@ -238,7 +283,7 @@ function FilterForm({
       aria-label="Search and filter the directory"
       className="flex flex-col gap-3"
     >
-      {archived ? <input type="hidden" name="view" value="archived" /> : null}
+      {view !== "current" ? <input type="hidden" name="view" value={view} /> : null}
       <div className="flex flex-wrap items-end gap-2">
         <div className="flex min-w-48 flex-1 flex-col gap-1.5">
           <label htmlFor="f-q" className="text-sm font-medium">
@@ -256,7 +301,7 @@ function FilterForm({
         <button type="submit" className="button-primary">
           Search
         </button>
-        {hasFilters(f) ? (
+        {hasFilters(isList ? { ...f, statuses: [] } : f) ? (
           <Link href={clearHref} className="button-secondary">
             Clear filters
           </Link>
@@ -268,7 +313,7 @@ function FilterForm({
           Filters
         </summary>
         <div className="flex flex-col gap-4 pt-3">
-          <fieldset className="flex flex-col gap-2">
+          <fieldset className="flex flex-col gap-2" hidden={isList} disabled={isList}>
             <legend className="text-sm font-medium">Status</legend>
             <div className="flex flex-wrap gap-2">
               {STATUSES.map((st) => (
