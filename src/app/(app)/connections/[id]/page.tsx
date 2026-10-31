@@ -54,13 +54,13 @@ async function Connection({
       </p>
 
       {archived ? (
-        <p className="rounded-md border border-foreground p-3 text-sm font-medium">
+        <p className="window p-3 text-sm font-medium">
           Archived {formatDate(c.archived_at!)}. Hidden from the directory; everything below is kept.
         </p>
       ) : null}
 
       <header className="flex flex-col gap-2">
-        <h1 className="text-3xl font-bold tracking-tight break-words">{c.name}</h1>
+        <h1 className="text-4xl font-bold sm:text-[52px] break-words">{c.name}</h1>
         <p className="text-muted">
           {[formatType(c), place].filter(Boolean).join(" · ")}
         </p>
@@ -226,7 +226,7 @@ async function Connection({
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="flex flex-col gap-2">
-      <h2 className="text-lg font-semibold">{title}</h2>
+      <h2 className="text-xl font-bold">{title}</h2>
       {children}
     </section>
   );

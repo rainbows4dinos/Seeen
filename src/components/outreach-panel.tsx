@@ -40,7 +40,7 @@ export function OutreachPanel({
         </div>
       )}
       {entries.length ? (
-        <ol className="flex flex-col divide-y divide-line border-y border-line">
+        <ol className="panel flex flex-col divide-y divide-line">
           {entries.map((e) => (
             <EntryRow key={e.id} entry={e} mine={e.author_id === me} today={today} />
           ))}
@@ -58,7 +58,7 @@ function EntryRow({ entry: e, mine, today }: { entry: Entry; mine: boolean; toda
   const [pending, startTransition] = useTransition();
 
   return (
-    <li className="flex flex-col gap-1 py-3">
+    <li className="flex flex-col gap-1 px-3 py-3">
       <p className="text-sm text-muted">
         <time dateTime={e.occurred_on} className="font-medium text-foreground">
           {formatDay(e.occurred_on, today)}
@@ -144,7 +144,7 @@ function LogForm({
       key={state.attempt ?? state.savedAt ?? 0}
       action={formAction}
       noValidate
-      className="flex flex-col gap-4 rounded-md border border-line p-4"
+      className="flex flex-col gap-4 panel p-4"
     >
       {errors.form ? (
         <p role="alert" className="text-sm font-semibold text-error">

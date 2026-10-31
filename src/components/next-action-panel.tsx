@@ -43,7 +43,7 @@ export function NextActionPanel({
     });
 
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-line p-4">
+    <div className="flex flex-col gap-3 panel p-4">
       {editing ? (
         <PlanForm
           connectionId={connectionId}

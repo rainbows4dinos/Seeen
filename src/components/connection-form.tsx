@@ -99,7 +99,7 @@ function FormBody({
   return (
     <form action={formAction} noValidate className="flex flex-col gap-8">
       {errors.form || errorCount > 0 ? (
-        <div role="alert" className="rounded-md border border-error p-3 text-sm">
+        <div role="alert" className="border-2 border-error bg-surface p-3 text-sm">
           <p className="font-semibold text-error">
             {errors.form ?? `Couldn't save yet. Fix ${errorCount === 1 ? "the field" : `${errorCount} fields`} marked below.`}
           </p>

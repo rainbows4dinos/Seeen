@@ -87,7 +87,7 @@ export function QuickStatus({ id, initial }: { id: string; initial: QuickState }
         {pending ? "Saving…" : message}
       </p>
       {failed ? (
-        <div role="alert" className="flex flex-wrap items-center gap-3 rounded-md border border-error p-3 text-sm">
+        <div role="alert" className="flex flex-wrap items-center gap-3 border-2 border-error bg-surface p-3 text-sm">
           <p className="font-medium text-error">
             Couldn&rsquo;t save. It&rsquo;s still {STATUS_LABELS[saved.status]}
             {saved.playedTogether ? ", played together" : ""}.

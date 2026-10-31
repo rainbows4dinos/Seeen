@@ -121,7 +121,7 @@ export function PlaceField({
         role="listbox"
         aria-label="Matching towns"
         hidden={!open || results.length === 0}
-        className="absolute top-full z-10 mt-1 w-full overflow-hidden rounded-md border border-line bg-background shadow-lg"
+        className="absolute top-full z-10 mt-1 w-full overflow-hidden panel shadow-[var(--shadow-hard)]"
       >
         {results.map((s, i) => (
           <li

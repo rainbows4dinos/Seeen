@@ -12,7 +12,7 @@ export const metadata: Metadata = { title: "Add connection · Seeen" };
 export default function NewConnectionPage() {
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight">Add connection</h1>
+      <h1 className="text-4xl font-bold sm:text-[52px]">Add connection</h1>
       <Suspense fallback={<p className="text-muted">Loading…</p>}>
         <NewConnection />
       </Suspense>

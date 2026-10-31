@@ -1,36 +1,27 @@
 import Link from "next/link";
 import { Suspense, type ReactNode } from "react";
 import { getCurrentUser, getMembership } from "@/lib/auth/dal";
+import { MainNav } from "@/components/main-nav";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex flex-1 flex-col">
-      <header className="border-b border-line">
-        <div className="mx-auto flex w-full max-w-3xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-          <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
-            <Link href="/" className="text-xl font-bold tracking-tight">
+      <header>
+        <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-between gap-3 px-4 pt-4 pb-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Link href="/" className="logo uppercase">
               Seeen
             </Link>
-            <nav aria-label="Main" className="flex flex-wrap gap-x-4 gap-y-1 text-sm font-medium">
-              <Link href="/" className="action-link">
-                Directory
-              </Link>
-              <Link href="/scenes" className="action-link">
-                Scenes
-              </Link>
-              <Link href="/follow-ups" className="action-link">
-                Follow-ups
-              </Link>
-            </nav>
+            <MainNav />
           </div>
-          <Suspense fallback={<span className="text-sm text-muted">Loading…</span>}>
+          <Suspense fallback={<span className="caption">Loading…</span>}>
             <Account />
           </Suspense>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-6">{children}</main>
-      <footer className="border-t border-line">
-        <p className="mx-auto w-full max-w-3xl px-4 py-4 text-xs text-muted">
+      <main className="mx-auto w-full max-w-4xl flex-1 px-4 pt-8 pb-16">{children}</main>
+      <footer className="border-t border-strong bg-surface">
+        <p className="caption mx-auto w-full max-w-4xl px-4 py-4 normal-case">
           Town data from{" "}
           <a href="https://www.geonames.org/" className="link" target="_blank" rel="noopener noreferrer">
             GeoNames
@@ -60,11 +51,13 @@ async function Account() {
 
   return (
     <div className="flex flex-wrap items-center gap-3">
-      <p className="text-sm">
+      <p className="flex flex-wrap items-center gap-2 text-sm">
         {membership ? (
           <>
-            <span className="font-medium">{membership.workspaceName}</span>
-            <span className="text-muted"> · {name}</span>
+            <span className="nav-chip bg-inverse text-[var(--color-text-inverse)] hover:bg-inverse">
+              {membership.workspaceName}
+            </span>
+            <span className="text-muted">{name}</span>
           </>
         ) : (
           <span className="text-muted break-all">{name}</span>
