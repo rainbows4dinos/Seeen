@@ -18,6 +18,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               <Link href="/scenes" className="link">
                 Scenes
               </Link>
+              <Link href="/follow-ups" className="link">
+                Follow-ups
+              </Link>
             </nav>
           </div>
           <Suspense fallback={<span className="text-sm text-muted">Loading…</span>}>

@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { getMembership } from "@/lib/auth/dal";
+import { getCurrentUser, getMembership } from "@/lib/auth/dal";
+import { todayISO } from "@/lib/outreach/labels";
+import { NextActionPanel } from "@/components/next-action-panel";
+import { OutreachPanel } from "@/components/outreach-panel";
 import { getConnection, type ConnectionDetail } from "@/lib/connections/queries";
 import {
   STATUS_LABELS,
@@ -27,7 +30,8 @@ async function Connection({ params }: { params: PageProps<"/connections/[id]">["
   if (!membership) return <NoWorkspace />;
 
   const { id } = await params;
-  const detail = await getConnection(id);
+  const [detail, user] = await Promise.all([getConnection(id), getCurrentUser()]);
+  const today = todayISO();
   const { connection: c, nextAction, labelMates, sharedWithUs, isLabelMateWithUs, statusHistory } = detail;
   const rows = linkRows(c, detail.affiliations);
   const place = formatLocality(c.localities);
@@ -98,21 +102,34 @@ async function Connection({ params }: { params: PageProps<"/connections/[id]">["
       </Section>
 
       <Section title="Next action">
-        {nextAction ? (
-          <p>
-            {nextAction.description}
-            <span className="block text-sm text-muted">
-              {[
-                nextAction.assignee?.display_name,
-                nextAction.due_on ? `planned for ${formatDate(`${nextAction.due_on}T12:00:00`)}` : null,
-              ]
-                .filter(Boolean)
-                .join(" · ") || "No date set"}
-            </span>
-          </p>
-        ) : (
-          <p className="text-muted">Nothing planned.</p>
-        )}
+        <NextActionPanel
+          connectionId={c.id}
+          current={nextAction}
+          members={detail.members}
+          me={user.id}
+          today={today}
+        />
+        {detail.pastPlans.length ? (
+          <details className="text-sm">
+            <summary className="cursor-pointer text-muted">Earlier plans</summary>
+            <ul className="flex flex-col gap-1 pt-2">
+              {detail.pastPlans.map((p) => (
+                <li key={p.id}>
+                  {p.description}
+                  <span className="text-muted">
+                    {" · "}
+                    {p.status === "done" ? "done" : "dropped"}
+                    {p.closed_at ? ` ${formatDate(p.closed_at)}` : ""}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </details>
+        ) : null}
+      </Section>
+
+      <Section title="Outreach log">
+        <OutreachPanel connectionId={c.id} entries={detail.outreach} me={user.id} today={today} />
       </Section>
 
       <LinksPanel

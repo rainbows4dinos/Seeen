@@ -26,7 +26,7 @@ export type ConnectionListItem = Awaited<ReturnType<typeof listConnections>>[num
 export async function getConnection(id: string) {
   const supabase = await createClient();
 
-  const [connection, outgoing, incoming, nextAction, history, members] = await Promise.all([
+  const [connection, outgoing, incoming, nextAction, history, members, outreach, pastPlans] = await Promise.all([
     supabase
       .from("connections")
       .select("*, localities ( name, region, region_code, country, country_code, place_id ), connection_links ( id, label, url, position ), connection_scenes ( scenes ( id, name ) )")
@@ -47,7 +47,7 @@ export async function getConnection(id: string) {
     supabase
       .from("next_actions")
       .select(
-        "id, description, due_on, assignee:workspace_members!next_actions_workspace_id_assignee_id_fkey ( display_name )",
+        "id, description, due_on, assignee_id, assignee:workspace_members!next_actions_workspace_id_assignee_id_fkey ( display_name )",
       )
       .eq("connection_id", id)
       .eq("status", "open")
@@ -59,14 +59,37 @@ export async function getConnection(id: string) {
       .order("changed_at", { ascending: false })
       .order("id", { ascending: false })
       .limit(10),
-    supabase.from("workspace_members").select("user_id, display_name"),
+    supabase.from("workspace_members").select("user_id, display_name").order("display_name"),
+    supabase
+      .from("outreach_entries")
+      .select(
+        "id, occurred_on, channel, summary, author_id, created_at, author:workspace_members!outreach_entries_workspace_id_author_id_fkey ( display_name )",
+      )
+      .eq("connection_id", id)
+      .order("occurred_on", { ascending: false })
+      .order("created_at", { ascending: false }),
+    supabase
+      .from("next_actions")
+      .select("id, description, due_on, status, closed_at")
+      .eq("connection_id", id)
+      .in("status", ["done", "dropped"])
+      .order("closed_at", { ascending: false })
+      .limit(5),
   ]);
 
   // An invalid UUID comes back as an error; treat it like a missing record.
   if (connection.error?.code === "22P02") notFound();
   if (connection.error) throw new Error("Couldn't load this connection.");
   if (!connection.data) notFound();
-  if (outgoing.error || incoming.error || nextAction.error || history.error || members.error) {
+  if (
+    outgoing.error ||
+    incoming.error ||
+    nextAction.error ||
+    history.error ||
+    members.error ||
+    outreach.error ||
+    pastPlans.error
+  ) {
     throw new Error("Couldn't load this connection's details.");
   }
 
@@ -81,6 +104,9 @@ export async function getConnection(id: string) {
     connection: { ...connection.data, connection_links: links, scenes },
     affiliations: { outgoing: outgoing.data, incoming: incoming.data },
     nextAction: nextAction.data,
+    outreach: outreach.data,
+    pastPlans: pastPlans.data,
+    members: members.data,
     statusHistory: history.data.map((h) => ({
       ...h,
       by: members.data.find((m) => m.user_id === h.changed_by)?.display_name ?? null,
