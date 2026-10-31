@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { PlaceField } from "@/components/place-field";
 import { useActionState, useState } from "react";
-import type { ConnectionFormState, ConnectionFormValues } from "@/lib/connections/form";
+import { readForm, type ConnectionFormState, type ConnectionFormValues } from "@/lib/connections/form";
 import {
   GROUP_TYPES,
   GROUP_TYPE_LABELS,
@@ -31,7 +31,21 @@ export function ConnectionForm({
   submitLabel: string;
   cancelHref: string;
 }) {
-  const [state, formAction, pending] = useActionState(action, { values: initial, errors: {} });
+  const [state, formAction, pending] = useActionState<ConnectionFormState, FormData>(
+    async (prev, fd) => {
+      try {
+        return await action(prev, fd);
+      } catch {
+        // The request itself failed (offline, server down): keep what they typed.
+        return {
+          values: readForm(fd),
+          errors: { form: "Couldn't reach Seeen. Your changes are still here; try again." },
+          attempt: Date.now(),
+        };
+      }
+    },
+    { values: initial, errors: {} },
+  );
 
   // Remount after each failed save so fields show what was submitted.
   return (

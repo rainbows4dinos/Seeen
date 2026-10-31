@@ -108,7 +108,7 @@ function LinkItem({ row }: { row: LinkRow }) {
   const [error, setError] = useState<string>();
   const [pending, startTransition] = useTransition();
   const [state, action, saving] = useActionState<LinkState, FormData>(async (prev, fd) => {
-    const result = await updateLink(row.id, prev, fd);
+    const result = await updateLink(row.id, prev, fd).catch(() => ({ error: "Couldn't reach Seeen. Try again.", attempt: Date.now() }) as LinkState);
     if (result.ok) setMode("view");
     return result;
   }, {});
@@ -129,10 +129,10 @@ function LinkItem({ row }: { row: LinkRow }) {
         </p>
         {mode === "view" ? (
           <span className="flex gap-3 text-sm">
-            <button ref={editRef} type="button" className="link" onClick={() => setMode("edit")}>
+            <button ref={editRef} type="button" className="action-link" onClick={() => setMode("edit")}>
               Edit<span className="sr-only"> link to {row.otherName}</span>
             </button>
-            <button type="button" className="link" onClick={() => setMode("remove")}>
+            <button type="button" className="action-link" onClick={() => setMode("remove")}>
               Remove<span className="sr-only"> link to {row.otherName}</span>
             </button>
           </span>
@@ -185,7 +185,7 @@ function LinkItem({ row }: { row: LinkRow }) {
               autoFocus
               onClick={() =>
                 startTransition(async () => {
-                  const r = await removeLink(row.id);
+                  const r = await removeLink(row.id).catch(() => ({ error: "Couldn't reach Seeen. Try again." }));
                   if (r.error) setError(r.error);
                 })
               }
@@ -217,7 +217,7 @@ function AddLinkForm({
   onDone: () => void;
 }) {
   const [state, action, pending] = useActionState<LinkState, FormData>(async (prev, fd) => {
-    const result = await addLink(subjectId, option.id, prev, fd);
+    const result = await addLink(subjectId, option.id, prev, fd).catch(() => ({ error: "Couldn't reach Seeen. Try again.", attempt: Date.now() }) as LinkState);
     if (result.ok) onDone();
     return result;
   }, {});

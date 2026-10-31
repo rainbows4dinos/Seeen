@@ -97,7 +97,7 @@ export async function getConnection(id: string) {
   const scenes = connection.data.connection_scenes
     .map((cs) => cs.scenes)
     .filter((s): s is NonNullable<typeof s> => Boolean(s))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
   const network = await loadNetwork();
 
   return {

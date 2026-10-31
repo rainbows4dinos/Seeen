@@ -8,7 +8,7 @@ import { NoWorkspace } from "@/components/no-workspace";
 
 export const metadata: Metadata = { title: "Scenes · Seeen" };
 
-export default function ScenesPage() {
+export default function ScenesPage({ searchParams }: PageProps<"/scenes">) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -18,16 +18,17 @@ export default function ScenesPage() {
         </Link>
       </div>
       <Suspense fallback={<p className="text-muted">Loading scenes…</p>}>
-        <Scenes />
+        <Scenes searchParams={searchParams} />
       </Suspense>
     </div>
   );
 }
 
-async function Scenes() {
+async function Scenes({ searchParams }: { searchParams: PageProps<"/scenes">["searchParams"] }) {
   const membership = await getMembership();
   if (!membership) return <NoWorkspace />;
-  const scenes = await listScenes();
+  const [scenes, { saved }] = await Promise.all([listScenes(), searchParams]);
+  const savedName = scenes.find((s) => s.id === saved)?.name;
 
   if (!scenes.length) {
     return (
@@ -46,6 +47,10 @@ async function Scenes() {
   }
 
   return (
+    <div className="flex flex-col gap-3">
+    <p role="status" className="text-sm font-medium empty:hidden">
+      {savedName ? `Saved ${savedName}.` : ""}
+    </p>
     <ul className="flex flex-col divide-y divide-line border-y border-line">
       {nestScenes(scenes).map(({ scene, children }) => (
         <li key={scene.id} className="py-3">
@@ -68,6 +73,7 @@ async function Scenes() {
         </li>
       ))}
     </ul>
+    </div>
   );
 }
 
@@ -100,7 +106,7 @@ function SceneRow({
           <span className="block text-sm text-muted">{scene.description}</span>
         ) : null}
       </p>
-      <Link href={`/scenes/${scene.id}`} className="link text-sm">
+      <Link href={`/scenes/${scene.id}`} className="action-link text-sm">
         Edit<span className="sr-only"> {scene.name}</span>
       </Link>
     </div>
