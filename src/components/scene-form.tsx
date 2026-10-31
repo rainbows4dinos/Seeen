@@ -22,7 +22,28 @@ export function SceneForm({
   sceneId?: string;
   sceneName?: string;
 }) {
-  const [state, formAction, pending] = useActionState(action, { values: initial, errors: {} });
+  const [state, formAction, pending] = useActionState<SceneFormState, FormData>(
+    async (prev, fd) => {
+      try {
+        return await action(prev, fd);
+      } catch {
+        const get = (k: string) => String(fd.get(k) ?? "").trim();
+        return {
+          values: {
+            name: get("name"),
+            description: get("description"),
+            parentId: get("parent_id"),
+            placeId: get("place_id"),
+            placeText: get("place_text"),
+            keepLocalityId: get("keep_locality_id"),
+          },
+          errors: { form: "Couldn't reach Seeen. Your changes are still here; try again." },
+          attempt: Date.now(),
+        };
+      }
+    },
+    { values: initial, errors: {} },
+  );
   const { values: v, errors } = state;
   const count = Object.keys(errors).filter((k) => k !== "form").length;
 
@@ -140,7 +161,7 @@ function RemoveScene({ id, name }: { id: string; name: string }) {
               autoFocus
               onClick={() =>
                 startTransition(async () => {
-                  const r = await removeScene(id);
+                  const r = await removeScene(id).catch(() => ({ error: "Couldn't reach Seeen. Try again." }));
                   if (r?.error) setError(r.error);
                 })
               }

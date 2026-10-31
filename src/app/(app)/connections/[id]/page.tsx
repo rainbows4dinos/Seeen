@@ -17,19 +17,25 @@ import { LinksPanel, type LinkRow } from "@/components/links-panel";
 import { NoWorkspace } from "@/components/no-workspace";
 import { QuickStatus } from "@/components/quick-status";
 
-export default function ConnectionPage({ params }: PageProps<"/connections/[id]">) {
+export default function ConnectionPage({ params, searchParams }: PageProps<"/connections/[id]">) {
   return (
     <Suspense fallback={<p className="text-muted">Loading…</p>}>
-      <Connection params={params} />
+      <Connection params={params} searchParams={searchParams} />
     </Suspense>
   );
 }
 
-async function Connection({ params }: { params: PageProps<"/connections/[id]">["params"] }) {
+async function Connection({
+  params,
+  searchParams,
+}: {
+  params: PageProps<"/connections/[id]">["params"];
+  searchParams: PageProps<"/connections/[id]">["searchParams"];
+}) {
   const membership = await getMembership();
   if (!membership) return <NoWorkspace />;
 
-  const { id } = await params;
+  const [{ id }, { saved }] = await Promise.all([params, searchParams]);
   const [detail, user] = await Promise.all([getConnection(id), getCurrentUser()]);
   const today = todayISO();
   const { connection: c, nextAction, labelMates, sharedWithUs, isLabelMateWithUs, statusHistory } = detail;
@@ -42,6 +48,10 @@ async function Connection({ params }: { params: PageProps<"/connections/[id]">["
       <Link href={archived ? "/?view=archived" : "/"} className="link text-sm text-muted">
         Back to directory
       </Link>
+
+      <p role="status" className="text-sm font-medium empty:hidden">
+        {saved ? "Saved." : ""}
+      </p>
 
       {archived ? (
         <p className="rounded-md border border-foreground p-3 text-sm font-medium">

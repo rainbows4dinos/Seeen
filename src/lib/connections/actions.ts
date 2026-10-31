@@ -140,7 +140,7 @@ export async function createConnection(
   }
 
   revalidatePath("/", "layout");
-  redirect(`/connections/${id}`);
+  redirect(`/connections/${id}?saved=1`);
 }
 
 export async function updateConnection(
@@ -172,7 +172,7 @@ export async function updateConnection(
   }
 
   revalidatePath("/", "layout");
-  redirect(`/connections/${id}`);
+  redirect(`/connections/${id}?saved=1`);
 }
 
 export type ArchiveState = { error?: string };

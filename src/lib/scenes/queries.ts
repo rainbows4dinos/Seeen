@@ -3,16 +3,18 @@ import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 const SCENE_FIELDS =
-  "id, name, description, parent_id, locality_id, localities ( name, region, region_code, country, country_code, place_id ), connection_scenes ( connection_id )";
+  "id, name, description, parent_id, locality_id, localities ( name, region, region_code, country, country_code, place_id ), connection_scenes ( connection_id, connection:connections ( archived_at ) )";
 
+// Counts leave out archived connections, matching what the directory shows.
 function withCount<
-  T extends { connection_scenes: { connection_id: string }[] },
+  T extends {
+    connection_scenes: { connection_id: string; connection: { archived_at: string | null } | null }[];
+  },
 >(s: T) {
-  return {
-    ...s,
-    connectionIds: s.connection_scenes.map((cs) => cs.connection_id),
-    count: s.connection_scenes.length,
-  };
+  const ids = s.connection_scenes
+    .filter((cs) => cs.connection && !cs.connection.archived_at)
+    .map((cs) => cs.connection_id);
+  return { ...s, connectionIds: ids, count: ids.length };
 }
 
 export async function listScenes() {

@@ -11,14 +11,14 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <Link href="/" className="text-xl font-bold tracking-tight">
               Seeen
             </Link>
-            <nav aria-label="Main" className="flex gap-4 text-sm font-medium">
-              <Link href="/" className="link">
+            <nav aria-label="Main" className="flex flex-wrap gap-x-4 gap-y-1 text-sm font-medium">
+              <Link href="/" className="action-link">
                 Directory
               </Link>
-              <Link href="/scenes" className="link">
+              <Link href="/scenes" className="action-link">
                 Scenes
               </Link>
-              <Link href="/follow-ups" className="link">
+              <Link href="/follow-ups" className="action-link">
                 Follow-ups
               </Link>
             </nav>
@@ -52,7 +52,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 }
 
 async function Account() {
-  const [user, membership] = await Promise.all([getCurrentUser(), getMembership()]);
+  const user = await getCurrentUser();
+  // The header shouldn't take the page down if the workspace can't load;
+  // the page's own error state explains what happened.
+  const membership = await getMembership().catch(() => null);
   const name = membership?.displayName ?? user.email ?? "you";
 
   return (

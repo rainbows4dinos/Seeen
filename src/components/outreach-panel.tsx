@@ -93,7 +93,7 @@ function EntryRow({ entry: e, mine, today }: { entry: Entry; mine: boolean; toda
           </div>
         ) : (
           <div>
-            <button type="button" className="link text-sm text-muted" onClick={() => setConfirming(true)}>
+            <button type="button" className="action-link text-sm text-muted" onClick={() => setConfirming(true)}>
               Remove<span className="sr-only"> entry from {formatDay(e.occurred_on, today)}</span>
             </button>
           </div>
