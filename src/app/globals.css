@@ -41,6 +41,8 @@
   --color-plate-cyan: var(--plate-cyan);
   --color-plate-magenta: var(--plate-magenta);
   --color-plate-yellow: var(--plate-yellow);
+  /* Primary accent: primary buttons, hover, checked controls. */
+  --color-accent-primary: var(--plate-cyan);
   --color-status-homie: var(--plate-magenta);
   --color-status-prospect: var(--plate-cyan);
   --color-status-lets-play: var(--plate-yellow);
@@ -91,6 +93,7 @@
   --color-cyan: var(--plate-cyan);
   --color-magenta: var(--plate-magenta);
   --color-yellow: var(--plate-yellow);
+  --color-accent: var(--color-accent-primary);
 
   --font-display: var(--type-display);
   --font-mono: var(--type-mono);
@@ -211,8 +214,8 @@
     border-width: 2px;
   }
 
-  /* Buttons: mono, boxed, yellow on hover (Figma Button). Primary is the
-     yellow plate; secondary is paper. */
+  /* Buttons: mono, boxed, accent (cyan) on hover (Figma Button). Primary
+     is filled with the accent; secondary is paper. */
   .button-primary,
   .button-secondary {
     display: inline-flex;
@@ -231,7 +234,7 @@
     text-decoration: none;
   }
   .button-primary {
-    background: var(--plate-yellow);
+    background: var(--color-accent-primary);
     box-shadow: 3px 3px 0 0 var(--ink-900);
   }
   .button-secondary {
@@ -242,7 +245,7 @@
     color: var(--color-text-inverse);
   }
   .button-secondary:hover:not(:disabled) {
-    background: var(--plate-yellow);
+    background: var(--color-accent-primary);
   }
   .button-primary:active:not(:disabled) {
     transform: translate(3px, 3px);
@@ -272,10 +275,10 @@
   .choice input {
     width: 1.125rem;
     height: 1.125rem;
-    accent-color: var(--plate-yellow);
+    accent-color: var(--color-accent-primary);
   }
   .choice:hover {
-    background: var(--plate-yellow);
+    background: var(--color-accent-primary);
   }
   .choice:has(input:checked) {
     background: var(--color-bg-inverse);
@@ -315,7 +318,7 @@
     }
   }
   .segmented > *:hover {
-    background: var(--plate-yellow);
+    background: var(--color-accent-primary);
   }
   .segmented > [aria-current="page"] {
     background: var(--color-bg-inverse);
@@ -352,13 +355,23 @@
     color: var(--color-text-inverse);
   }
 
+  /* Whole-row links (directory, follow-ups). On hover the row takes the
+     accent; muted text goes full ink so it stays readable on cyan. */
+  .row-link:hover {
+    background: var(--color-accent-primary);
+  }
+  .row-link:hover .text-muted,
+  .row-link:hover .caption {
+    color: var(--color-text-primary);
+  }
+
   .link {
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 3px;
   }
   .link:hover {
-    background: var(--plate-yellow);
+    background: var(--color-accent-primary);
   }
   /* Stand-alone text actions (Edit, Remove): at least 24px tall to tap. */
   .action-link {
@@ -370,7 +383,7 @@
     text-underline-offset: 3px;
   }
   .action-link:hover {
-    background: var(--plate-yellow);
+    background: var(--color-accent-primary);
   }
 
   /* Nav chip (Figma Nav Chip): Hanken in a box; current page inverts. */
@@ -387,7 +400,7 @@
     letter-spacing: -0.01em;
   }
   .nav-chip:hover {
-    background: var(--plate-yellow);
+    background: var(--color-accent-primary);
   }
   .nav-chip[aria-current="page"] {
     background: var(--color-bg-inverse);

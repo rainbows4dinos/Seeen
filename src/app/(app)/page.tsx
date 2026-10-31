@@ -434,7 +434,7 @@ function ConnectionList({
           <li key={c.id}>
             <Link
               href={`/connections/${c.id}`}
-              className="flex flex-col gap-1 px-3 py-3 hover:bg-yellow sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+              className="flex flex-col gap-1 px-3 py-3 row-link sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
             >
               {/* Name first for screen readers; type caption sits above it visually, like the Figma card. */}
               <span className="flex flex-col-reverse gap-0.5">

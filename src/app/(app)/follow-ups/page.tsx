@@ -117,7 +117,7 @@ function ActionList({ title, actions, today }: { title: string; actions: Action[
           <li key={a.id}>
             <Link
               href={`/connections/${a.connection!.id}`}
-              className="flex flex-col gap-1 px-3 py-3 hover:bg-yellow sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+              className="flex flex-col gap-1 px-3 py-3 row-link sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
             >
               <span className="flex flex-col">
                 <span className="font-semibold break-words">{a.connection!.name}</span>
