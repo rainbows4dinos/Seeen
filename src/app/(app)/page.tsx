@@ -205,6 +205,14 @@ async function Directory({
           })}
         </>
       )}
+
+      {all.length ? (
+        <p className="border-t border-line pt-4">
+          <Link href="/export" className="action-link text-sm">
+            Export the directory as CSV
+          </Link>
+        </p>
+      ) : null}
     </div>
   );
 }
