@@ -47,7 +47,15 @@ Start with band members adding relevant prospects and links, recording why they 
 
 Confirmed: Seeen name, shared Merwulf access, scenes/localities, Homies, Vercel hosting, and Supabase backend.
 
-Working assumptions: Homies are band-wide; prospects are manually curated; the launch serves one workspace. Framework, member invitation mechanism, and visual tokens remain open.
+Decided while building the MVP:
+
+- **Stack:** Next.js App Router with TypeScript and Tailwind. Server actions and one route handler (`/api/export`) are the only server code. Supabase does auth and Postgres, and row-level security enforces membership on every private table.
+- **Access:** members are added by hand in Supabase (see the README). Signing up grants nothing, and public sign-ups stay off. A member is removed by deleting their `workspace_members` row. They keep their login but see "No workspace yet."
+- **Concurrent edits:** last save wins on a connection's fields. The edit form saves all of its fields together. Outreach entries, status history, and earlier next actions are separate records, so they're never overwritten.
+- **Deleting:** connections are archived, not deleted. An outreach entry can be removed only by its author, to fix mistakes. Replaced, done, and dropped next actions are kept.
+- **Visual tokens:** these live in the Seeen Figma file and are mirrored in `src/app/globals.css` (see [design-system/rules.md](design-system/rules.md)).
+
+Working assumptions: Homies are band-wide, prospects are manually curated, and the launch serves one workspace.
 
 ## History
 
