@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { getMembership } from "@/lib/auth/dal";
 import { createClient } from "@/lib/supabase/server";
+import { resolveLocality } from "@/lib/localities";
 import {
   readForm,
   validate,
@@ -27,55 +28,6 @@ async function requireWorkspace() {
   const membership = await getMembership();
   if (!membership) redirect("/");
   return membership.workspaceId;
-}
-
-// Each workspace has one locality per GeoNames place; reuse it or add it.
-async function resolveLocality(
-  supabase: Supabase,
-  workspaceId: string,
-  locality: ValidConnection["locality"],
-) {
-  if (!locality) return null;
-  if ("keepLocalityId" in locality) return locality.keepLocalityId;
-
-  const existing = await supabase
-    .from("localities")
-    .select("id")
-    .eq("place_id", locality.placeId)
-    .maybeSingle();
-  if (existing.error) throw existing.error;
-  if (existing.data) return existing.data.id;
-
-  const { data: place, error: placeError } = await supabase
-    .from("places")
-    .select("*")
-    .eq("id", locality.placeId)
-    .single();
-  if (placeError) throw placeError;
-
-  const { data, error } = await supabase
-    .from("localities")
-    .insert({
-      workspace_id: workspaceId,
-      place_id: place.id,
-      name: place.name,
-      region: place.region_name,
-      region_code: place.region_code,
-      country: place.country_name,
-      country_code: place.country_code,
-      latitude: place.latitude,
-      longitude: place.longitude,
-    })
-    .select("id")
-    .single();
-  if (error?.code === "23505") {
-    // A bandmate added the same town at the same moment.
-    const again = await supabase.from("localities").select("id").eq("place_id", place.id).single();
-    if (again.error) throw again.error;
-    return again.data.id;
-  }
-  if (error) throw error;
-  return data.id;
 }
 
 function connectionRow(data: ValidConnection, localityId: string | null) {
@@ -120,6 +72,45 @@ async function replaceLinks(
   if (error) throw error;
 }
 
+// Tags the connection with exactly these scenes. Names typed in as new
+// scenes reuse an existing scene with the same name (any capitalization).
+async function replaceScenes(
+  supabase: Supabase,
+  workspaceId: string,
+  connectionId: string,
+  sceneIds: string[],
+  newNames: string[],
+) {
+  const ids = new Set(sceneIds);
+  if (newNames.length) {
+    const { data: existing, error } = await supabase.from("scenes").select("id, name");
+    if (error) throw error;
+    const byName = new Map(existing.map((s) => [s.name.toLowerCase(), s.id]));
+    const missing = newNames.filter((n) => !byName.has(n.toLowerCase()));
+    if (missing.length) {
+      const { data: created, error: insertError } = await supabase
+        .from("scenes")
+        .insert(missing.map((name) => ({ workspace_id: workspaceId, name })))
+        .select("id, name");
+      if (insertError) throw insertError;
+      created.forEach((s) => byName.set(s.name.toLowerCase(), s.id));
+    }
+    newNames.forEach((n) => ids.add(byName.get(n.toLowerCase())!));
+  }
+
+  const { error: deleteError } = await supabase
+    .from("connection_scenes")
+    .delete()
+    .eq("connection_id", connectionId);
+  if (deleteError) throw deleteError;
+  if (!ids.size) return;
+
+  const { error } = await supabase.from("connection_scenes").insert(
+    [...ids].map((scene_id) => ({ workspace_id: workspaceId, connection_id: connectionId, scene_id })),
+  );
+  if (error) throw error;
+}
+
 export async function createConnection(
   _prev: ConnectionFormState,
   formData: FormData,
@@ -142,6 +133,7 @@ export async function createConnection(
     if (error) throw error;
     id = data.id;
     await replaceLinks(supabase, workspaceId, id, result.data.links);
+    await replaceScenes(supabase, workspaceId, id, result.data.scene_ids, result.data.new_scenes);
   } catch (error) {
     return { values, errors: saveErrors(error), attempt: Date.now() };
   }
@@ -173,6 +165,7 @@ export async function updateConnection(
     // RLS hides rows the user can't edit, which shows up as zero rows updated.
     if (!data.length) throw new Error("not found");
     await replaceLinks(supabase, workspaceId, id, result.data.links);
+    await replaceScenes(supabase, workspaceId, id, result.data.scene_ids, result.data.new_scenes);
   } catch (error) {
     return { values, errors: saveErrors(error), attempt: Date.now() };
   }

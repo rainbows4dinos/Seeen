@@ -11,11 +11,15 @@ export function PlaceField({
   initialLabel,
   keepLocalityId,
   error,
+  label = "Where they\u2019re based",
+  hint = "Their home town, not where you met them. Type a town, like \u201cWalla Walla\u201d or \u201cPortland, ME.\u201d",
 }: {
   initialId: number | null;
   initialLabel: string;
   keepLocalityId: string | null;
   error?: string;
+  label?: string;
+  hint?: string;
 }) {
   const id = useId();
   const [text, setText] = useState(initialLabel);
@@ -65,11 +69,10 @@ export function PlaceField({
   return (
     <div className="relative flex flex-col gap-1.5">
       <label htmlFor="c-place" className="text-sm font-medium">
-        Where they&rsquo;re based
+        {label}
       </label>
       <p id={`${id}-hint`} className="-mt-1 text-sm text-muted">
-        Their home town, not where you met them. Type a town, like &ldquo;Walla Walla&rdquo; or
-        &ldquo;Portland, ME.&rdquo;
+        {hint}
       </p>
       <input
         id="c-place"

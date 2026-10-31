@@ -11,7 +11,7 @@ export async function listConnections({ archived }: { archived: boolean }) {
   let query = supabase
     .from("connections")
     .select(
-      "id, name, kind, person_roles, group_type, status, played_together, is_us, archived_at, localities ( name, region, region_code, country, country_code, place_id )",
+      "id, name, kind, person_roles, group_type, status, played_together, is_us, archived_at, locality_id, localities ( name, region, region_code, country, country_code, place_id ), connection_scenes ( scene_id )",
     )
     .order("name");
   query = archived ? query.not("archived_at", "is", null) : query.is("archived_at", null);
@@ -29,7 +29,7 @@ export async function getConnection(id: string) {
   const [connection, outgoing, incoming, nextAction] = await Promise.all([
     supabase
       .from("connections")
-      .select("*, localities ( name, region, region_code, country, country_code, place_id ), connection_links ( id, label, url, position )")
+      .select("*, localities ( name, region, region_code, country, country_code, place_id ), connection_links ( id, label, url, position ), connection_scenes ( scenes ( id, name ) )")
       .eq("id", id)
       .maybeSingle(),
     supabase
@@ -63,10 +63,14 @@ export async function getConnection(id: string) {
   }
 
   const links = [...connection.data.connection_links].sort((a, b) => a.position - b.position);
+  const scenes = connection.data.connection_scenes
+    .map((cs) => cs.scenes)
+    .filter((s): s is NonNullable<typeof s> => Boolean(s))
+    .sort((a, b) => a.name.localeCompare(b.name));
   const network = await loadNetwork();
 
   return {
-    connection: { ...connection.data, connection_links: links },
+    connection: { ...connection.data, connection_links: links, scenes },
     affiliations: { outgoing: outgoing.data, incoming: incoming.data },
     nextAction: nextAction.data,
     candidates: network.connections
@@ -94,6 +98,7 @@ export function toFormValues(c: ConnectionDetail["connection"]): ConnectionFormV
     placeId: c.localities?.place_id ? String(c.localities.place_id) : "",
     placeText: c.localities ? formatPlace({ ...c.localities, country_name: c.localities.country }) : "",
     keepLocalityId: c.localities && !c.localities.place_id && c.locality_id ? c.locality_id : "",
+    sceneIds: c.scenes.map((s) => s.id),
     email: c.email ?? "",
     phone: c.phone ?? "",
     notes: c.notes ?? "",
