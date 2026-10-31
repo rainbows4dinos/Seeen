@@ -69,6 +69,7 @@ npm run dev                  # http://localhost:3000
 | `npm run build` | Production build |
 | `npm run lint` | ESLint |
 | `npm run typecheck` | Route types + TypeScript |
+| `npm test` | Unit tests (CSV export round-trip) |
 | `npm run db:start` / `db:stop` | Local Supabase via the CLI (Docker) |
 | `npm run db:migration <name>` | New versioned migration in `supabase/migrations/` |
 | `npm run db:reset` | Rebuild local DB from migrations |
@@ -103,6 +104,13 @@ insert into public.workspaces (name) values ('Merwulf') returning id;
 insert into public.workspace_members (workspace_id, user_id, role, display_name)
 select '<workspace-id>', id, 'member', 'Display Name'
 from auth.users where email = 'member@example.com';
+```
+
+To remove a member, delete their membership. They can still sign in, but they see "No workspace yet," and the database returns none of the band's data.
+
+```sql
+delete from public.workspace_members
+where user_id = (select id from auth.users where email = 'member@example.com');
 ```
 
 Supabase code lives in `src/lib/supabase/`: `client.ts` for Client Components, `server.ts` for server code, and `proxy.ts` for session refresh (wired up in `src/proxy.ts`). Only the project URL and publishable key belong in env vars the app reads. Never add the secret key.
