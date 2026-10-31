@@ -120,7 +120,7 @@ function ActionList({ title, actions, today }: { title: string; actions: Action[
               className="flex flex-col gap-1 px-3 py-3 row-link sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
             >
               <span className="flex flex-col">
-                <span className="font-semibold break-words">{a.connection!.name}</span>
+                <span className="font-display text-xl leading-tight font-semibold tracking-[-0.03em] break-words">{a.connection!.name}</span>
                 <span>{a.description}</span>
               </span>
               <span className="flex flex-wrap gap-x-3 text-sm text-muted sm:justify-end">
