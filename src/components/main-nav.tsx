@@ -26,7 +26,7 @@ function CurrentChips() {
 
 function Chips({ pathname }: { pathname: string | null }) {
   return (
-    <nav aria-label="Main" className="flex flex-wrap gap-1.5">
+    <nav aria-label="Main" className="flex flex-wrap gap-2">
       {ITEMS.map((item) => (
         <Link
           key={item.href}

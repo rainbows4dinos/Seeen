@@ -20,7 +20,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
       <main className="mx-auto w-full max-w-4xl flex-1 px-4 pt-8 pb-16">{children}</main>
-      <footer className="border-t border-strong bg-surface">
+      <footer className="rule-top rule-strong bg-surface">
         <p className="caption mx-auto w-full max-w-4xl px-4 py-4 normal-case">
           Town data from{" "}
           <a href="https://www.geonames.org/" className="link" target="_blank" rel="noopener noreferrer">

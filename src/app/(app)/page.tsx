@@ -87,7 +87,7 @@ async function Directory({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="text-4xl font-bold sm:text-[52px]">Directory</h1>
+        <h1 className="text-4xl font-bold sm:text-[52px] sm:leading-[52px]">Directory</h1>
         <Link href="/connections/new" className="button-primary">
           Add connection
         </Link>
@@ -207,7 +207,7 @@ async function Directory({
       )}
 
       {all.length ? (
-        <p className="border-t border-line pt-4">
+        <p className="rule-top pt-4">
           <Link href="/export" className="action-link text-sm">
             Export the directory as CSV
           </Link>
@@ -293,7 +293,7 @@ function FilterForm({
     >
       {view !== "current" ? <input type="hidden" name="view" value={view} /> : null}
       <div className="flex flex-wrap items-end gap-2">
-        <div className="flex min-w-48 flex-1 flex-col gap-1.5">
+        <div className="flex min-w-48 flex-1 flex-col gap-2">
           <label htmlFor="f-q" className="text-sm font-medium">
             Search by name
           </label>
@@ -338,7 +338,7 @@ function FilterForm({
             </div>
           </fieldset>
           <div className="grid gap-3 sm:grid-cols-3">
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <label htmlFor="f-type" className="text-sm font-medium">
                 Type
               </label>
@@ -360,7 +360,7 @@ function FilterForm({
                 ))}
               </select>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <label htmlFor="f-scene" className="text-sm font-medium">
                 Scene
               </label>
@@ -383,7 +383,7 @@ function FilterForm({
                 ])}
               </select>
             </div>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <label htmlFor="f-town" className="text-sm font-medium">
                 Town
               </label>
@@ -435,23 +435,23 @@ function ConnectionList({
   tagsFor: (id: string) => string[];
 }) {
   return (
-    <ul className="panel flex flex-col divide-y divide-line">
+    <ul className="panel rows flex flex-col">
       {connections.map((c) => {
         const place = formatLocality(c.localities);
         return (
           <li key={c.id}>
             <Link
               href={`/connections/${c.id}`}
-              className="flex flex-col gap-1 px-3 py-3 row-link sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+              className="flex flex-col gap-1 px-3 py-3 row-link sm:flex-row sm:items-start sm:justify-between sm:gap-4"
             >
               {/* Name first for screen readers; type caption sits above it visually, like the Figma card. */}
-              <span className="flex flex-col-reverse gap-0.5">
-                <span className="font-display text-xl font-semibold leading-tight tracking-[-0.03em] break-words">
+              <span className="flex flex-col-reverse gap-1">
+                <span className="font-display text-xl leading-6 font-semibold tracking-[-0.03em] break-words">
                   {c.name}
                 </span>
                 <span className="caption">{formatType(c)}</span>
               </span>
-              <span className="flex flex-wrap items-center gap-1.5 sm:justify-end">
+              <span className="flex flex-wrap items-center gap-2 sm:justify-end">
                 {place ? <span className="text-sm text-muted">{place}</span> : null}
                 {c.played_together ? <span className="tag">Played together</span> : null}
                 {tagsFor(c.id).map((t) => (

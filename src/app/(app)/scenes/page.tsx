@@ -12,7 +12,7 @@ export default function ScenesPage({ searchParams }: PageProps<"/scenes">) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="text-4xl font-bold sm:text-[52px]">Scenes</h1>
+        <h1 className="text-4xl font-bold sm:text-[52px] sm:leading-[52px]">Scenes</h1>
         <Link href="/scenes/new" className="button-primary">
           New scene
         </Link>
@@ -51,7 +51,7 @@ async function Scenes({ searchParams }: { searchParams: PageProps<"/scenes">["se
     <p role="status" className="text-sm font-medium empty:hidden">
       {savedName ? `Saved ${savedName}.` : ""}
     </p>
-    <ul className="panel flex flex-col divide-y divide-line">
+    <ul className="panel rows flex flex-col">
       {nestScenes(scenes).map(({ scene, children }) => (
         <li key={scene.id} className="px-3 py-3">
           <SceneRow
@@ -88,7 +88,7 @@ function SceneRow({
 }) {
   const place = formatLocality(scene.localities);
   return (
-    <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+    <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
       <p>
         <Link href={`/?scene=${scene.id}`} className="link font-semibold">
           {scene.name}

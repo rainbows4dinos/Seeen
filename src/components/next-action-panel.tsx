@@ -154,7 +154,7 @@ function PlanForm({
           {errors.form}
         </p>
       ) : null}
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-2">
         <label htmlFor="na-description" className="text-sm font-medium">
           Next step
         </label>
@@ -176,7 +176,7 @@ function PlanForm({
         ) : null}
       </div>
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <label htmlFor="na-assignee" className="text-sm font-medium">
             Who&rsquo;s on it
           </label>
@@ -202,7 +202,7 @@ function PlanForm({
             </p>
           ) : null}
         </div>
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <label htmlFor="na-due" className="text-sm font-medium">
             Follow up on <span className="font-normal text-muted">(optional)</span>
           </label>

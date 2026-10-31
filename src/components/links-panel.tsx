@@ -53,7 +53,7 @@ export function LinksPanel({
 
   return (
     <section aria-labelledby="links-heading" className="flex flex-col gap-4">
-      <h2 id="links-heading" className="text-xl font-bold">
+      <h2 id="links-heading" className="text-xl leading-6 font-bold">
         Connections
       </h2>
 
@@ -63,7 +63,7 @@ export function LinksPanel({
         sections.map((s) => (
           <div key={s.title} className="flex flex-col gap-1">
             <h3 className="label text-muted">{s.title}</h3>
-            <ul className="flex flex-col divide-y divide-line">
+            <ul className="rows flex flex-col">
               {[...s.rows]
                 .sort((a, b) => Number(b.isCurrent) - Number(a.isCurrent))
                 .map((r) => (
@@ -141,7 +141,7 @@ function LinkItem({ row }: { row: LinkRow }) {
 
       {mode === "edit" ? (
         <form action={action} className="flex flex-col gap-3 panel p-3">
-          <div className="flex flex-col gap-1.5">
+          <div className="flex flex-col gap-2">
             <label htmlFor={`${formId}-role`} className="text-sm font-medium">
               Role or detail
             </label>
@@ -238,7 +238,7 @@ function AddLinkForm({
     <form action={action} className="flex flex-col gap-4 panel p-4">
       <h3 className="font-semibold">{option.label}</h3>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-2">
         <label htmlFor={`${id}-search`} className="text-sm font-medium">
           Find in your directory, or type a new name
         </label>
@@ -295,7 +295,7 @@ function AddLinkForm({
       <input type="hidden" name="new_name" value={picked === "__new__" ? query.trim() : ""} />
 
       {picked === "__new__" && types.length > 1 ? (
-        <div className="flex flex-col gap-1.5">
+        <div className="flex flex-col gap-2">
           <label htmlFor={`${id}-type`} className="text-sm font-medium">
             What is {query.trim()}?
           </label>
@@ -309,7 +309,7 @@ function AddLinkForm({
         </div>
       ) : null}
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-2">
         <label htmlFor={`${id}-role`} className="text-sm font-medium">
           Role or detail <span className="font-normal text-muted">(optional)</span>
         </label>
