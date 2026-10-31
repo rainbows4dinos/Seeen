@@ -41,8 +41,10 @@
   --color-plate-cyan: var(--plate-cyan);
   --color-plate-magenta: var(--plate-magenta);
   --color-plate-yellow: var(--plate-yellow);
-  /* Primary accent: primary buttons, hover, checked controls. */
-  --color-accent-primary: var(--plate-cyan);
+  /* Primary accent is ink. Color is saved for highlights and tags. */
+  --color-accent-primary: var(--ink-900);
+  /* Hover on paper controls and rows: a quiet step toward the ground. */
+  --color-bg-hover: var(--ground-200);
   --color-status-homie: var(--plate-magenta);
   --color-status-prospect: var(--plate-cyan);
   --color-status-lets-play: var(--plate-yellow);
@@ -183,6 +185,19 @@
     text-transform: uppercase;
     color: var(--color-text-secondary);
   }
+  /* Highlighter swipe behind type (Xerox Lab hero). Color as a highlight,
+     never as text color. */
+  .swipe {
+    background: linear-gradient(
+      transparent 44%,
+      var(--color-plate-magenta) 44%,
+      var(--color-plate-magenta) 82%,
+      transparent 82%
+    );
+    padding-right: 0.04em;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
   .hand {
     font-family: var(--type-hand);
     font-size: 30px;
@@ -215,8 +230,8 @@
     border-width: 2px;
   }
 
-  /* Buttons: mono, boxed, accent (cyan) on hover (Figma Button). Primary
-     is filled with the accent; secondary is paper. */
+  /* Buttons: mono, boxed (Figma Button). Primary is ink; secondary is
+     paper. Hover inverts each one. */
   .button-primary,
   .button-secondary {
     display: inline-flex;
@@ -236,16 +251,18 @@
   }
   .button-primary {
     background: var(--color-accent-primary);
+    color: var(--color-text-inverse);
   }
   .button-secondary {
     background: var(--color-bg-surface);
   }
   .button-primary:hover:not(:disabled) {
-    background: var(--color-bg-inverse);
-    color: var(--color-text-inverse);
+    background: var(--color-bg-surface);
+    color: var(--color-text-primary);
   }
   .button-secondary:hover:not(:disabled) {
     background: var(--color-accent-primary);
+    color: var(--color-text-inverse);
   }
   .button-primary:disabled,
   .button-secondary:disabled {
@@ -274,12 +291,16 @@
     accent-color: var(--color-accent-primary);
   }
   .choice:hover {
-    background: var(--color-accent-primary);
+    background: var(--color-bg-hover);
   }
   .choice:has(input:checked) {
     background: var(--color-bg-inverse);
     color: var(--color-text-inverse);
     font-weight: 600;
+  }
+  /* Keep the native control visible on the ink fill. */
+  .choice:has(input:checked) input {
+    accent-color: var(--paper-50);
   }
   .choice:has(input:focus-visible) {
     outline: 2px solid var(--color-focus-outline);
@@ -314,7 +335,7 @@
     }
   }
   .segmented > *:hover {
-    background: var(--color-accent-primary);
+    background: var(--color-bg-hover);
   }
   .segmented > [aria-current="page"] {
     background: var(--color-bg-inverse);
@@ -351,10 +372,9 @@
     color: var(--color-text-inverse);
   }
 
-  /* Whole-row links (directory, follow-ups). On hover the row takes the
-     accent; muted text goes full ink so it stays readable on cyan. */
+  /* Whole-row links (directory, follow-ups): a quiet hover tint. */
   .row-link:hover {
-    background: var(--color-accent-primary);
+    background: var(--color-bg-hover);
   }
 
   .link {
@@ -363,7 +383,7 @@
     text-underline-offset: 3px;
   }
   .link:hover {
-    background: var(--color-accent-primary);
+    text-decoration-thickness: 2px;
   }
   /* Stand-alone text actions (Edit, Remove): at least 24px tall to tap. */
   .action-link {
@@ -375,7 +395,7 @@
     text-underline-offset: 3px;
   }
   .action-link:hover {
-    background: var(--color-accent-primary);
+    text-decoration-thickness: 2px;
   }
 
   /* Nav chip (Figma Nav Chip): Hanken in a box; current page inverts. */
@@ -392,7 +412,7 @@
     letter-spacing: -0.01em;
   }
   .nav-chip:hover {
-    background: var(--color-accent-primary);
+    background: var(--color-bg-hover);
   }
   .nav-chip[aria-current="page"] {
     background: var(--color-bg-inverse);
@@ -410,13 +430,5 @@
     font-weight: 700;
     letter-spacing: -0.03em;
     text-shadow: var(--misregister-cyan);
-  }
-}
-
-/* Must sit in the utilities layer to override .text-muted. */
-@layer utilities {
-  .row-link:hover .text-muted,
-  .row-link:hover .caption {
-    color: var(--color-text-primary);
   }
 }

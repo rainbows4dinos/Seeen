@@ -14,7 +14,7 @@ export default function LoginPage() {
         <p className="font-display text-5xl leading-[0.9] font-bold tracking-[-0.045em] sm:text-[96px]">
           Your people.
           <br />
-          Your scenes.
+          <span className="swipe">Your scenes.</span>
         </p>
       </header>
 
