@@ -6,6 +6,21 @@ Seeen helps Merwulf keep track of its music network and decide whom to reach out
 
 Formerly Artist Pathway / BandPath. The project restarted on October 27, 2026 with a smaller, personal MVP.
 
+![The Seeen directory, grouped by status](docs/screenshots/directory.png)
+
+## Screenshots
+
+All data shown is fictional sample data from `supabase/seed.sql`.
+
+| | |
+| --- | --- |
+| ![Sign-in page with the "Your people. Your scenes." headline](docs/screenshots/login.png) | ![A band's page with status, next action, outreach log, and connections](docs/screenshots/connection.png) |
+| **Sign in.** Invite-only. | **A connection.** Status in one tap, the next step, what's happened, and who's connected. |
+| ![The Let's play list](docs/screenshots/lets-play.png) | ![Scenes nested under Pacific Northwest](docs/screenshots/scenes.png) |
+| **Let's play.** The booking backlog, filterable by town or scene. | **Scenes.** Local scenes inside bigger ones, like the Pacific Northwest. |
+| ![Follow-ups grouped by date](docs/screenshots/follow-ups.png) | ![The directory on a phone](docs/screenshots/mobile-directory.png) |
+| **Follow-ups.** Every next step, with dates as plain facts and no overdue alarms. | **On a phone.** The same app, built for the merch table. |
+
 ## MVP
 
 - **Connections:** bands, promoters, venues, DJs, playlisters, and other people or organizations in the network.
