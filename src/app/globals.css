@@ -114,11 +114,12 @@
   body {
     background-color: var(--color-bg-ground);
     /* Faint dot grid, like graph paper under the cut-outs. */
+    /* Kept faint so it reads as texture, not a pattern. */
     background-image: radial-gradient(
-      var(--color-pattern-dot) 1px,
+      color-mix(in srgb, var(--color-pattern-dot) 50%, transparent) 1px,
       transparent 1.2px
     );
-    background-size: 16px 16px;
+    background-size: 20px 20px;
     color: var(--color-text-primary);
     font-family: var(--type-mono);
     font-size: 14px;
@@ -235,7 +236,6 @@
   }
   .button-primary {
     background: var(--color-accent-primary);
-    box-shadow: 3px 3px 0 0 var(--ink-900);
   }
   .button-secondary {
     background: var(--color-bg-surface);
@@ -246,10 +246,6 @@
   }
   .button-secondary:hover:not(:disabled) {
     background: var(--color-accent-primary);
-  }
-  .button-primary:active:not(:disabled) {
-    transform: translate(3px, 3px);
-    box-shadow: none;
   }
   .button-primary:disabled,
   .button-secondary:disabled {
@@ -360,10 +356,6 @@
   .row-link:hover {
     background: var(--color-accent-primary);
   }
-  .row-link:hover .text-muted,
-  .row-link:hover .caption {
-    color: var(--color-text-primary);
-  }
 
   .link {
     text-decoration: underline;
@@ -418,5 +410,13 @@
     font-weight: 700;
     letter-spacing: -0.03em;
     text-shadow: var(--misregister-cyan);
+  }
+}
+
+/* Must sit in the utilities layer to override .text-muted. */
+@layer utilities {
+  .row-link:hover .text-muted,
+  .row-link:hover .caption {
+    color: var(--color-text-primary);
   }
 }
