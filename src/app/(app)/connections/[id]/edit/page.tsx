@@ -5,6 +5,7 @@ import { updateConnection } from "@/lib/connections/actions";
 import { getConnection, toFormValues } from "@/lib/connections/queries";
 import { ConnectionForm } from "@/components/connection-form";
 import { NoWorkspace } from "@/components/no-workspace";
+import { listScenes } from "@/lib/scenes/queries";
 
 export const metadata: Metadata = { title: "Edit connection · Seeen" };
 
@@ -21,7 +22,7 @@ async function EditConnection({ params }: { params: PageProps<"/connections/[id]
   if (!membership) return <NoWorkspace />;
 
   const { id } = await params;
-  const { connection } = await getConnection(id);
+  const [{ connection }, scenes] = await Promise.all([getConnection(id), listScenes()]);
 
   return (
     <div className="flex flex-col gap-6">
@@ -29,6 +30,7 @@ async function EditConnection({ params }: { params: PageProps<"/connections/[id]
       <ConnectionForm
         action={updateConnection.bind(null, id)}
         initial={toFormValues(connection)}
+        scenes={scenes}
         submitLabel="Save changes"
         cancelHref={`/connections/${id}`}
       />

@@ -3,7 +3,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 
-select plan(45);
+select plan(47);
 
 -- ---------------------------------------------------------------------------
 -- Fixtures (as postgres)
@@ -31,6 +31,9 @@ insert into public.connections (id, workspace_id, name, kind, person_roles, grou
   ('c0000000-0000-0000-0000-0000000000f1', 'aaaaaaaa-0000-0000-0000-0000000000f1', 'The Tin Hollows', 'group', '{}', 'band'),
   ('c0000000-0000-0000-0000-0000000000f2', 'aaaaaaaa-0000-0000-0000-0000000000f1', 'Jo Example', 'person', '{musician,dj}', null),
   ('c0000000-0000-0000-0000-0000000000f3', 'bbbbbbbb-0000-0000-0000-0000000000f2', 'Elsewhere Hall', 'group', '{}', 'venue');
+
+insert into public.scenes (id, workspace_id, name) values
+  ('5c000000-0000-0000-0000-0000000000f9', 'bbbbbbbb-0000-0000-0000-0000000000f2', 'Elsewhere scene');
 
 -- ---------------------------------------------------------------------------
 -- Signed out (anon)
@@ -209,6 +212,21 @@ select is(
   (select count(*) from public.affiliations where from_connection_id = 'c0000000-0000-0000-0000-0000000000f4'),
   0::bigint,
   'members can remove a link'
+);
+
+-- Scenes can sit inside a bigger scene in the same workspace.
+select lives_ok(
+  $$insert into public.scenes (id, workspace_id, name) values
+      ('5c000000-0000-0000-0000-0000000000f1', 'aaaaaaaa-0000-0000-0000-0000000000f1', 'Pacific Northwest');
+    insert into public.scenes (workspace_id, name, parent_id) values
+      ('aaaaaaaa-0000-0000-0000-0000000000f1', 'Portland DIY', '5c000000-0000-0000-0000-0000000000f1')$$,
+  'member can add a macro-scene and a scene inside it'
+);
+select throws_ok(
+  $$insert into public.scenes (workspace_id, name, parent_id) values
+      ('aaaaaaaa-0000-0000-0000-0000000000f1', 'Sneaky', '5c000000-0000-0000-0000-0000000000f9')$$,
+  '23503', null,
+  'a scene cannot sit inside another band''s scene'
 );
 
 -- One "us" per workspace, and it has to be a group.

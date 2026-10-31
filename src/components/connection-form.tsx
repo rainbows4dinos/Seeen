@@ -15,16 +15,19 @@ import {
   STATUS_LABELS,
 } from "@/lib/connections/labels";
 
+type SceneOption = { id: string; name: string; parent_id: string | null };
 type Action = (prev: ConnectionFormState, formData: FormData) => Promise<ConnectionFormState>;
 
 export function ConnectionForm({
   action,
   initial,
+  scenes,
   submitLabel,
   cancelHref,
 }: {
   action: Action;
   initial: ConnectionFormValues;
+  scenes: SceneOption[];
   submitLabel: string;
   cancelHref: string;
 }) {
@@ -37,6 +40,7 @@ export function ConnectionForm({
       state={state}
       formAction={formAction}
       pending={pending}
+      scenes={scenes}
       submitLabel={submitLabel}
       cancelHref={cancelHref}
     />
@@ -47,12 +51,14 @@ function FormBody({
   state,
   formAction,
   pending,
+  scenes,
   submitLabel,
   cancelHref,
 }: {
   state: ConnectionFormState;
   formAction: (fd: FormData) => void;
   pending: boolean;
+  scenes: SceneOption[];
   submitLabel: string;
   cancelHref: string;
 }) {
@@ -168,6 +174,37 @@ function FormBody({
           keepLocalityId={v.keepLocalityId || null}
           error={errors.placeText}
         />
+
+        <ChoiceGroup
+          legend="Scenes"
+          hint={scenes.length ? "Any they're part of." : "None yet. Add one below."}
+        >
+          {orderScenes(scenes).map((s) => (
+            <Choice
+              key={s.id}
+              type="checkbox"
+              name="scene_ids"
+              value={s.id}
+              label={s.name}
+              defaultChecked={v.sceneIds.includes(s.id)}
+            />
+          ))}
+        </ChoiceGroup>
+        <Field
+          id="c-new_scenes"
+          label={scenes.length ? "Another scene (optional)" : "Scenes (optional)"}
+          hint="Separate with commas, like: Portland DIY, Pacific Northwest."
+          error={errors.newScenes}
+        >
+          <input
+            id="c-new_scenes"
+            name="new_scenes"
+            defaultValue={v.newScenes}
+            autoComplete="off"
+            className="field"
+            {...invalid("c-new_scenes", errors.newScenes, "c-new_scenes-hint")}
+          />
+        </Field>
       </fieldset>
 
       <fieldset className="flex flex-col gap-5">
@@ -296,6 +333,12 @@ function FormBody({
       </div>
     </form>
   );
+}
+
+// Bigger scenes first, each followed by the scenes inside it.
+function orderScenes(scenes: SceneOption[]) {
+  const top = scenes.filter((s) => !s.parent_id || !scenes.some((p) => p.id === s.parent_id));
+  return top.flatMap((t) => [t, ...scenes.filter((c) => c.parent_id === t.id)]);
 }
 
 function invalid(id: string, error?: string, extraDescribedBy?: string) {

@@ -229,17 +229,23 @@ isOneToOne: false
                   ]
                 },"scenes": {
                   Row: {
-                    "created_at": string,"description": string | null,"id": string,"locality_id": string | null,"name": string,"updated_at": string,"workspace_id": string
+                    "created_at": string,"description": string | null,"id": string,"locality_id": string | null,"name": string,"parent_id": string | null,"updated_at": string,"workspace_id": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "created_at"?: string,"description"?: string | null,"id"?: string,"locality_id"?: string | null,"name": string,"updated_at"?: string,"workspace_id": string
+                    "created_at"?: string,"description"?: string | null,"id"?: string,"locality_id"?: string | null,"name": string,"parent_id"?: string | null,"updated_at"?: string,"workspace_id": string
                   }
                   Update: {
-                    "created_at"?: string,"description"?: string | null,"id"?: string,"locality_id"?: string | null,"name"?: string,"updated_at"?: string,"workspace_id"?: string
+                    "created_at"?: string,"description"?: string | null,"id"?: string,"locality_id"?: string | null,"name"?: string,"parent_id"?: string | null,"updated_at"?: string,"workspace_id"?: string
                   }
                   Relationships: [
                     {
+      foreignKeyName: "scenes_parent_same_workspace"
+      columns: ["workspace_id","parent_id"]
+isOneToOne: false
+      referencedRelation: "scenes"
+      referencedColumns: ["workspace_id","id"]
+    },{
       foreignKeyName: "scenes_workspace_id_fkey"
       columns: ["workspace_id"]
 isOneToOne: false

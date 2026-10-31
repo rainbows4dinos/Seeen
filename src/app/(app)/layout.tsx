@@ -7,9 +7,19 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     <div className="flex flex-1 flex-col">
       <header className="border-b border-line">
         <div className="mx-auto flex w-full max-w-3xl flex-wrap items-center justify-between gap-3 px-4 py-3">
-          <Link href="/" className="text-xl font-bold tracking-tight">
-            Seeen
-          </Link>
+          <div className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
+            <Link href="/" className="text-xl font-bold tracking-tight">
+              Seeen
+            </Link>
+            <nav aria-label="Main" className="flex gap-4 text-sm font-medium">
+              <Link href="/" className="link">
+                Directory
+              </Link>
+              <Link href="/scenes" className="link">
+                Scenes
+              </Link>
+            </nav>
+          </div>
           <Suspense fallback={<span className="text-sm text-muted">Loading…</span>}>
             <Account />
           </Suspense>

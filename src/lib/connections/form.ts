@@ -22,6 +22,8 @@ export type ConnectionFormValues = {
   placeId: string;
   placeText: string;
   keepLocalityId: string;
+  sceneIds: string[];
+  newScenes: string;
   email: string;
   phone: string;
   notes: string;
@@ -49,6 +51,8 @@ export type ValidConnection = {
   is_us: boolean;
   can_help_with: string[];
   locality: { placeId: number } | { keepLocalityId: string } | null;
+  scene_ids: string[];
+  new_scenes: string[];
   email: string | null;
   phone: string | null;
   notes: string | null;
@@ -67,6 +71,8 @@ export const EMPTY_FORM: ConnectionFormValues = {
   placeId: "",
   placeText: "",
   keepLocalityId: "",
+  sceneIds: [],
+  newScenes: "",
   email: "",
   phone: "",
   notes: "",
@@ -91,6 +97,8 @@ export function readForm(fd: FormData): ConnectionFormValues {
     placeId: str(fd, "place_id"),
     placeText: str(fd, "place_text"),
     keepLocalityId: str(fd, "keep_locality_id"),
+    sceneIds: fd.getAll("scene_ids").map(String),
+    newScenes: str(fd, "new_scenes"),
     email: str(fd, "email"),
     phone: str(fd, "phone"),
     notes: str(fd, "notes"),
@@ -109,6 +117,17 @@ export function normalizeUrl(raw: string): string | null {
   } catch {
     return null;
   }
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+// "Portland DIY, Pacific Northwest" -> two names, duplicates dropped.
+export function splitList(raw: string) {
+  const seen = new Set<string>();
+  return raw
+    .split(",")
+    .map((s) => s.trim().replace(/\s+/g, " "))
+    .filter((s) => s && !seen.has(s.toLowerCase()) && seen.add(s.toLowerCase()));
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -140,6 +159,9 @@ export function validate(values: ConnectionFormValues):
   if (values.placeText && !placeId && !values.keepLocalityId) {
     errors.placeText = "Pick a town from the suggestions, or clear the field.";
   }
+
+  const newScenes = splitList(values.newScenes);
+  if (newScenes.some((n) => n.length > 120)) errors.newScenes = "Keep each scene name under 120 characters.";
 
   const links: ValidConnection["links"] = [];
   const linkUrls: Record<number, string> = {};
@@ -175,6 +197,8 @@ export function validate(values: ConnectionFormValues):
         : values.keepLocalityId
           ? { keepLocalityId: values.keepLocalityId }
           : null,
+      scene_ids: [...new Set(values.sceneIds.filter((id) => UUID_RE.test(id)))],
+      new_scenes: newScenes,
       email: optional(values.email),
       phone: optional(values.phone),
       notes: optional(values.notes),

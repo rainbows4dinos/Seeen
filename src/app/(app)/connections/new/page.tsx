@@ -5,6 +5,7 @@ import { createConnection } from "@/lib/connections/actions";
 import { EMPTY_FORM } from "@/lib/connections/form";
 import { ConnectionForm } from "@/components/connection-form";
 import { NoWorkspace } from "@/components/no-workspace";
+import { listScenes } from "@/lib/scenes/queries";
 
 export const metadata: Metadata = { title: "Add connection · Seeen" };
 
@@ -22,11 +23,13 @@ export default function NewConnectionPage() {
 async function NewConnection() {
   const membership = await getMembership();
   if (!membership) return <NoWorkspace />;
+  const scenes = await listScenes();
 
   return (
     <ConnectionForm
       action={createConnection}
       initial={EMPTY_FORM}
+      scenes={scenes}
       submitLabel="Add connection"
       cancelHref="/"
     />

@@ -61,6 +61,19 @@ async function Connection({ params }: { params: PageProps<"/connections/[id]">["
             <span className="tag">Shares a member with us: {sharedWithUs.join(", ")}</span>
           ) : null}
         </div>
+        {c.scenes.length ? (
+          <p className="text-sm">
+            <span className="text-muted">Scenes: </span>
+            {c.scenes.map((s, i) => (
+              <span key={s.id}>
+                {i ? ", " : null}
+                <Link href={`/?scene=${s.id}`} className="link">
+                  {s.name}
+                </Link>
+              </span>
+            ))}
+          </p>
+        ) : null}
         <div className="pt-2">
           <Link href={`/connections/${c.id}/edit`} className="button-primary">
             Edit
