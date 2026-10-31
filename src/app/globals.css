@@ -1,82 +1,136 @@
 @import "tailwindcss";
 
-/* Placeholder tokens. Visual tokens are not chosen yet (docs/design-system/rules.md).
-   Contrast targets WCAG AA in both schemes. */
+/* ---------------------------------------------------------------------------
+   Seeen tokens, phase 1. Source of truth: Figma "Seeen" > Components page
+   (variables: Primitives, Color/Paper, Spacing; text and effect styles).
+   Names mirror the Figma variables so the two stay easy to diff.
+   --------------------------------------------------------------------------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-  --muted: #525252;
-  --line: #d4d4d4;
-  /* Borders that mark a control's edge need 3:1 against the page (WCAG 1.4.11). */
-  --control: #858585;
-  --field: #ffffff;
-  --error: #b91c1c;
-  --focus: #2563eb;
+  /* Primitives */
+  --ink-900: #141414;
+  --ink-600: #5d5d58;
+  --paper-50: #f8f7f3;
+  --paper-photo: #fbfaf5;
+  --ground-200: #e4e4df;
+  --ground-300: #c9c9c2;
+  --ground-dot: #b9b9b2;
+  --plate-cyan: #00b4e6;
+  --plate-magenta: #ff40a6;
+  --plate-yellow: #ffe500;
+  --stock-pink: #f7c8dc;
+  --stock-mint: #c9eddc;
+  --stock-lilac: #dcd2f6;
+  --stock-butter: #fbeeaa;
+
+  /* Color (Paper mode) */
+  --color-bg-ground: var(--ground-200);
+  --color-bg-surface: var(--paper-50);
+  --color-bg-inverse: var(--ink-900);
+  --color-text-primary: var(--ink-900);
+  --color-text-secondary: var(--ink-600);
+  --color-text-inverse: var(--paper-50);
+  --color-border-strong: var(--ink-900);
+  --color-border-subtle: var(--ground-300);
+  --color-pattern-dot: var(--ground-dot);
+  --color-status-homie: var(--plate-magenta);
+  --color-status-prospect: var(--plate-cyan);
+  /* Not in Figma yet (code-side additions, flagged for review): */
+  --color-status-lets-play: var(--plate-yellow);
+  --red-error: #b0002a; /* 6.4:1 on paper; errors also say "Error:" in text */
+
+  /* Spacing and strokes */
+  --space-2xs: 2px;
+  --space-xs: 4px;
+  --space-sm: 6px;
+  --space-md: 10px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+  --space-2xl: 32px;
+  --space-section: 72px;
+  --stroke-hair: 1px;
+  --stroke-strong: 1.5px;
+
+  /* Type families (Figma text styles: Display/*, UI/Nav, Mono/*, Hand/Note) */
+  --type-display:
+    "Hanken Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --type-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --type-hand: "Reenie Beanie", cursive;
+
+  /* Effects */
+  --shadow-hard: 5px 5px 0 0 var(--ink-900);
+  --shadow-photo: 0 3px 6px 0 rgb(0 0 0 / 0.22);
+  --misregister-cyan: 2px 1px 0 var(--plate-cyan);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --muted: #a3a3a3;
-    --line: #404040;
-    --control: #7a7a7a;
-    --field: #171717;
-    --error: #f87171;
-    --focus: #60a5fa;
-  }
-}
-
+/* Map tokens into Tailwind utilities (bg-surface, text-muted, border-line…).
+   Corners are square everywhere. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
-  --color-line: var(--line);
-  --color-error: var(--error);
+  --color-background: var(--color-bg-ground);
+  --color-surface: var(--color-bg-surface);
+  --color-inverse: var(--color-bg-inverse);
+  --color-foreground: var(--color-text-primary);
+  --color-muted: var(--color-text-secondary);
+  --color-line: var(--color-border-subtle);
+  --color-strong: var(--color-border-strong);
+  --color-error: var(--red-error);
+  --color-cyan: var(--plate-cyan);
+  --color-magenta: var(--plate-magenta);
+  --color-yellow: var(--plate-yellow);
+
+  --font-display: var(--type-display);
+  --font-mono: var(--type-mono);
+  --font-hand: var(--type-hand);
+
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-full: 0;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: ui-sans-serif, system-ui, sans-serif;
-}
-
-:focus-visible {
-  outline: 2px solid var(--focus);
-  outline-offset: 2px;
-}
-
-@layer components {
-  .field {
-    min-height: 2.75rem;
-    border: 1px solid var(--control);
-    border-radius: 0.375rem;
-    background: var(--field);
-    padding: 0.5rem 0.75rem;
-    font-size: 1rem; /* 16px avoids iOS zoom on focus */
-  }
-  .field[aria-invalid="true"] {
-    border-color: var(--error);
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+@layer base {
+  body {
+    background-color: var(--color-bg-ground);
+    /* Faint dot grid, like graph paper under the cut-outs. */
+    background-image: radial-gradient(
+      var(--color-pattern-dot) 1px,
+      transparent 1.2px
+    );
+    background-size: 16px 16px;
+    color: var(--color-text-primary);
+    font-family: var(--type-mono);
+    font-size: 14px;
+    line-height: 1.55;
   }
 
-  .button-primary,
-  .button-secondary {
-    min-height: 2.75rem;
-    border-radius: 0.375rem;
-    padding: 0.5rem 1rem;
-    font-weight: 600;
+  h1,
+  h2,
+  h3 {
+    font-family: var(--type-display);
+    letter-spacing: -0.045em;
+    line-height: 1;
   }
-  .button-primary {
-    background: var(--foreground);
-    color: var(--background);
+  h1 {
+    font-weight: 700;
   }
-  .button-secondary {
-    border: 1px solid var(--control);
+  /* Form section titles read as headings too. */
+  legend.text-lg,
+  summary.text-lg {
+    font-family: var(--type-display);
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.03em;
   }
-  .button-primary:disabled,
-  .button-secondary:disabled {
-    opacity: 0.6;
-    cursor: progress;
+
+  /* Focus: ink outline (3:1 on every surface) with a magenta glow from Figma. */
+  :focus-visible {
+    outline: 2px solid var(--ink-900);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 5px var(--plate-magenta);
   }
 }
 
@@ -89,51 +143,207 @@ body {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Components
+   --------------------------------------------------------------------------- */
 @layer components {
+  /* Mono/Label: section labels like "HOMIES (5)". */
+  .label {
+    font-family: var(--type-mono);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.4;
+  }
+  /* Mono/Caption: tiny metadata like "BAND". */
+  .caption {
+    font-family: var(--type-mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-text-secondary);
+  }
+  .hand {
+    font-family: var(--type-hand);
+    font-size: 30px;
+    line-height: 1;
+  }
+
+  /* Paper surface: forms, panels, cards. */
+  .panel {
+    background: var(--color-bg-surface);
+    border: var(--stroke-hair) solid var(--color-border-strong);
+  }
+  /* Window: the boxed tool look with a hard shadow. */
+  .window {
+    background: var(--color-bg-surface);
+    border: var(--stroke-strong) solid var(--color-border-strong);
+    box-shadow: var(--shadow-hard);
+  }
+
+  .field {
+    min-height: 2.75rem;
+    border: var(--stroke-hair) solid var(--color-border-strong);
+    border-radius: 0;
+    background: var(--color-bg-surface);
+    padding: 0.5rem 0.75rem;
+    font-family: var(--type-mono);
+    font-size: 1rem; /* 16px avoids iOS zoom on focus */
+  }
+  .field[aria-invalid="true"] {
+    border-color: var(--red-error);
+    border-width: 2px;
+  }
+
+  /* Buttons: mono, boxed, yellow on hover (Figma Button). Primary is the
+     yellow plate; secondary is paper. */
   .button-primary,
   .button-secondary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    min-height: 2.75rem;
+    border: var(--stroke-hair) solid var(--color-border-strong);
+    border-radius: 0;
+    padding: 0.375rem 0.875rem;
+    font-family: var(--type-mono);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-text-primary);
+    text-decoration: none;
+  }
+  .button-primary {
+    background: var(--plate-yellow);
+    box-shadow: 3px 3px 0 0 var(--ink-900);
+  }
+  .button-secondary {
+    background: var(--color-bg-surface);
+  }
+  .button-primary:hover:not(:disabled) {
+    background: var(--color-bg-inverse);
+    color: var(--color-text-inverse);
+  }
+  .button-secondary:hover:not(:disabled) {
+    background: var(--plate-yellow);
+  }
+  .button-primary:active:not(:disabled) {
+    transform: translate(3px, 3px);
+    box-shadow: none;
+  }
+  .button-primary:disabled,
+  .button-secondary:disabled {
+    opacity: 0.6;
+    cursor: progress;
   }
 
-  /* Radio/checkbox pill. Selected state shows a check mark, not just color. */
+  /* Choice: radio/checkbox as a segment (Figma Segment). Selected flips to
+     ink. The native control stays visible so state never relies on color. */
   .choice {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
     min-height: 2.75rem;
-    border: 1px solid var(--control);
-    border-radius: 999px;
-    padding: 0.375rem 0.875rem;
+    border: var(--stroke-hair) solid var(--color-border-strong);
+    border-radius: 0;
+    background: var(--color-bg-surface);
+    padding: 0.375rem 0.75rem;
+    font-family: var(--type-mono);
+    font-size: 13px;
     cursor: pointer;
   }
   .choice input {
     width: 1.125rem;
     height: 1.125rem;
-    accent-color: var(--foreground);
+    accent-color: var(--plate-yellow);
+  }
+  .choice:hover {
+    background: var(--plate-yellow);
   }
   .choice:has(input:checked) {
-    border-color: var(--foreground);
+    background: var(--color-bg-inverse);
+    color: var(--color-text-inverse);
     font-weight: 600;
   }
   .choice:has(input:focus-visible) {
-    outline: 2px solid var(--focus);
+    outline: 2px solid var(--ink-900);
     outline-offset: 2px;
+    box-shadow: 0 0 0 5px var(--plate-magenta);
   }
 
+  /* Segmented control (Figma Segmented Control): joined boxes, current
+     one inverted. Used for directory views. */
+  .segmented {
+    display: inline-flex;
+    flex-wrap: wrap;
+    border: var(--stroke-hair) solid var(--color-border-strong);
+    background: var(--color-bg-surface);
+    width: fit-content;
+    max-width: 100%;
+  }
+  .segmented > * {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    padding: 0.25rem 0.75rem;
+    font-family: var(--type-mono);
+    font-size: 13px;
+    border-right: var(--stroke-hair) solid var(--color-border-strong);
+    margin-right: -1px;
+  }
+  @media (max-width: 480px) {
+    .segmented > * {
+      padding: 0.25rem 0.5rem;
+      font-size: 12px;
+    }
+  }
+  .segmented > *:hover {
+    background: var(--plate-yellow);
+  }
+  .segmented > [aria-current="page"] {
+    background: var(--color-bg-inverse);
+    color: var(--color-text-inverse);
+    font-weight: 600;
+  }
+
+  /* Tag (Figma Tag): mono caption in a box. Status colors from the plates. */
   .tag {
     display: inline-flex;
     align-items: center;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 0.125rem 0.625rem;
-    font-size: 0.875rem;
+    border: var(--stroke-hair) solid var(--color-border-strong);
+    border-radius: 0;
+    padding: 1px 6px;
+    font-family: var(--type-mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    line-height: 1.4;
+    background: transparent;
+  }
+  .tag-homies {
+    background: var(--color-status-homie);
+  }
+  .tag-prospect {
+    background: var(--color-status-prospect);
+  }
+  .tag-lets_play {
+    background: var(--color-status-lets-play);
+  }
+  .tag-ink,
+  .tag-avoid {
+    background: var(--color-bg-inverse);
+    color: var(--color-text-inverse);
   }
 
   .link {
     text-decoration: underline;
-    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .link:hover {
+    background: var(--plate-yellow);
   }
   /* Stand-alone text actions (Edit, Remove): at least 24px tall to tap. */
   .action-link {
@@ -142,6 +352,43 @@ body {
     min-height: 1.5rem;
     min-width: 1.5rem;
     text-decoration: underline;
-    text-underline-offset: 2px;
+    text-underline-offset: 3px;
+  }
+  .action-link:hover {
+    background: var(--plate-yellow);
+  }
+
+  /* Nav chip (Figma Nav Chip): Hanken in a box; current page inverts. */
+  .nav-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    border: var(--stroke-hair) solid var(--color-border-strong);
+    background: var(--color-bg-surface);
+    padding: 0.125rem 0.625rem;
+    font-family: var(--type-display);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .nav-chip:hover {
+    background: var(--plate-yellow);
+  }
+  .nav-chip[aria-current="page"] {
+    background: var(--color-bg-inverse);
+    color: var(--color-text-inverse);
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    border: var(--stroke-hair) solid var(--color-border-strong);
+    background: var(--color-bg-surface);
+    padding: 0.125rem 0.625rem;
+    font-family: var(--type-display);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    text-shadow: var(--misregister-cyan);
   }
 }

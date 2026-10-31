@@ -8,22 +8,35 @@ export const metadata: Metadata = {
 
 export default function LoginPage() {
   return (
-    <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-8 px-4 py-16">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-3xl font-bold tracking-tight">Seeen</h1>
-        <p className="text-muted">Your people. Your scenes.</p>
+    <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center gap-10 px-4 py-16">
+      <header className="flex flex-col items-start gap-6">
+        <h1 className="logo uppercase">Seeen</h1>
+        <p className="font-display text-5xl leading-[0.9] font-bold tracking-[-0.045em] sm:text-[96px]">
+          Your people.
+          <br />
+          Your scenes.
+        </p>
       </header>
 
-      <section aria-labelledby="signin-heading" className="flex flex-col gap-4">
-        <h2 id="signin-heading" className="text-lg font-semibold">
+      <section
+        aria-labelledby="signin-heading"
+        className="window flex w-full max-w-sm flex-col"
+      >
+        <h2
+          id="signin-heading"
+          className="bg-inverse px-2 py-1 font-mono text-xs font-normal tracking-normal text-[var(--color-text-inverse)]"
+        >
           Sign in
         </h2>
-        <Suspense fallback={<p className="text-sm text-muted">Loading…</p>}>
-          <LoginForm />
-        </Suspense>
-        <p className="text-sm text-muted">
-          Seeen is invite-only. Ask a bandmate to add you if you don&rsquo;t have an account.
-        </p>
+        <div className="flex flex-col gap-4 p-4">
+          <Suspense fallback={<p className="text-sm text-muted">Loading…</p>}>
+            <LoginForm />
+          </Suspense>
+          <p className="text-sm text-muted">
+            Seeen is invite-only. Ask a bandmate to add you if you don&rsquo;t
+            have an account.
+          </p>
+        </div>
       </section>
     </main>
   );

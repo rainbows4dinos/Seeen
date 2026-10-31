@@ -12,7 +12,7 @@ export default function ScenesPage({ searchParams }: PageProps<"/scenes">) {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="text-3xl font-bold tracking-tight">Scenes</h1>
+        <h1 className="text-4xl font-bold sm:text-[52px]">Scenes</h1>
         <Link href="/scenes/new" className="button-primary">
           New scene
         </Link>
@@ -32,7 +32,7 @@ async function Scenes({ searchParams }: { searchParams: PageProps<"/scenes">["se
 
   if (!scenes.length) {
     return (
-      <div className="flex flex-col items-start gap-3 rounded-md border border-dashed border-line p-6">
+      <div className="flex flex-col items-start gap-3 border border-dashed border-strong bg-surface p-6">
         <p className="font-medium">No scenes yet.</p>
         <p className="text-muted">
           Scenes group connections by local community, like &ldquo;Portland
@@ -51,9 +51,9 @@ async function Scenes({ searchParams }: { searchParams: PageProps<"/scenes">["se
     <p role="status" className="text-sm font-medium empty:hidden">
       {savedName ? `Saved ${savedName}.` : ""}
     </p>
-    <ul className="flex flex-col divide-y divide-line border-y border-line">
+    <ul className="panel flex flex-col divide-y divide-line">
       {nestScenes(scenes).map(({ scene, children }) => (
-        <li key={scene.id} className="py-3">
+        <li key={scene.id} className="px-3 py-3">
           <SceneRow
             scene={scene}
             total={

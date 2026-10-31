@@ -26,7 +26,7 @@ async function EditScene({ params }: { params: PageProps<"/scenes/[id]">["params
 
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight break-words">Edit {scene.name}</h1>
+      <h1 className="text-4xl font-bold sm:text-[52px] break-words">Edit {scene.name}</h1>
       <SceneForm
         action={updateScene.bind(null, id)}
         initial={{

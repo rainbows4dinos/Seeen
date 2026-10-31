@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Follow-ups · Seeen" };
 export default function FollowUpsPage({ searchParams }: PageProps<"/follow-ups">) {
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight">Follow-ups</h1>
+      <h1 className="text-4xl font-bold sm:text-[52px]">Follow-ups</h1>
       <Suspense fallback={<p className="text-muted">Loading follow-ups…</p>}>
         <FollowUps searchParams={searchParams} />
       </Suspense>
@@ -73,7 +73,7 @@ async function FollowUps({ searchParams }: { searchParams: PageProps<"/follow-up
       </form>
 
       {open.length === 0 ? (
-        <div className="flex flex-col items-start gap-3 rounded-md border border-dashed border-line p-6">
+        <div className="flex flex-col items-start gap-3 border border-dashed border-strong bg-surface p-6">
           <p className="font-medium">Nothing planned.</p>
           <p className="text-muted">Plan a next step from any connection&rsquo;s page and it shows up here.</p>
           <Link href="/" className="button-secondary">
@@ -81,7 +81,7 @@ async function FollowUps({ searchParams }: { searchParams: PageProps<"/follow-up
           </Link>
         </div>
       ) : shown.length === 0 ? (
-        <div className="flex flex-col items-start gap-3 rounded-md border border-dashed border-line p-6">
+        <div className="flex flex-col items-start gap-3 border border-dashed border-strong bg-surface p-6">
           <p className="font-medium">Nothing planned for them.</p>
           <Link href="/follow-ups" className="button-secondary">
             Show everyone
@@ -109,15 +109,15 @@ function ActionList({ title, actions, today }: { title: string; actions: Action[
   const id = `fu-${title.toLowerCase().replace(/\W+/g, "-")}`;
   return (
     <section aria-labelledby={id} className="flex flex-col gap-2">
-      <h2 id={id} className="text-sm font-semibold uppercase tracking-wide text-muted">
+      <h2 id={id} className="label text-muted">
         {title}
       </h2>
-      <ul className="flex flex-col divide-y divide-line border-y border-line">
+      <ul className="panel flex flex-col divide-y divide-line">
         {actions.map((a) => (
           <li key={a.id}>
             <Link
               href={`/connections/${a.connection!.id}`}
-              className="flex flex-col gap-1 py-3 hover:bg-line/30 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+              className="flex flex-col gap-1 px-3 py-3 hover:bg-yellow sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
             >
               <span className="flex flex-col">
                 <span className="font-semibold break-words">{a.connection!.name}</span>

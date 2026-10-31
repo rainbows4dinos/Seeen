@@ -1,6 +1,15 @@
 # Seeen design rules
 
-Status: baseline guidance; visual tokens and component library are not yet selected.
+Status: phase 1 tokens are in. The source of truth is the Seeen Figma file ("Components" page: variables, text styles, effect styles). Code mirrors it in `src/app/globals.css` with the same names.
+
+## Tokens (phase 1)
+
+- **Color:** ink `#141414` on paper `#f8f7f3`, over a dotted ground `#e4e4df`. The secondary text is `#5d5d58`. Process plates are for status and accents: magenta (Homies), cyan (Prospect), and yellow (Let's play, primary buttons, hover).
+- **Type:** Hanken Grotesk for headings and nav. IBM Plex Mono for body, labels, and controls. Reenie Beanie for rare handwritten notes. Fonts are self-hosted with Fontsource.
+- **Shape:** square corners everywhere, 1px ink borders, and a 1.5px border on windows. Windows and the primary button get a hard offset shadow.
+- **Components:** `.panel`, `.window`, `.field`, `.button-primary` (yellow), `.button-secondary` (paper, yellow on hover), `.choice` (segment that inverts when on), `.segmented`, `.tag` with `.tag-{status}`, `.nav-chip`, `.logo` (cyan misregister), `.label`, and `.caption`.
+- **Code-side additions not yet in Figma:** the Let's play status color (yellow plate), the Avoid/ink tag, an error red `#b0002a`, and the focus ring (ink outline plus magenta glow).
+- **Later phases:** xerox shader on photos, cut-out edges, tape, and rub-down type texture.
 
 ## Character
 

@@ -46,7 +46,7 @@ export function ArchiveControl({
   }
 
   return (
-    <div role="group" aria-labelledby="archive-question" className="flex flex-col gap-3 rounded-md border border-line p-4">
+    <div role="group" aria-labelledby="archive-question" className="flex flex-col gap-3 panel p-4">
       <p id="archive-question" className="font-medium break-words">
         Archive {name}?
       </p>

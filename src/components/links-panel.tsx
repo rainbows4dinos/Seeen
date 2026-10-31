@@ -53,7 +53,7 @@ export function LinksPanel({
 
   return (
     <section aria-labelledby="links-heading" className="flex flex-col gap-4">
-      <h2 id="links-heading" className="text-lg font-semibold">
+      <h2 id="links-heading" className="text-xl font-bold">
         Connections
       </h2>
 
@@ -62,7 +62,7 @@ export function LinksPanel({
       ) : (
         sections.map((s) => (
           <div key={s.title} className="flex flex-col gap-1">
-            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted">{s.title}</h3>
+            <h3 className="label text-muted">{s.title}</h3>
             <ul className="flex flex-col divide-y divide-line">
               {[...s.rows]
                 .sort((a, b) => Number(b.isCurrent) - Number(a.isCurrent))
@@ -140,7 +140,7 @@ function LinkItem({ row }: { row: LinkRow }) {
       </div>
 
       {mode === "edit" ? (
-        <form action={action} className="flex flex-col gap-3 rounded-md border border-line p-3">
+        <form action={action} className="flex flex-col gap-3 panel p-3">
           <div className="flex flex-col gap-1.5">
             <label htmlFor={`${formId}-role`} className="text-sm font-medium">
               Role or detail
@@ -173,7 +173,7 @@ function LinkItem({ row }: { row: LinkRow }) {
       ) : null}
 
       {mode === "remove" ? (
-        <div role="group" aria-label={`Remove link to ${row.otherName}`} className="flex flex-col gap-2 rounded-md border border-line p-3">
+        <div role="group" aria-label={`Remove link to ${row.otherName}`} className="flex flex-col gap-2 panel p-3">
           <p className="text-sm">
             Remove the link to {row.otherName}? Both connections stay in the directory.
           </p>
@@ -235,7 +235,7 @@ function AddLinkForm({
   const canCreate = query.trim().length > 0 && !exact;
 
   return (
-    <form action={action} className="flex flex-col gap-4 rounded-md border border-line p-4">
+    <form action={action} className="flex flex-col gap-4 panel p-4">
       <h3 className="font-semibold">{option.label}</h3>
 
       <div className="flex flex-col gap-1.5">

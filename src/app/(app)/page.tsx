@@ -87,13 +87,13 @@ async function Directory({
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
-        <h1 className="text-3xl font-bold tracking-tight">Directory</h1>
+        <h1 className="text-4xl font-bold sm:text-[52px]">Directory</h1>
         <Link href="/connections/new" className="button-primary">
           Add connection
         </Link>
       </div>
 
-      <nav aria-label="Directory views" className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+      <nav aria-label="Directory views" className="segmented">
         {VIEWS.map((v) => (
           <ViewLink key={v.id} href={viewHref(v.id)} current={view === v.id}>
             {v.label}
@@ -124,7 +124,7 @@ async function Directory({
         ) : list ? (
           <p className="text-muted">{list.empty}</p>
         ) : (
-          <div className="flex flex-col items-start gap-3 rounded-md border border-dashed border-line p-6">
+          <div className="flex flex-col items-start gap-3 border border-dashed border-strong bg-surface p-6">
             <p className="font-medium">No connections yet.</p>
             <p className="text-muted">
               Start with a band you&rsquo;ve shared a bill with, a venue
@@ -159,7 +159,7 @@ async function Directory({
           {connections.length === 0 && list && !filtering ? (
             <p className="text-muted">{list.empty}</p>
           ) : connections.length === 0 ? (
-            <div className="flex flex-col items-start gap-3 rounded-md border border-dashed border-line p-6">
+            <div className="flex flex-col items-start gap-3 border border-dashed border-strong bg-surface p-6">
               <p className="font-medium">Nothing matches.</p>
               <p className="text-muted">
                 Try fewer filters or a shorter search.
@@ -174,9 +174,9 @@ async function Directory({
             <section aria-labelledby="group-us" className="flex flex-col gap-2">
               <h2
                 id="group-us"
-                className="text-sm font-semibold uppercase tracking-wide text-muted"
+                className="label"
               >
-                Us
+                <span className="tag tag-ink">Us</span>
               </h2>
               <ConnectionList connections={us} tagsFor={tagsFor} />
             </section>
@@ -194,10 +194,10 @@ async function Directory({
               >
                 <h2
                   id={`group-${status}`}
-                  className="text-sm font-semibold uppercase tracking-wide text-muted"
+                  className="label"
                 >
-                  {STATUS_LABELS[status]}{" "}
-                  <span className="font-normal">({group.length})</span>
+                  <span className={`tag tag-${status}`}>{STATUS_LABELS[status]}</span>{" "}
+                  <span className="text-muted">({group.length})</span>
                 </h2>
                 <ConnectionList connections={group} tagsFor={tagsFor} />
               </section>
@@ -413,15 +413,7 @@ function ViewLink({
   children: React.ReactNode;
 }) {
   return (
-    <Link
-      href={href}
-      aria-current={current ? "page" : undefined}
-      className={
-        current
-          ? "border-b-2 border-foreground pb-1 font-semibold"
-          : "border-b-2 border-transparent pb-1 text-muted hover:text-foreground"
-      }
-    >
+    <Link href={href} aria-current={current ? "page" : undefined}>
       {children}
     </Link>
   );
@@ -435,24 +427,29 @@ function ConnectionList({
   tagsFor: (id: string) => string[];
 }) {
   return (
-    <ul className="flex flex-col divide-y divide-line border-y border-line">
+    <ul className="panel flex flex-col divide-y divide-line">
       {connections.map((c) => {
         const place = formatLocality(c.localities);
         return (
           <li key={c.id}>
             <Link
               href={`/connections/${c.id}`}
-              className="flex flex-col gap-1 py-3 hover:bg-line/30 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+              className="flex flex-col gap-1 px-3 py-3 hover:bg-yellow sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
             >
-              <span className="flex flex-col">
-                <span className="font-semibold break-words">{c.name}</span>
-                <span className="text-sm text-muted">{formatType(c)}</span>
+              {/* Name first for screen readers; type caption sits above it visually, like the Figma card. */}
+              <span className="flex flex-col-reverse gap-0.5">
+                <span className="font-display text-xl font-semibold leading-tight tracking-[-0.03em] break-words">
+                  {c.name}
+                </span>
+                <span className="caption">{formatType(c)}</span>
               </span>
-              <span className="flex flex-wrap gap-x-3 text-sm text-muted sm:justify-end">
-                {place ? <span>{place}</span> : null}
-                {c.played_together ? <span>Played together</span> : null}
+              <span className="flex flex-wrap items-center gap-1.5 sm:justify-end">
+                {place ? <span className="text-sm text-muted">{place}</span> : null}
+                {c.played_together ? <span className="tag">Played together</span> : null}
                 {tagsFor(c.id).map((t) => (
-                  <span key={t}>{t}</span>
+                  <span key={t} className="tag">
+                    {t}
+                  </span>
                 ))}
               </span>
             </Link>

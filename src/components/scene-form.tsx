@@ -51,7 +51,7 @@ export function SceneForm({
     <div className="flex flex-col gap-8">
       <form key={state.attempt ?? 0} action={formAction} noValidate className="flex flex-col gap-5">
         {errors.form || count ? (
-          <div role="alert" className="rounded-md border border-error p-3 text-sm font-semibold text-error">
+          <div role="alert" className="border-2 border-error bg-surface p-3 text-sm font-semibold text-error">
             {errors.form ?? `Couldn't save yet. Fix ${count === 1 ? "the field" : `${count} fields`} marked below.`}
           </div>
         ) : null}
@@ -147,7 +147,7 @@ function RemoveScene({ id, name }: { id: string; name: string }) {
           Remove scene
         </button>
       ) : (
-        <div role="group" aria-label={`Remove ${name}`} className="flex flex-col gap-3 rounded-md border border-line p-4">
+        <div role="group" aria-label={`Remove ${name}`} className="flex flex-col gap-3 panel p-4">
           <p className="font-medium">Remove {name}?</p>
           <p className="text-sm text-muted">
             Connections in it stay in the directory; they just lose this scene tag. Scenes inside it become
