@@ -4,10 +4,10 @@ Status: phase 1 tokens are in. The source of truth is the Seeen Figma file ("Com
 
 ## Tokens (phase 1)
 
-- **Color:** ink `#141414` on paper `#f8f7f3`, over a dotted ground `#e4e4df`. The secondary text is `#5d5d58`. Process plates are for status and accents. Cyan is the primary accent (`color/accent/primary`): primary buttons, hover, and checked controls. Status plates: magenta (Homies), cyan (Prospect), and yellow (Let's play).
+- **Color:** ink `#141414` on paper `#f8f7f3`, over a dotted ground `#e4e4df`. The secondary text is `#5d5d58`. Process plates are for status and accents. Ink is the primary accent (`color/accent/primary`), used for primary buttons and checked controls. Hover is a quiet ground tint (`color/bg/hover`) or an inversion. Color is saved for highlights and tags. Status plates: magenta (Homies), cyan (Prospect), and yellow (Let's play).
 - **Type:** Hanken Grotesk for headings and nav. IBM Plex Mono for body, labels, and controls. Reenie Beanie for rare handwritten notes. Fonts are self-hosted with Fontsource.
 - **Shape:** square corners everywhere, 1px ink borders, and a 1.5px border on windows. Windows get a hard offset shadow; buttons have none for now.
-- **Components:** `.panel`, `.window`, `.field`, `.button-primary` (cyan), `.button-secondary` (paper, cyan on hover), `.choice` (segment that inverts when on), `.segmented`, `.tag` with `.tag-{status}`, `.nav-chip`, `.logo` (cyan misregister), `.label`, and `.caption`.
+- **Components:** `.panel`, `.window`, `.field`, `.button-primary` (ink), `.button-secondary` (paper; both invert on hover), `.choice` (segment that inverts when on), `.segmented`, `.tag` with `.tag-{status}`, `.nav-chip`, `.logo` (cyan misregister), `.label`, and `.caption`.
 - **Status and state colors:** Let's play is the yellow plate and Avoid/"Us" is an ink tag. Error red is `#b0002a`. Focus is a 2px ink outline plus a magenta glow. All are Figma variables (`color/status/*`, `color/text/error`, `color/border/error`, `color/focus/*`), and their code syntax matches the CSS names.
 - **Later phases:** xerox shader on photos, cut-out edges, tape, and rub-down type texture.
 
